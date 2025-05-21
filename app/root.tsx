@@ -9,6 +9,8 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "./theme";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -32,17 +34,28 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="min-h-screen relative">
         {children}
         <ScrollRestoration />
         <Scripts />
+        <div className="absolute bottom-0 left-0 right-0 flex justify-center pb-8">
+          <img
+            src="/beutechful-logo.png"
+            alt="Beutechful Logo"
+            className="w-1/3"
+          />
+        </div>
       </body>
     </html>
   );
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <ThemeProvider theme={theme}>
+      <Outlet />
+    </ThemeProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

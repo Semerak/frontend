@@ -1,16 +1,21 @@
-import { useState } from "react";
+import { DefaultButton } from "~/components/DefaultButton";
 
 export function Welcome() {
-  const [data, setData] = useState(0);
+  function testFunction() {
+    console.log("123");
+  }
+
   return (
-    <main className="flex items-center justify-center pt-16 pb-4">
-      <div className="text-red-500">Hello
-        <button
-          className="ml-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          onClick={() => setData(data + 1)}
-        >
-          Clicked {data} times
-        </button>
+    <main className="relative h-screen overflow-hidden">
+      <div className="absolute scale-140 top-24">
+        <img
+          src="/welcome-picture.png"
+          alt="Welcome image"
+          className="h-full object-cover"
+        />
+      </div>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <DefaultButton text="Start Analysis" handleClick={testFunction} />
       </div>
     </main>
   );
