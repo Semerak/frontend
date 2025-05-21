@@ -1,6 +1,9 @@
 import { DefaultButton } from "~/components/DefaultButton";
-
-export function Welcome() {
+import { Page } from "~/routes/home";
+interface SensorAnalysisProps {
+  handleClick: (nextPage: Page) => void;
+}
+export function Welcome({ handleClick }: SensorAnalysisProps) {
   function testFunction() {
     console.log("123");
   }
@@ -15,7 +18,7 @@ export function Welcome() {
         />
       </div>
       <div className="absolute inset-0 flex items-center justify-center">
-        <DefaultButton text="Start Analysis" handleClick={testFunction} />
+        <DefaultButton text="Start Analysis" handleClick={() => handleClick(Page.SensorAnalysis)} />
       </div>
     </main>
   );
