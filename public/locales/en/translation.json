@@ -1,0 +1,18 @@
+{
+  "common": {
+    "nextPage": "Next"
+  },
+  "startPage": {
+    "welcome": "Find your perfect Make-up Match",
+    "startAnalysis": "Start Analysis"
+  },
+  "languages": {
+    "english": "EN",
+    "german": "DE"
+  },
+  "sensorAnalysis": {
+    "title": "Sensor Analysis",
+    "spot": "Spot",
+    "instruction": "Place the sensor in three different spots of your face"
+  }
+}
