@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
-import SensorAnalysis from '~/sensor-analysis/sensor-analysis';
-import { Page } from '~/types/pages-enum';
-import { Welcome } from '~/welcome/welcome';
+import SensorAnalysis from 'app/features/sensor-analysis/sensor-analysis';
+import { Welcome } from 'app/features/welcome/welcome';
+import { Page } from 'app/types/pages-enum';
 
 import type { Route } from './+types/home';
 

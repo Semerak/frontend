@@ -1,9 +1,10 @@
 import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
-import { DefaultButton } from '~/components/default-button';
-import { SpotDisplay } from '~/sensor-analysis/components/spot-display';
-import { Page } from '~/types/pages-enum';
+import { DefaultButton } from 'app/components/ui/default-button';
+import { Page } from 'app/types/pages-enum';
+
+import { SpotDisplay } from './components/spot-display';
 
 interface SensorAnalysisProps {
   handleClick: (nextPage: Page) => void;
