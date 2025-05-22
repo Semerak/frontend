@@ -1,18 +1,17 @@
-import SensorAnalysis from "~/sensor-analysis/sensor-analysis";
-import type { Route } from "./+types/home";
-import { Welcome } from "~/welcome/welcome";
-import { useState } from "react";
+import { useState } from 'react';
 
+import SensorAnalysis from '~/sensor-analysis/sensor-analysis';
+import { Page } from '~/types/pages-enum';
+import { Welcome } from '~/welcome/welcome';
+
+import type { Route } from './+types/home';
+
+// eslint-disable-next-line
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Makeup Match" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: 'Makeup Match' },
+    { name: 'description', content: 'Welcome to React Router!' },
   ];
-}
-
-export enum Page {
-  Welcome = "Welcome",
-  SensorAnalysis = "SensorAnalysis",
 }
 
 export default function Home() {
