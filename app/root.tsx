@@ -8,12 +8,12 @@ import {
   ScrollRestoration,
 } from 'react-router';
 
-import type { Route } from './+types/root';
-import { LanguagePicker } from './components/language-picker';
-import theme from './theme';
-import './app.css';
+import { MainLayout } from './components/layouts/main-layout';
+import theme from './styles/theme';
+import './styles/app.css';
 
 import './i18n';
+import type { Route } from '.react-router/types/app/+types/root';
 
 export const links: Route.LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -41,17 +41,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {children}
         <ScrollRestoration />
         <Scripts />
-
-        <div className="absolute top-4 left-4 z-10 w-18">
-          <LanguagePicker />
-        </div>
-        <div className="absolute bottom-0 left-0 right-0 flex justify-center pb-8">
-          <img
-            src="/beutechful-logo.png"
-            alt="Beutechful Logo"
-            className="w-1/3"
-          />
-        </div>
       </body>
     </html>
   );
@@ -60,7 +49,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <ThemeProvider theme={theme}>
-      <Outlet />
+      <MainLayout>
+        <Outlet />
+      </MainLayout>
     </ThemeProvider>
   );
 }

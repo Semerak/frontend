@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next';
 
-import { DefaultButton } from '~/components/default-button';
-import { Page } from '~/types/pages-enum';
+import { DefaultButton } from 'app/components/ui/default-button';
+import { Page } from 'app/types/pages-enum';
+
 interface SensorAnalysisProps {
   handleClick: (nextPage: Page) => void;
 }

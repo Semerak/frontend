@@ -18,12 +18,11 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: 'Poppins, Arial, sans-serif', // Does this work?
+    fontFamily: 'Poppins, Arial, sans-serif',
     button: {
       textTransform: 'none',
     },
   },
-  // Add more customizations as needed
 });
 
 export default theme;
