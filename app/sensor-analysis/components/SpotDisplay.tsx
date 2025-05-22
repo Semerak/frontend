@@ -1,4 +1,3 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
 
 interface SpotDisplayProps {
@@ -7,7 +6,7 @@ interface SpotDisplayProps {
     onClick?: () => void;
 }
 
-export const SpotDisplay: React.FC<SpotDisplayProps> = ({ number, color, onClick }) => {
+export function SpotDisplay({ number, color, onClick }: SpotDisplayProps) {
     const { t } = useTranslation();
 
     return (
