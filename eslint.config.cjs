@@ -34,7 +34,7 @@ module.exports = defineConfig([
       'check-file': checkFile,
     },
   },
-  globalIgnores(['node_modules/*', 'generators/*']),
+  globalIgnores(['node_modules/*', 'generators/*', '.react-router/*']),
   {
     files: ['**/*.ts', '**/*.tsx'],
 
@@ -76,7 +76,6 @@ module.exports = defineConfig([
 
     rules: {
       'import/no-cycle': 'error',
-      'linebreak-style': ['error', 'unix'],
       'react/prop-types': 'off',
 
       'import/order': [
