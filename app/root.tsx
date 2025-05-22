@@ -11,9 +11,9 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
+import { LanguagePicker } from "./components/LanguagePicker";
 
 import "./i18n";
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -43,20 +43,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Scripts />
 
         <div className="absolute top-4 left-4 z-10 w-18">
-          <FormControl fullWidth>
-            <InputLabel id="lang-select-label">Language</InputLabel>
-            <Select
-              labelId="lang-select-label"
-              id="lang-select"
-              value="EN"
-              label="Language"
-              variant="outlined"
-              // onChange={handleChange}
-            >
-              <MenuItem value="EN">EN</MenuItem>
-              <MenuItem value="DE">DE</MenuItem>
-            </Select>
-          </FormControl>
+          <LanguagePicker />
         </div>
         <div className="absolute bottom-0 left-0 right-0 flex justify-center pb-8">
           <img

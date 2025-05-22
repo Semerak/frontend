@@ -4,6 +4,7 @@ const theme = createTheme({
   palette: {
     primary: {
       main: "#906B4D",
+      dark: "#4d3725",
     },
     secondary: {
       main: "#C49E91",
@@ -18,6 +19,9 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: "Poppins, Arial, sans-serif", // Does this work?
+    button: {
+      textTransform: "none",
+    },
   },
   // Add more customizations as needed
 });
