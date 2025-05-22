@@ -1,12 +1,14 @@
 import { DefaultButton } from "~/components/DefaultButton";
 import { SpotDisplay } from "~/sensor_analysis/components/SensorDisplay";
 import { Page } from "~/routes/home";
+import { useTranslation } from "react-i18next";
 
 interface SensorAnalysisProps {
     handleClick: (nextPage: Page) => void;
 }
 
 export function SensorAnalysis({ handleClick }: SensorAnalysisProps) {
+    const { t } = useTranslation();
     return (
         <main className="flex flex-col items-center justify-center min-h-screen bg-white">
             {/* Progress Dots */}
@@ -19,7 +21,7 @@ export function SensorAnalysis({ handleClick }: SensorAnalysisProps) {
             </div>
 
             {/* Title */}
-            <h1 className="text-3xl font-extrabold text-center mb-6">Sensor Analysis</h1>
+            <h1 className="text-3xl font-extrabold text-center mb-6">{t("sensorAnalysis.title")}</h1>
 
             <div className="flex flex-row items-center gap-12">
                 {/* Image */}
@@ -41,10 +43,10 @@ export function SensorAnalysis({ handleClick }: SensorAnalysisProps) {
 
             {/* Instruction */}
             <div className="mt-8 text-center text-gray-400 text-base">
-                Place the sensor in three different spots of your face
+                {t("sensorAnalysis.instruction")}
             </div>
 
-            <DefaultButton text="Next" handleClick={() => handleClick(Page.Welcome)} />
+            <DefaultButton text={t("common.nextPage")} handleClick={() => handleClick(Page.Welcome)} />
         </main>
     );
 };

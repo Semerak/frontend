@@ -1,4 +1,18 @@
 {
-  "welcome": "Finde deinen perfekten MakeUp Match",
-  "startAnalysis": "Analyse Starten"
+  "common": {
+    "nextPage": "Nächste"
+  },
+  "startPage": {
+    "welcome": "Finde deinen perfekten MakeUp Match",
+    "startAnalysis": "Analyse Starten"
+  },
+  "languages": {
+    "english": "EN",
+    "german": "DE"
+  },
+  "sensorAnalysis": {
+    "title": "Sensor-Analyse",
+    "spot": "Punkt",
+    "instruction": "Platziere den Sensor an drei verschiedenen Stellen deines Gesichts"
+  }
 }

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export function LanguagePicker() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [language, setLanguage] = useState(i18n.language);
 
   const handleChange = (
@@ -49,7 +49,7 @@ export function LanguagePicker() {
             },
           }}
         >
-          <Typography variant="body1">EN</Typography>
+          <Typography variant="body1">{t("languages.english")}</Typography>
         </ToggleButton>
 
         <div className="h-5 w-1 bg-[#906B4D] self-center"></div>
@@ -66,7 +66,7 @@ export function LanguagePicker() {
             },
           }}
         >
-          <Typography variant="body1">DE</Typography>
+          <Typography variant="body1">{t("languages.german")}</Typography>
         </ToggleButton>
       </ToggleButtonGroup>
     </div>
