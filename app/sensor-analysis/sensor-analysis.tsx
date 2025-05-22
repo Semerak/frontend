@@ -1,8 +1,9 @@
-import { DefaultButton } from "~/components/DefaultButton";
-import { SpotDisplay } from "~/sensor-analysis/components/SpotDisplay";
-import { Page } from "~/routes/home";
-import { useTranslation } from "react-i18next";
-import { Typography } from "@mui/material";
+import { Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+
+import { DefaultButton } from '~/components/default-button';
+import { SpotDisplay } from '~/sensor-analysis/components/spot-display';
+import { Page } from '~/types/pages-enum';
 
 interface SensorAnalysisProps {
   handleClick: (nextPage: Page) => void;
@@ -24,7 +25,7 @@ export function SensorAnalysis({ handleClick }: SensorAnalysisProps) {
       {/* Title */}
       <div className="p-4">
         <Typography variant="h4" fontWeight={600} color="text.primary">
-          {t("sensorAnalysis.title")}
+          {t('sensorAnalysis.title')}
         </Typography>
       </div>
 
@@ -49,12 +50,12 @@ export function SensorAnalysis({ handleClick }: SensorAnalysisProps) {
       {/* Instruction */}
       <div className="mt-8 mb-2">
         <Typography variant="body1" fontWeight={400} color="gray">
-          {t("sensorAnalysis.instruction")}
+          {t('sensorAnalysis.instruction')}
         </Typography>
       </div>
 
       <DefaultButton
-        text={t("common.nextPage")}
+        text={t('common.nextPage')}
         handleClick={() => handleClick(Page.Welcome)}
       />
     </main>

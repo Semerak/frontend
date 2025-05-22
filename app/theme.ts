@@ -1,26 +1,26 @@
-import { createTheme } from "@mui/material/styles";
+import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#906B4D",
-      dark: "#4d3725",
+      main: '#906B4D',
+      dark: '#4d3725',
     },
     secondary: {
-      main: "#C49E91",
+      main: '#C49E91',
     },
     background: {
-      default: "#FFFFFF",
+      default: '#FFFFFF',
     },
     text: {
-      primary: "#000000",
-      secondary: "",
+      primary: '#000000',
+      secondary: '',
     },
   },
   typography: {
-    fontFamily: "Poppins, Arial, sans-serif", // Does this work?
+    fontFamily: 'Poppins, Arial, sans-serif', // Does this work?
     button: {
-      textTransform: "none",
+      textTransform: 'none',
     },
   },
   // Add more customizations as needed
