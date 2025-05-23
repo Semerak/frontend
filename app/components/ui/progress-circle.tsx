@@ -1,5 +1,7 @@
 import { useTheme } from '@mui/material/styles';
 
+import { cn } from '~/utils/cn';
+
 interface ProgressCircleProps {
   state: 'visited' | 'active' | 'not-visited';
 }
@@ -11,11 +13,9 @@ export function ProgressCircle({ state }: ProgressCircleProps) {
   let stateClass = '';
 
   if (state === 'visited') {
-    // visited
     stateClass = '';
     style_span = { backgroundColor: theme.palette.primary.main };
   } else if (state === 'active') {
-    // active
     stateClass = 'border-2';
     style_span = {
       borderColor: theme.palette.primary.main,
@@ -27,5 +27,5 @@ export function ProgressCircle({ state }: ProgressCircleProps) {
     style_span = { backgroundColor: theme.palette.background.paper };
   }
 
-  return <span className={`${baseClass} ${stateClass}`} style={style_span} />;
+  return <span className={cn([baseClass, stateClass])} style={style_span} />;
 }
