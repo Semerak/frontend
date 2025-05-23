@@ -47,6 +47,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+// TODO: Add a better Loading Screen for the base app
+export function HydrateFallback() {
+  // return <LoadingScreen />;
+  return <div>Loading...</div>;
+}
+
 export default function App() {
   const queryClient = new QueryClient();
 
