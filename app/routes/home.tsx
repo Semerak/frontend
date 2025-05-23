@@ -1,21 +1,20 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '../firebase/AuthProvider';
-import SensorAnalysis from '~/sensor_analysis/sensor_analysis';
+
+import SensorAnalysis from 'app/features/sensor-analysis/sensor-analysis';
+import { Welcome } from 'app/features/welcome/welcome';
+import { Page } from 'app/types/pages-enum';
+
+import { useAuth } from '../firebase/auth-provider';
+
 import type { Route } from './+types/home';
 import LoginForm from './login';
-import { Welcome } from '~/welcome/welcome';
 
+// eslint-disable-next-line
 export function meta({}: Route.MetaArgs) {
   return [
     { title: 'Makeup Match' },
     { name: 'description', content: 'Welcome to React Router!' },
   ];
-}
-
-export enum Page {
-  Login = 'Login',
-  Welcome = 'Welcome',
-  SensorAnalysis = 'SensorAnalysis',
 }
 
 export default function Home() {

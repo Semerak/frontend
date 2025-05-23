@@ -1,16 +1,17 @@
 import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+  type User,
+} from 'firebase/auth';
+import {
   createContext,
   useContext,
   useEffect,
   useState,
   type ReactNode,
 } from 'react';
-import {
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  signOut,
-  type User,
-} from 'firebase/auth';
+
 import { auth } from './firebase';
 
 interface AuthContextType {
@@ -53,7 +54,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const userCredential = await signInWithEmailAndPassword(
       auth,
       email,
-      password
+      password,
     );
     const token = await userCredential.user.getIdToken();
     setToken(token);

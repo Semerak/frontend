@@ -1,6 +1,9 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useState } from 'react';
-import { useAuth } from '../firebase/AuthProvider';
-import { Page } from './home';
+
+import { Page } from 'app/types/pages-enum';
+
+import { useAuth } from '../firebase/auth-provider';
 
 type LoginFormProps = {
   handleClick: (nextPage: Page) => void;
