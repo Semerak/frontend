@@ -1,18 +1,13 @@
-# Welcome to React Router!
+# MakeUp Match - Frontend
 
-A modern, production-ready template for building full-stack React applications using React Router.
+This is the frontend for the **MakeUp Match** app, built with React, Firebase Hosting and Auth, Tailwind CSS and Vite.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
-
-## Features
-
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+Tech Stack:
+- ⚛️ **React** – Modern UI library using hooks
+- 🔥 **Firebase** – Authentication & Hosting
+- 💨 **Tailwind CSS** – Utility-first styling framework
+- ⚡ **Vite** – Lightning-fast dev/build tooling
+- 🔐 **AuthContext** – Custom context for protected routes
 
 ## Getting Started
 
@@ -24,64 +19,44 @@ Install the dependencies:
 npm install
 ```
 
-### Development
+### Environment Setup
 
-Start the development server with HMR:
+Firebase credentials are managed via environment variables.
+Make sure to create a `.env` file like this:
+```bash
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=...
+VITE_FIREBASE_APP_ID=...
+VITE_FIREBASE_MEASUREMENT_ID=...
+```
+Do *not* commit your `.env` file to version control.
+
+### Local Development
+
+Start the local development server with hot module reloading (HMR):
 
 ```bash
+firebase login
 npm run dev
 ```
 
-Your application will be available at `http://localhost:5173`.
+Your application will be available at `http://localhost:5173`. Make sure you are logged into Firebase CLI before running the dev server.
 
-## Building for Production
+## Deployment with Firebase Hosting
 
-Create a production build:
+Firebase Hosting is used to deploy the app.
+To deploy your current local build, run:
 
 ```bash
 npm run build
+firebase deploy
 ```
 
-## Deployment
-
-### Docker Deployment
-
-To build and run using Docker:
-
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
+The deployed version will be available at `https://ceremonial-bond-459215-i1.web.app`.
 
 ## Styling
 
 This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.

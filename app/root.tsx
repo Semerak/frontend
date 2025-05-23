@@ -1,14 +1,16 @@
 import { ThemeProvider } from '@mui/material/styles';
 import {
-  isRouteErrorResponse,
-  Links,
-  Meta,
   Outlet,
-  Scripts,
+  Navigate,
+  Meta,
+  Links,
   ScrollRestoration,
+  Scripts,
+  isRouteErrorResponse,
 } from 'react-router';
 
 import { MainLayout } from './components/layouts/main-layout';
+import { useAuth, AuthProvider } from './firebase/auth-provider';
 import theme from './styles/theme';
 import './styles/app.css';
 
@@ -49,12 +51,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <ThemeProvider theme={theme}>
-      <MainLayout>
-        <Outlet />
-      </MainLayout>
+      <AuthProvider>
+        <MainLayout>
+          <Outlet />
+        </MainLayout>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
+
+export const ProtectedRoute: React.FC = () => {
+  const { user } = useAuth();
+  return user ? <Outlet /> : <Navigate to="/login" replace />;
+};
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let message = 'Oops!';
