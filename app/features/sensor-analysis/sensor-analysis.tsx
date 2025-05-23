@@ -34,9 +34,9 @@ export function SensorAnalysis({ handleClick }: SensorAnalysisProps) {
         {/* Image */}
         <div className="rounded-xl overflow-hidden shadow-md">
           <img
-            src="/face-placeholder.png"
+            src="/sensor-user.png"
             alt="Face"
-            className="w-72 h-72 object-cover"
+            className="w-60 h-72 object-cover"
           />
         </div>
 

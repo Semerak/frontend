@@ -12,7 +12,7 @@
   },
   "sensorAnalysis": {
     "title": "Sensor Analysis",
-    "spot": "Spot",
+    "spot": "Scan spot",
     "instruction": "Place the sensor in three different spots of your face"
   }
 }
