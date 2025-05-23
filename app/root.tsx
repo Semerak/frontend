@@ -1,4 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   isRouteErrorResponse,
   Links,
@@ -47,11 +48,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const queryClient = new QueryClient();
+
   return (
     <ThemeProvider theme={theme}>
-      <MainLayout>
-        <Outlet />
-      </MainLayout>
+      <QueryClientProvider client={queryClient}>
+        <MainLayout>
+          <Outlet />
+        </MainLayout>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }
