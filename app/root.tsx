@@ -10,6 +10,7 @@ import {
 } from 'react-router';
 
 import { MainLayout } from './components/layouts/main-layout';
+import LoadingScreen from './features/loading-screen/loading-screen';
 import theme from './styles/theme';
 import './styles/app.css';
 
@@ -45,6 +46,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </body>
     </html>
   );
+}
+
+// TODO: Add a better Loading Screen for the base app
+export function HydrateFallback() {
+  return <LoadingScreen />;
 }
 
 export default function App() {
