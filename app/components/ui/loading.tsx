@@ -1,4 +1,4 @@
-import { useTheme } from '@mui/material/styles';
+// import { useTheme } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 
 interface LoadingProps {
@@ -12,7 +12,7 @@ const triangle = [
 ];
 
 export function Loading({ size = 'medium' }: LoadingProps) {
-  const theme = useTheme();
+  // const theme = useTheme();
   const sizeMap = {
     small: { circle: 18, gap: 56 },
     medium: { circle: 32, gap: 100 },
@@ -22,9 +22,12 @@ export function Loading({ size = 'medium' }: LoadingProps) {
 
   // Colors from theme (match Figma order: top, right, left)
   const colors = [
-    theme.palette.secondary.main, // top (light)
-    theme.palette.primary.main, // right (medium)
-    theme.palette.primary.dark, // left (dark)
+    // theme.palette.secondary.main, // top (light)
+    // theme.palette.primary.main, // right (medium)
+    // theme.palette.primary.dark, // left (dark)
+    '#C49E91', // top (light)
+    '#906B4D', // right (medium)
+    '#4d3725', // left (dark)
   ];
 
   // Each circle starts at a different triangle vertex and cycles through all three
