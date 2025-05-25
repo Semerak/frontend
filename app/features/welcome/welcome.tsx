@@ -10,7 +10,7 @@ export function Welcome({ handleClick }: SensorAnalysisProps) {
   const { t } = useTranslation();
 
   return (
-    <main className="relative h-screen overflow-hidden">
+    <div>
       <div className="absolute scale-140 top-24">
         <img
           src="/welcome-picture.png"
@@ -21,9 +21,9 @@ export function Welcome({ handleClick }: SensorAnalysisProps) {
       <div className="absolute inset-0 flex items-center justify-center">
         <DefaultButton
           text={t('startPage.startAnalysis')}
-          handleClick={() => handleClick(Page.SensorAnalysis)}
+          handleClick={() => handleClick(Page.FormScreen)}
         />
       </div>
-    </main>
+    </div>
   );
 }
