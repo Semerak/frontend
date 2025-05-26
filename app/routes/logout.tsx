@@ -17,12 +17,12 @@ export default function LogOut() {
 
     try {
       await onLogout();
+      navigate('/login');
     } catch (err: any) {
       setError(err.code);
       console.log(err);
     } finally {
       setLoading(false);
-      navigate('/login');
     }
   };
 
