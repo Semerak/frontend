@@ -2,7 +2,6 @@ import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { DefaultButton } from 'app/components/ui/default-button';
-import { ProgressBar } from 'app/components/ui/progress-bar';
 import { Page } from 'app/types/pages-enum';
 
 import { SpotDisplay } from './components/spot-display';
@@ -14,10 +13,7 @@ interface SensorAnalysisProps {
 export function SensorAnalysis({ handleClick }: SensorAnalysisProps) {
   const { t } = useTranslation();
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen bg-white">
-      {/* Progress Dots */}
-      <ProgressBar steps={4} currentStep={2} />
-
+    <main className="flex flex-col items-center justify-center">
       {/* Title */}
       <div className="p-4">
         <Typography variant="h4" fontWeight={600} color="text.primary">
@@ -37,9 +33,9 @@ export function SensorAnalysis({ handleClick }: SensorAnalysisProps) {
 
         {/* Spots */}
         <div className="flex flex-col gap-6">
-          <SpotDisplay number={1} color="#C4C4C4" />
-          <SpotDisplay number={2} color="#C4C4C4" />
-          <SpotDisplay number={3} color="#C4C4C4" />
+          <SpotDisplay number={1} color="background.paper" />
+          <SpotDisplay number={2} color="background.paper" />
+          <SpotDisplay number={3} color="background.paper" />
         </div>
       </div>
 
