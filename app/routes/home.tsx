@@ -7,6 +7,7 @@ import { Page } from 'app/types/pages-enum';
 import { useAuth } from '../firebase/auth-provider';
 
 import type { Route } from './+types/home';
+import Config from './config';
 import LoginForm from './login';
 
 // eslint-disable-next-line
@@ -33,6 +34,10 @@ export default function Home() {
 
   if (currentPage === Page.Login) {
     return <LoginForm handleClick={switchPage} />;
+  }
+
+  if (currentPage === Page.Config) {
+    return <Config handleClick={switchPage} />;
   }
 
   if (currentPage === Page.Welcome) {

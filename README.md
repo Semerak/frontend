@@ -41,6 +41,7 @@ Start the local development server with hot module reloading (HMR):
 ```bash
 firebase login
 npm run dev
+firebase deploy --only hosting:makeupmatch
 ```
 
 Your application will be available at `http://localhost:5173`. Make sure you are logged into Firebase CLI before running the dev server.
