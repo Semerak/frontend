@@ -63,4 +63,4 @@ This app uses [Tailwind CSS](https://tailwindcss.com/) for styling. It's configu
 
 ## 🔐 Important Information
 
-Once you’re logged in, you can log out at any time by navigating to [`/logout`](#/logout).
+Once you’re logged in, you can log out at any time by navigating to `/logout`.
