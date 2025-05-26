@@ -16,7 +16,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Footer stuck to the bottom */}
-        <footer className="flex justify-center pb-8">
+        <footer className="flex justify-center pb-8  z-10">
           <img
             src="/beutechful-logo.png"
             alt="Beutechful Logo"
