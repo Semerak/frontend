@@ -3,6 +3,7 @@ import { useState } from 'react';
 import SensorAnalysis from 'app/features/sensor-analysis/sensor-analysis';
 import { Welcome } from 'app/features/welcome/welcome';
 import { Page } from 'app/types/pages-enum';
+import { MainFormProvider } from '~/context/main-form-context';
 import FormScreen from '~/features/form-screen/form-screen';
 
 import type { Route } from './+types/home';
@@ -23,7 +24,11 @@ export default function Home() {
   }
 
   if (currentPage === Page.Welcome) {
-    return <Welcome handleClick={switchPage} />;
+    return (
+      <MainFormProvider>
+        <Welcome handleClick={switchPage} />
+      </MainFormProvider>
+    );
   }
 
   if (currentPage === Page.SensorAnalysis) {
