@@ -13,7 +13,7 @@ interface SensorAnalysisProps {
 export function SensorAnalysis({ handleClick }: SensorAnalysisProps) {
   const { t } = useTranslation();
   return (
-    <main className="flex flex-col items-center justify-center bg-white">
+    <main className="flex flex-col items-center justify-center">
       {/* Title */}
       <div className="p-4">
         <Typography variant="h4" fontWeight={600} color="text.primary">
