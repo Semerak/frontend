@@ -4,6 +4,7 @@ import { Navigate } from 'react-router';
 import SensorAnalysis from 'app/features/sensor-analysis/sensor-analysis';
 import { Welcome } from 'app/features/welcome/welcome';
 import { Page } from 'app/types/pages-enum';
+import FormScreen from '~/features/form-screen/form-screen';
 import { useAuth } from '~/firebase/auth-provider';
 
 import type { Route } from './+types/home';
@@ -34,5 +35,8 @@ export default function Home() {
 
   if (currentPage === Page.SensorAnalysis) {
     return <SensorAnalysis handleClick={switchPage} />;
+  }
+  if (currentPage === Page.FormScreen) {
+    return <FormScreen handleClick={switchPage} />;
   }
 }

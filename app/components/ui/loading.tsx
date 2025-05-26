@@ -1,4 +1,4 @@
-import { useTheme } from '@mui/material/styles';
+// import { useTheme } from '@mui/material/styles};
 import { motion } from 'framer-motion';
 
 interface LoadingProps {
@@ -12,7 +12,6 @@ const triangle = [
 ];
 
 export function Loading({ size = 'medium' }: LoadingProps) {
-  const theme = useTheme();
   const sizeMap = {
     small: { circle: 18, gap: 56 },
     medium: { circle: 32, gap: 100 },
@@ -20,14 +19,12 @@ export function Loading({ size = 'medium' }: LoadingProps) {
   };
   const { circle, gap } = sizeMap[size];
 
-  // Colors from theme (match Figma order: top, right, left)
   const colors = [
-    theme.palette.secondary.main, // top (light)
-    theme.palette.primary.main, // right (medium)
-    theme.palette.primary.dark, // left (dark)
+    '#C49E91', // top (light)
+    '#906B4D', // right (medium)
+    '#4d3725', // left (dark)
   ];
 
-  // Each circle starts at a different triangle vertex and cycles through all three
   const getKeyframes = (startIdx: number) => {
     const order = [0, 1, 2].map((i) => (i + startIdx) % 3);
     return {
@@ -47,14 +44,12 @@ export function Loading({ size = 'medium' }: LoadingProps) {
         return (
           <motion.div
             key={i}
-            className="absolute rounded-full"
+            className={`absolute rounded-full shadow-[0_1px_4px_0_rgba(0,0,0,0.04)]`}
             style={{
               width: circle,
               height: circle,
               backgroundColor: colors[i],
-              position: 'absolute',
               transform: 'translate(-50%, -50%)',
-              boxShadow: '0 1px 4px 0 rgba(0,0,0,0.04)',
             }}
             animate={{
               x: keyframes.x,
@@ -63,7 +58,7 @@ export function Loading({ size = 'medium' }: LoadingProps) {
                 repeat: Infinity,
                 repeatType: 'loop',
                 ease: 'easeInOut',
-                duration: 2.0, // Increased duration to make the animation slower
+                duration: 2.0,
                 times: [0, 0.33, 0.66, 1],
               },
             }}
