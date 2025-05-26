@@ -2,7 +2,6 @@ import { ThemeProvider } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   Outlet,
-  Navigate,
   Meta,
   Links,
   ScrollRestoration,
@@ -12,7 +11,7 @@ import {
 
 import { MainLayout } from './components/layouts/main-layout';
 import LoadingScreen from './features/loading-screen/loading-screen';
-import { AuthProvider, useAuth } from './firebase/auth-provider';
+import { AuthProvider } from './firebase/auth-provider';
 import theme from './styles/theme';
 import './styles/app.css';
 
@@ -70,11 +69,6 @@ export default function App() {
     </ThemeProvider>
   );
 }
-
-export const ProtectedRoute: React.FC = () => {
-  const { user } = useAuth();
-  return user ? <Outlet /> : <Navigate to="/login" replace />;
-};
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let message = 'Oops!';

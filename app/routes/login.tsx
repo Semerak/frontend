@@ -1,16 +1,12 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { useState } from 'react';
-
-import { Page } from 'app/types/pages-enum';
+import { useNavigate } from 'react-router';
 
 import { useAuth } from '../firebase/auth-provider';
 
-type LoginFormProps = {
-  handleClick: (nextPage: Page) => void;
-};
-
-export default function LoginForm({ handleClick }: LoginFormProps) {
+export default function LoginForm() {
   const { onLogin } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +19,7 @@ export default function LoginForm({ handleClick }: LoginFormProps) {
 
     try {
       await onLogin(email, password);
-      handleClick(Page.Welcome);
+      navigate('/');
     } catch (err: any) {
       if (err.code === 'auth/invalid-email') {
         setError('Ungültige E-Mail-Adresse.');
@@ -46,8 +42,6 @@ export default function LoginForm({ handleClick }: LoginFormProps) {
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-2xl shadow-md w-full max-w-sm"
       >
-        <h2 className="text-2xl font-semibold mb-6 text-center">Anmelden</h2>
-
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             E-Mail
@@ -81,9 +75,10 @@ export default function LoginForm({ handleClick }: LoginFormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+          className="w-full text-white py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+          style={{ backgroundColor: '#906b4d' }}
         >
-          {loading ? 'Einloggen...' : 'Einloggen'}
+          {loading ? 'Login...' : 'Login'}
         </button>
       </form>
     </div>

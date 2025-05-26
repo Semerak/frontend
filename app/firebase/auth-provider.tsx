@@ -14,7 +14,7 @@ import {
 
 import { auth } from './firebase';
 
-const isLocalDev = import.meta.env.DEV;
+const isLocalDev = false;
 
 interface AuthContextType {
   user: User | null;
@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setToken('');
       return;
     }
-    await signOut(auth);
+    signOut(auth);
     setUser(null);
     setToken('');
   };

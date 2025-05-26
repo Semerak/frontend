@@ -1,29 +1,26 @@
 import { useState } from 'react';
-
-import { Page } from 'app/types/pages-enum';
+import { useNavigate } from 'react-router';
 
 import { useAuth } from '../firebase/auth-provider';
 
-type LoginFormProps = {
-  handleClick: (nextPage: Page) => void;
-};
-
-export default function Config({ handleClick }: LoginFormProps) {
+export default function LogOut() {
   const { onLogout } = useAuth();
+  const navigate = useNavigate();
+
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleLogout = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLogout = async () => {
     setLoading(true);
 
     try {
       await onLogout();
-      handleClick(Page.Login);
     } catch (err: any) {
       setError(err.code);
+      console.log(err);
     } finally {
       setLoading(false);
+      navigate('/login');
     }
   };
 
@@ -34,7 +31,7 @@ export default function Config({ handleClick }: LoginFormProps) {
         disabled={loading}
         className="bg-red-600 text-white px-6 py-3 rounded-full shadow-md hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {loading ? 'Wird abgemeldet...' : 'Logout'}
+        {loading ? 'Logout...' : 'Logout'}
       </button>
 
       {error && <p className="text-red-600 mt-4 text-sm">{error}</p>}

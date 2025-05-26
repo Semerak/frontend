@@ -60,3 +60,7 @@ Deployment is managed through Firebase Hosting and automated via GitHub Actions 
 ## 🎨 Styling
 
 This app uses [Tailwind CSS](https://tailwindcss.com/) for styling. It's configured out of the box and can be extended or replaced with any CSS solution of your choice.
+
+## 🔐 Important Information
+
+Once you’re logged in, you can log out at any time by navigating to [`/logout`](#/logout).
