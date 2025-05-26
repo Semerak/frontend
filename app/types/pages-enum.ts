@@ -1,5 +1,4 @@
-export enum Page {
-  Welcome = 'Welcome',
+export enum QuestinnairePages {
   SensorAnalysis = 'SensorAnalysis',
-  FormScreen = 'FormScreen',
+  QuestionScreen = 'QuestionScreen',
 }

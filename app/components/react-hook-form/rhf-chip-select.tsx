@@ -15,7 +15,8 @@ export function RHFChipSelect({
   disabled = false,
   ...others
 }: RHFChipSelectProps) {
-  const { control } = useFormContext();
+  const formContext = useFormContext();
+  const { control } = formContext;
 
   return (
     <Controller

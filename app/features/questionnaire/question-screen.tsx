@@ -2,26 +2,23 @@ import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { DefaultButton } from 'app/components/ui/default-button';
-import { Page } from 'app/types/pages-enum';
+import { Field } from '~/components/react-hook-form';
 
 interface QuestionnaireProps {
   question: string;
   options: string[];
-  handleClick: (nextPage: Page) => void;
+  handleSubmit: () => void;
 }
 
-export function Questionnaire({
+export function QuestionScreen({
   question,
   options,
-  handleClick,
+  handleSubmit,
 }: QuestionnaireProps) {
   const { t } = useTranslation();
 
-  const maxButtonWidth =
-    Math.max(...options.map((option) => option.length)) * 10; // Approximate width based on character count
-
   return (
-    <main className="flex flex-col items-center justify-center bg-white  w-full h-full">
+    <main className="flex flex-col items-center justify-center bg-white w-full h-full">
       {/* Title */}
       <div className="p-4">
         <Typography
@@ -47,31 +44,16 @@ export function Questionnaire({
         </div>
 
         <div className="grid grid-cols-2 gap-4 mt-4 mb-8 justify-items-center">
-          {options.map((option, index) => (
-            <div
-              key={index}
-              className={
-                options.length % 2 !== 0 && index === options.length - 1
-                  ? 'col-span-2 text-center'
-                  : ''
-              }
-            >
-              <DefaultButton
-                text={option}
-                handleClick={() => console.log(`Selected: ${option}`)}
-                style={{ width: `${maxButtonWidth}px` }}
-              />
-            </div>
-          ))}
+          <Field.ChipSelect name="textQuestionAnswer" chips={options} />
         </div>
       </div>
 
       <DefaultButton
         text={t('common.nextPage')}
-        handleClick={() => handleClick(Page.Welcome)}
+        handleClick={() => handleSubmit()}
       />
     </main>
   );
 }
 
-export default Questionnaire;
+export default QuestionScreen;

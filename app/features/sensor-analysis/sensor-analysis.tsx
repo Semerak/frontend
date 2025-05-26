@@ -2,12 +2,12 @@ import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { DefaultButton } from 'app/components/ui/default-button';
-import { Page } from 'app/types/pages-enum';
+import { QuestinnairePages } from 'app/types/pages-enum';
 
 import { SpotDisplay } from './components/spot-display';
 
 interface SensorAnalysisProps {
-  handleClick: (nextPage: Page) => void;
+  handleClick: (nextPage: QuestinnairePages) => void;
 }
 
 export function SensorAnalysis({ handleClick }: SensorAnalysisProps) {
@@ -48,7 +48,7 @@ export function SensorAnalysis({ handleClick }: SensorAnalysisProps) {
 
       <DefaultButton
         text={t('common.nextPage')}
-        handleClick={() => handleClick(Page.Welcome)}
+        handleClick={() => handleClick(QuestinnairePages.QuestionScreen)}
       />
     </main>
   );
