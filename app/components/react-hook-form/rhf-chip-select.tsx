@@ -11,7 +11,6 @@ export interface RHFChipSelectProps extends ChipOwnProps {
 export function RHFChipSelect({
   name,
   chips,
-  variant = 'outlined',
   disabled = false,
   ...others
 }: RHFChipSelectProps) {
@@ -26,14 +25,17 @@ export function RHFChipSelect({
         return (
           <>
             {chips.map((item) => {
+              const isSelected = field.value === item;
               return (
                 <Chip
                   key={item}
                   {...field}
                   disabled={disabled}
                   label={item}
-                  variant={variant}
-                  onClick={() => console.log('test')}
+                  variant={isSelected ? 'filled' : 'outlined'}
+                  onClick={() => {
+                    field.onChange(item);
+                  }}
                   {...others}
                 />
               );

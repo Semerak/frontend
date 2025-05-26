@@ -1,8 +1,10 @@
 import CheckIcon from '@mui/icons-material/Check';
 import { CircularProgress } from '@mui/material';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DefaultButton } from '~/components/ui/default-button';
+import { useMainFormContext } from '~/context/main-form-context';
 
 import { useGetSensorData } from '../hooks/use-get-sensor-data';
 
@@ -14,11 +16,26 @@ interface SpotDisplayProps {
 
 export function SpotDisplay({ number, color }: SpotDisplayProps) {
   const { t } = useTranslation();
+  const { methods } = useMainFormContext();
   const { mutate, isPending, data } = useGetSensorData();
 
   const handleClick = () => {
     mutate();
   };
+
+  // Save scan result to form when data is available
+  React.useEffect(() => {
+    if (data && data.values) {
+      methods.setValue(
+        `sensorAnalysis.scanResult${number}` as any,
+        data.values,
+        {
+          shouldValidate: false,
+          shouldDirty: true,
+        },
+      );
+    }
+  }, [data, number, methods]);
 
   return (
     <div className="flex flex-row items-center gap-4">
