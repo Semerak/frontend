@@ -14,6 +14,8 @@ import {
 
 import { auth } from './firebase';
 
+const isLocalDev = import.meta.env.DEV;
+
 interface AuthContextType {
   user: User | null;
   token: string;
@@ -36,6 +38,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (isLocalDev) {
+      const mockUser = {
+        uid: 'local-user',
+        email: 'dev@test.com',
+      } as User;
+
+      setUser(mockUser);
+      setToken('dev-token');
+      setLoading(false);
+      console.warn('⚠️ Firebase Auth is disabled in local development mode');
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {
@@ -51,6 +66,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const handleLogin = async (email: string, password: string) => {
+    if (isLocalDev) return;
     const userCredential = await signInWithEmailAndPassword(
       auth,
       email,
@@ -61,6 +77,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const handleLogout = async () => {
+    if (isLocalDev) {
+      setUser(null);
+      setToken('');
+      return;
+    }
     await signOut(auth);
     setUser(null);
     setToken('');
