@@ -4,17 +4,17 @@ import { useTranslation } from 'react-i18next';
 import { DefaultButton } from 'app/components/ui/default-button';
 import { Page } from 'app/types/pages-enum';
 
-interface QuestionaryProps {
+interface QuestionnaireProps {
   question: string;
   options: string[];
   handleClick: (nextPage: Page) => void;
 }
 
-export function Questionary({
+export function Questionnaire({
   question,
   options,
   handleClick,
-}: QuestionaryProps) {
+}: QuestionnaireProps) {
   const { t } = useTranslation();
 
   const maxButtonWidth =
@@ -74,4 +74,4 @@ export function Questionary({
   );
 }
 
-export default Questionary;
+export default Questionnaire;

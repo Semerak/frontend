@@ -1,7 +1,7 @@
 import { FormLayout } from '~/components/layouts/form-layout';
 import type { Page } from '~/types/pages-enum';
 
-import Questionary from '../questionary/questionary';
+import Questionnaire from '../questionnaire/questionnaire';
 import SensorAnalysis from '../sensor-analysis/sensor-analysis';
 
 /**
@@ -15,7 +15,7 @@ interface FromScreenProps {
 export function FormScreen({ handleClick }: FromScreenProps) {
   return (
     <FormLayout steps={4} currentStep={2}>
-      {/* <Questionary
+      {/* <Questionnaire
         question="How often do you use foundation?"
         options={['A', 'B', 'C', 'D']}
         handleClick={handleClick}
