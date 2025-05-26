@@ -55,7 +55,7 @@ Your application will be available at `http://localhost:5173`.
 Deployment is managed through Firebase Hosting and automated via GitHub Actions on branch merges.
 
 - 🧪 Development environment: [https://dev-makeupmatch.web.app/](https://dev-makeupmatch.web.app/)
-- 🚀 Production environment: [https://makeupmatch.firebaseapp.com/](https://makeupmatch.firebaseapp.com/)
+- 🚀 Production environment: [https://makeupmatch.web.app/](https://makeupmatch.web.app/)
 
 ## 🎨 Styling
 
