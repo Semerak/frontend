@@ -2,6 +2,7 @@ import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { DefaultButton } from 'app/components/ui/default-button';
+import { ProgressBar } from 'app/components/ui/progress-bar';
 import { Page } from 'app/types/pages-enum';
 
 import { SpotDisplay } from './components/spot-display';
@@ -15,13 +16,7 @@ export function SensorAnalysis({ handleClick }: SensorAnalysisProps) {
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-white">
       {/* Progress Dots */}
-      <div className="flex gap-2 mt-8 mb-6">
-        <span className="w-5 h-5 rounded-full bg-[#8B6A4F]" />
-        <span className="w-5 h-5 rounded-full bg-[#B08B5E]" />
-        <span className="w-5 h-5 rounded-full bg-[#D2B48C]" />
-        <span className="w-5 h-5 rounded-full bg-[#E5DED6]" />
-        <span className="w-5 h-5 rounded-full bg-[#F3F1EF]" />
-      </div>
+      <ProgressBar steps={4} currentStep={2} />
 
       {/* Title */}
       <div className="p-4">
@@ -34,9 +29,9 @@ export function SensorAnalysis({ handleClick }: SensorAnalysisProps) {
         {/* Image */}
         <div className="rounded-xl overflow-hidden shadow-md">
           <img
-            src="/face-placeholder.png"
+            src="/sensor-user.png"
             alt="Face"
-            className="w-72 h-72 object-cover"
+            className="w-60 h-72 object-cover"
           />
         </div>
 

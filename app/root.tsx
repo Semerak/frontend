@@ -1,4 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   Outlet,
   Navigate,
@@ -10,7 +11,8 @@ import {
 } from 'react-router';
 
 import { MainLayout } from './components/layouts/main-layout';
-import { useAuth, AuthProvider } from './firebase/auth-provider';
+import LoadingScreen from './features/loading-screen/loading-screen';
+import { AuthProvider, useAuth } from './firebase/auth-provider';
 import theme from './styles/theme';
 import './styles/app.css';
 
@@ -48,14 +50,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+// TODO: Add a better Loading Screen for the base app
+export function HydrateFallback() {
+  return <LoadingScreen />;
+}
+
 export default function App() {
+  const queryClient = new QueryClient();
+
   return (
     <ThemeProvider theme={theme}>
-      <AuthProvider>
-        <MainLayout>
-          <Outlet />
-        </MainLayout>
-      </AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <MainLayout>
+            <Outlet />
+          </MainLayout>
+        </AuthProvider>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }

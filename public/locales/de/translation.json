@@ -12,7 +12,7 @@
   },
   "sensorAnalysis": {
     "title": "Sensor-Analyse",
-    "spot": "Punkt",
+    "spot": "Scanne Stelle",
     "instruction": "Platziere den Sensor an drei verschiedenen Stellen deines Gesichts"
   }
 }
