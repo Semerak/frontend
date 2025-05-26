@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
+import { DefaultButton } from '~/components/ui/default-button';
+
 import { useAuth } from '../firebase/auth-provider';
 
 export default function LogOut() {
@@ -26,14 +28,11 @@ export default function LogOut() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-      <button
-        onClick={handleLogout}
+      <DefaultButton
+        text={loading ? 'Logout...' : 'Logout'}
+        handleClick={handleLogout}
         disabled={loading}
-        className="bg-red-600 text-white px-6 py-3 rounded-full shadow-md hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {loading ? 'Logout...' : 'Logout'}
-      </button>
-
+      />
       {error && <p className="text-red-600 mt-4 text-sm">{error}</p>}
     </div>
   );

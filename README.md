@@ -11,6 +11,7 @@ Welcome to the **MakeUp Match** frontend – a modern web app built with React, 
 - 💨 **Tailwind CSS** – Utility-first CSS framework for styling  
 - ⚡ **Vite** – Lightning-fast development and build tooling  
 - 🔐 **Custom AuthContext** – Manages authentication and protected routes  
+- 🧭 **React Router v7** – Declarative routing with file-based route configuration
 
 ---
 
