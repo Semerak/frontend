@@ -13,10 +13,12 @@ import { MainLayout } from './components/layouts/main-layout';
 import LoadingScreen from './features/loading-screen/loading-screen';
 import { AuthProvider } from './firebase/auth-provider';
 import theme from './styles/theme';
+
+import type { Route } from '.react-router/types/app/+types/root';
+
 import './styles/app.css';
 
 import './i18n';
-import type { Route } from '.react-router/types/app/+types/root';
 
 export const links: Route.LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },

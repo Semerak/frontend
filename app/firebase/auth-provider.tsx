@@ -14,7 +14,7 @@ import {
 
 import { auth } from './firebase';
 
-const isLocalDev = false;
+const isLocalDev = import.meta.env.DEV;
 
 interface AuthContextType {
   user: User | null;
