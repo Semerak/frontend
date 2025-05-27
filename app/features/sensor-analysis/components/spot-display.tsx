@@ -1,24 +1,42 @@
 import CheckIcon from '@mui/icons-material/Check';
 import { CircularProgress } from '@mui/material';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DefaultButton } from '~/components/ui/default-button';
+import { useMainFormContext } from '~/context/main-form-context';
 
 import { useGetSensorData } from '../hooks/use-get-sensor-data';
 
 interface SpotDisplayProps {
+  questionnaireIndex: number;
   number: number;
   color: string;
   onClick?: () => void;
 }
 
-export function SpotDisplay({ number, color }: SpotDisplayProps) {
+export function SpotDisplay({
+  questionnaireIndex,
+  number,
+  color,
+}: SpotDisplayProps) {
   const { t } = useTranslation();
+  const { methods } = useMainFormContext();
   const { mutate, isPending, data } = useGetSensorData();
 
   const handleClick = () => {
     mutate();
   };
+
+  // Save scan result to form when data is available
+  React.useEffect(() => {
+    if (data && data.values) {
+      methods.setValue(
+        `answers[${questionnaireIndex}].value[${number - 1}]` as any,
+        data.values,
+      );
+    }
+  }, [data, number, methods]);
 
   return (
     <div className="flex flex-row items-center gap-4">
