@@ -1,6 +1,10 @@
 {
   "common": {
-    "nextPage": "Nächste"
+    "nextPage": "Nächste",
+    "password": {
+      "label": "Passwort",
+      "placeholder": "Passwort eingeben"
+    }
   },
   "startPage": {
     "welcome": "Finde deinen perfekten MakeUp Match",

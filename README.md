@@ -1,32 +1,49 @@
-# Welcome to React Router!
+# 💄 MakeUp Match – Frontend
 
-A modern, production-ready template for building full-stack React applications using React Router.
+Welcome to the **MakeUp Match** frontend – a modern web app built with React, Firebase, Tailwind CSS, and Vite. It features secure authentication, fast performance, and a clean, responsive UI.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+---
 
-## Features
+## 🚀 Tech Stack
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- ⚛️ **React** – Modern component-based UI library with hooks  
+- 🔥 **Firebase** – Authentication and Hosting  
+- 💨 **Tailwind CSS** – Utility-first CSS framework for styling  
+- ⚡ **Vite** – Lightning-fast development and build tooling  
+- 🔐 **Custom AuthContext** – Manages authentication and protected routes  
+- 🧭 **React Router v7** – Declarative routing with file-based route configuration
 
-## Getting Started
+---
 
-### Installation
+## 🛠 Getting Started
 
-Install the dependencies:
+### 1. Installation
+
+Clone the repository and install dependencies:
 
 ```bash
 npm install
 ```
 
-### Development
 
-Start the development server with HMR:
+### 2. Environment Setup
+
+Firebase credentials are managed via environment variables.
+Make sure to create a `.env` file like this:
+```bash
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=...
+VITE_FIREBASE_APP_ID=...
+VITE_FIREBASE_MEASUREMENT_ID=...
+```
+🔒 Do not commit your .env file to version control. Keep credentials private.
+
+### 3. Local Development
+
+Start the local development server with hot module reloading:
 
 ```bash
 npm run dev
@@ -34,54 +51,17 @@ npm run dev
 
 Your application will be available at `http://localhost:5173`.
 
-## Building for Production
+## 🚚 Deployment with Firebase Hosting
 
-Create a production build:
+Deployment is managed through Firebase Hosting and automated via GitHub Actions on branch merges.
 
-```bash
-npm run build
-```
+- 🧪 Development environment: [https://dev-makeupmatch.web.app/](https://dev-makeupmatch.web.app/)
+- 🚀 Production environment: [https://makeupmatch.web.app/](https://makeupmatch.web.app/)
 
-## Deployment
+## 🎨 Styling
 
-### Docker Deployment
+This app uses [Tailwind CSS](https://tailwindcss.com/) for styling. It's configured out of the box and can be extended or replaced with any CSS solution of your choice.
 
-To build and run using Docker:
+## 🔐 Important Information
 
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.
+Once you’re logged in, you can log out at any time by navigating to `/logout`.
