@@ -1,6 +1,6 @@
 import LoadingScreen from '~/features/loading-screen/loading-screen';
 
-import type { Route } from './+types/home';
+import type { Route } from './+types/test';
 
 // eslint-disable-next-line
 export function meta({}: Route.MetaArgs) {

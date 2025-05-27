@@ -9,12 +9,17 @@ import { useMainFormContext } from '~/context/main-form-context';
 import { useGetSensorData } from '../hooks/use-get-sensor-data';
 
 interface SpotDisplayProps {
+  questionnaireIndex: number;
   number: number;
   color: string;
   onClick?: () => void;
 }
 
-export function SpotDisplay({ number, color }: SpotDisplayProps) {
+export function SpotDisplay({
+  questionnaireIndex,
+  number,
+  color,
+}: SpotDisplayProps) {
   const { t } = useTranslation();
   const { methods } = useMainFormContext();
   const { mutate, isPending, data } = useGetSensorData();
@@ -27,12 +32,8 @@ export function SpotDisplay({ number, color }: SpotDisplayProps) {
   React.useEffect(() => {
     if (data && data.values) {
       methods.setValue(
-        `sensorAnalysis.scanResult${number}` as any,
+        `answers[${questionnaireIndex}].value[${number - 1}]` as any,
         data.values,
-        {
-          shouldValidate: false,
-          shouldDirty: true,
-        },
       );
     }
   }, [data, number, methods]);

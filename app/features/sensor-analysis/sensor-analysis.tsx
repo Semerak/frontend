@@ -7,10 +7,14 @@ import { QuestinnairePages } from 'app/types/pages-enum';
 import { SpotDisplay } from './components/spot-display';
 
 interface SensorAnalysisProps {
+  questionnaireIndex: number;
   handleClick: (nextPage: QuestinnairePages) => void;
 }
 
-export function SensorAnalysis({ handleClick }: SensorAnalysisProps) {
+export function SensorAnalysis({
+  questionnaireIndex,
+  handleClick,
+}: SensorAnalysisProps) {
   const { t } = useTranslation();
   return (
     <main className="flex flex-col items-center justify-center">
@@ -33,9 +37,21 @@ export function SensorAnalysis({ handleClick }: SensorAnalysisProps) {
 
         {/* Spots */}
         <div className="flex flex-col gap-6">
-          <SpotDisplay number={1} color="background.paper" />
-          <SpotDisplay number={2} color="background.paper" />
-          <SpotDisplay number={3} color="background.paper" />
+          <SpotDisplay
+            questionnaireIndex={questionnaireIndex}
+            number={1}
+            color="background.paper"
+          />
+          <SpotDisplay
+            questionnaireIndex={questionnaireIndex}
+            number={2}
+            color="background.paper"
+          />
+          <SpotDisplay
+            questionnaireIndex={questionnaireIndex}
+            number={3}
+            color="background.paper"
+          />
         </div>
       </div>
 

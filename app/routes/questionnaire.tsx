@@ -1,7 +1,7 @@
 import { MainFormProvider } from '~/context/main-form-context';
 import QuestionnaireRouter from '~/features/questionnaire/questionnaire-router';
 
-import type { Route } from './+types/home';
+import type { Route } from './+types/questionnaire';
 
 // eslint-disable-next-line
 export function meta({}: Route.MetaArgs) {
