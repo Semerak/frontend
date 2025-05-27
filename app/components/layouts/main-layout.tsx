@@ -16,7 +16,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
           <img
             src="/beutechful-logo.png"
             alt="Beutechful Logo"
-            className="w-1/3"
+            className="w-1/3 sm:w-1/4 md:w-1/5 max-w-44"
           />
         </footer>
       </div>
