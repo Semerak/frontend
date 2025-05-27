@@ -7,6 +7,11 @@ on:
       - dev
       - master
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deploy to which environment?'
+        required: true
+        default: 'dev'
 
 permissions:
   checks: write
