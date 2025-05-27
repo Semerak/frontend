@@ -64,11 +64,11 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-        <ConfigProvider>
-          <MainLayout>
-            <Outlet />
-          </MainLayout>
-        </ConfigProvider>
+          <ConfigProvider>
+            <MainLayout>
+              <Outlet />
+            </MainLayout>
+          </ConfigProvider>
         </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>
