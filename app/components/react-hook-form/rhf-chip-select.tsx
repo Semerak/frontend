@@ -24,8 +24,8 @@ export function RHFChipSelect({
       render={({ field }) => {
         return (
           <>
-            {chips.map((item) => {
-              const isSelected = field.value === item;
+            {chips.map((item, idx) => {
+              const isSelected = field.value === idx;
               return (
                 <Chip
                   key={item}
@@ -34,7 +34,7 @@ export function RHFChipSelect({
                   label={item}
                   variant={isSelected ? 'filled' : 'outlined'}
                   onClick={() => {
-                    field.onChange(item);
+                    field.onChange(idx);
                   }}
                   {...others}
                 />

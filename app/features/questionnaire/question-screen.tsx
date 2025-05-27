@@ -5,12 +5,14 @@ import { DefaultButton } from 'app/components/ui/default-button';
 import { Field } from '~/components/react-hook-form';
 
 interface QuestionnaireProps {
+  questionnaireIndex: number;
   question: string;
   options: string[];
   handleSubmit: () => void;
 }
 
 export function QuestionScreen({
+  questionnaireIndex,
   question,
   options,
   handleSubmit,
@@ -44,7 +46,10 @@ export function QuestionScreen({
         </div>
 
         <div className="grid grid-cols-2 gap-4 mt-4 mb-8 justify-items-center">
-          <Field.ChipSelect name="textQuestionAnswer" chips={options} />
+          <Field.ChipSelect
+            name={`answers[${questionnaireIndex}].value`}
+            chips={options}
+          />
         </div>
       </div>
 
