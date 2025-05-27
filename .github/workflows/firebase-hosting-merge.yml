@@ -1,4 +1,4 @@
-name: Deploy to Firebase Hosting on merge
+name: Deploy to Firebase Hosting on PR / Manuell
 
 on:
   pull_request:
@@ -6,6 +6,7 @@ on:
     branches:
       - dev
       - master
+  workflow_dispatch:
 
 permissions:
   checks: write
@@ -13,7 +14,7 @@ permissions:
 
 jobs:
   build_and_deploy:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     env:
       VITE_BACKEND_LOCAL_URL: http://localhost:8008
