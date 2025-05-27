@@ -10,6 +10,7 @@ import {
 } from 'react-router';
 
 import { MainLayout } from './components/layouts/main-layout';
+import { ConfigProvider } from './context/config-context';
 import LoadingScreen from './features/loading-screen/loading-screen';
 import theme from './styles/theme';
 import './styles/app.css';
