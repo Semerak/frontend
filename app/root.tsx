@@ -1,20 +1,24 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
-  isRouteErrorResponse,
-  Links,
-  Meta,
   Outlet,
-  Scripts,
+  Meta,
+  Links,
   ScrollRestoration,
+  Scripts,
+  isRouteErrorResponse,
 } from 'react-router';
 
 import { MainLayout } from './components/layouts/main-layout';
+import LoadingScreen from './features/loading-screen/loading-screen';
+import { AuthProvider } from './firebase/auth-provider';
 import theme from './styles/theme';
+
+import type { Route } from '.react-router/types/app/+types/root';
+
 import './styles/app.css';
 
 import './i18n';
-import type { Route } from '.react-router/types/app/+types/root';
 
 export const links: Route.LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -47,15 +51,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+// TODO: Add a better Loading Screen for the base app
+export function HydrateFallback() {
+  return <LoadingScreen />;
+}
+
 export default function App() {
   const queryClient = new QueryClient();
 
   return (
     <ThemeProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
-        <MainLayout>
-          <Outlet />
-        </MainLayout>
+        <AuthProvider>
+          <MainLayout>
+            <Outlet />
+          </MainLayout>
+        </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );

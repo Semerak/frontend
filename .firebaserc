@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "default": "ceremonial-bond-459215-i1"
+  },
+  "targets": {
+    "ceremonial-bond-459215-i1": {
+      "hosting": {
+        "dev-makeupmatch": [
+          "dev-makeupmatch"
+        ],
+        "makeupmatch": [
+          "makeupmatch"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
