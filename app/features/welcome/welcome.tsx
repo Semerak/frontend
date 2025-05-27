@@ -22,6 +22,7 @@ export function Welcome({ handleClick }: SensorAnalysisProps) {
         <DefaultButton
           text={t('startPage.startAnalysis')}
           handleClick={() => handleClick(Page.FormScreen)}
+          size="xlarge"
         />
       </div>
     </div>
