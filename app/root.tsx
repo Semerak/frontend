@@ -60,9 +60,11 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
-        <MainLayout>
-          <Outlet />
-        </MainLayout>
+        <ConfigProvider>
+          <MainLayout>
+            <Outlet />
+          </MainLayout>
+        </ConfigProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );
