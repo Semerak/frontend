@@ -1,12 +1,18 @@
 import { useTranslation } from 'react-i18next';
 
-import { DefaultButton } from 'app/components/ui/default-button';
-import { Page } from 'app/types/pages-enum';
+import { NavButton } from '~/components/ui/nav-button';
 
-interface SensorAnalysisProps {
-  handleClick: (nextPage: Page) => void;
+import type { Route } from './+types/welcome';
+
+// eslint-disable-next-line
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: 'Makeup Match' },
+    { name: 'description', content: 'Welcome to React Router!' },
+  ];
 }
-export function Welcome({ handleClick }: SensorAnalysisProps) {
+
+export default function Welcome() {
   const { t } = useTranslation();
 
   return (
@@ -19,10 +25,7 @@ export function Welcome({ handleClick }: SensorAnalysisProps) {
         />
       </div>
       <div className="absolute inset-0 flex items-center justify-center">
-        <DefaultButton
-          text={t('startPage.startAnalysis')}
-          handleClick={() => handleClick(Page.FormScreen)}
-        />
+        <NavButton text={t('startPage.startAnalysis')} url="/questionnaire" />
       </div>
     </div>
   );

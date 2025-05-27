@@ -51,6 +51,23 @@ npm run dev
 
 Your application will be available at `http://localhost:5173`.
 
+### 4. Run npm in a Linux Container (Optional Dev Tool)
+
+If you're working on Windows and want to ensure consistent dependency resolution (as on CI/CD or production Linux environments), you can run your `npm install` commands inside a Dockerized Linux container.
+
+This helps avoid issues related to OS-specific dependencies or subtle behavior differences between Windows and Unix-like systems.
+
+When to use it: 
+- You want to verify that your dependencies work in a clean **Linux** environment.
+- You're running into **Windows-specific package issues** (e.g., `node-gyp`, native modules).
+- You want to **mimic your CI environment** locally.
+
+Run the following in your project root (requires Docker Desktop):
+
+```cmd
+docker run --rm -v "%cd%:/app" -w /app node:20 bash -c "npm install && npm dedupe && npm ci && echo ✅ npm ci worked in Linux"
+```
+
 ## 🚚 Deployment with Firebase Hosting
 
 Deployment is managed through Firebase Hosting and automated via GitHub Actions on branch merges.

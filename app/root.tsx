@@ -10,6 +10,7 @@ import {
 } from 'react-router';
 
 import { MainLayout } from './components/layouts/main-layout';
+import { ConfigProvider } from './context/config-context';
 import LoadingScreen from './features/loading-screen/loading-screen';
 import { AuthProvider } from './firebase/auth-provider';
 import theme from './styles/theme';
@@ -63,9 +64,11 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <MainLayout>
-            <Outlet />
-          </MainLayout>
+          <ConfigProvider>
+            <MainLayout>
+              <Outlet />
+            </MainLayout>
+          </ConfigProvider>
         </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>
