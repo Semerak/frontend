@@ -16,19 +16,7 @@ const MainFormContext = createContext<MainFormContextValue>(null);
 
 export const MainFormProvider = ({ children }: MainFormContextProps) => {
   const defaultValues: MainFormData = {
-    photoAnalysis: {
-      photoUrl: '',
-    },
-    sensorAnalysis: {
-      scanResult1: [],
-      scanResult2: [],
-      scanResult3: [],
-    },
-    textQuestionAnswer: '',
-    eyeColor: '',
-    hairColor: '',
-    skinColor: '',
-    skinType: '',
+    answers: [],
   };
   const methods = useForm({ defaultValues });
 
