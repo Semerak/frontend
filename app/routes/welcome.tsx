@@ -25,12 +25,11 @@ export default function Welcome() {
         />
       </div>
       <div className="absolute inset-0 flex items-center justify-center">
-        <DefaultButton
+        <NavButton
           text={t('startPage.startAnalysis')}
-          handleClick={() => handleClick(Page.FormScreen)}
+          url="/questionnaire"
           size="xlarge"
         />
-        <NavButton text={t('startPage.startAnalysis')} url="/questionnaire" />
       </div>
     </div>
   );
