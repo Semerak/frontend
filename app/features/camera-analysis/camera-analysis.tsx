@@ -12,7 +12,6 @@ export function CameraAnalysis({ handleSubmit }: CameraAnalysisProps) {
 
   return (
     <main className="flex flex-col items-center justify-center bg-white w-full h-full">
-      {/* Title */}
       <div className="p-4">
         <Typography
           variant="h4"

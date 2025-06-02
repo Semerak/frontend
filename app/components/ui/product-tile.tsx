@@ -23,12 +23,12 @@ export function ProductTile({
   availability,
 }: ProductTileProps) {
   return (
-    <div className="flex flex-col items-center bg-background-paper p-4 rounded-lg shadow-md w-[200px] h-[300px]">
-      <div className="flex justify-center items-center h-[120px] mb-4">
+    <div className="flex flex-col items-center bg-background-paper p-4 rounded-lg shadow-md w-34 h-full">
+      <div className="flex justify-center items-center mb-4">
         <img
           src={image}
           alt={brand}
-          className="object-contain max-h-[110px] max-w-full"
+          className="object-contain max-h-32 max-w-full"
         />
       </div>
       <div className="flex-1 flex flex-col justify-between">
