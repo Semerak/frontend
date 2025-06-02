@@ -11,6 +11,7 @@ import {
 
 import { MainLayout } from './components/layouts/main-layout';
 import { ConfigProvider } from './context/config-context';
+import { SnackbarProvider } from './context/snackbar-context';
 import LoadingScreen from './features/loading-screen/loading-screen';
 import { AuthProvider } from './firebase/auth-provider';
 import theme from './styles/theme';
@@ -61,17 +62,19 @@ export default function App() {
   const queryClient = new QueryClient();
 
   return (
-    <ThemeProvider theme={theme}>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <ConfigProvider>
-            <MainLayout>
-              <Outlet />
-            </MainLayout>
-          </ConfigProvider>
-        </AuthProvider>
-      </QueryClientProvider>
-    </ThemeProvider>
+    <SnackbarProvider>
+      <ThemeProvider theme={theme}>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <ConfigProvider>
+              <MainLayout>
+                <Outlet />
+              </MainLayout>
+            </ConfigProvider>
+          </AuthProvider>
+        </QueryClientProvider>
+      </ThemeProvider>
+    </SnackbarProvider>
   );
 }
 

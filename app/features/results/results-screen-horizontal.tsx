@@ -13,9 +13,8 @@ interface ResultsScreenHorizontalProps {
     description: string;
     type: string;
     price: string;
-    availability: 'available' | 'online' | 'unavailable';
+    availability: 'available' | 'online' | 'unavailable' | 'unknown';
   }[];
-  onSendResults: () => void;
 }
 
 export function ResultsScreenHorizontal({
@@ -87,7 +86,7 @@ export function ResultsScreenHorizontal({
 
       {/* Send Results Button */}
       <div className="flex justify-center mt-6">
-        <NavButton text={'Exit the analysis'} url={'/'} />
+        <NavButton text="Exit the analysis" url="/" />
       </div>
     </div>
   );

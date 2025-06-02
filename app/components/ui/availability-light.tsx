@@ -1,6 +1,8 @@
 import { useTheme } from '@mui/material/styles';
 import React from 'react';
 
+import { cn } from '~/utils/cn';
+
 export type AvailabilityStatus =
   | 'available'
   | 'online'
@@ -24,7 +26,7 @@ export function AvailabilityLight({
 
   return (
     <span
-      className={`inline-block rounded-full m-1 ${className ?? ''}`}
+      className={cn('inline-block rounded-full m-1', className)}
       style={{ width: size, height: size, backgroundColor: color }}
       aria-label={status}
     />
