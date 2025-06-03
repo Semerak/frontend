@@ -25,7 +25,11 @@ export default function Welcome() {
         />
       </div>
       <div className="absolute inset-0 flex items-center justify-center">
-        <NavButton text={t('startPage.startAnalysis')} url="/questionnaire" />
+        <NavButton
+          text={t('startPage.startAnalysis')}
+          url="/questionnaire"
+          size="xlarge"
+        />
       </div>
     </div>
   );

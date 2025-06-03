@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
 import { FormLayout } from '~/components/layouts/form-layout';
-import { DefaultButton } from '~/components/ui/default-button';
+import { Form } from '~/components/react-hook-form';
 import { useConfig } from '~/context/config-context';
 import { useMainFormContext } from '~/context/main-form-context';
+import { useSnackbar } from '~/context/snackbar-context';
 import LoadingScreen from '~/features/loading-screen/loading-screen';
 import { useGetResults } from '~/features/results/hooks/use-results-hook';
 import { QuestinnaireTypes } from '~/types/questionnaires-enum';
@@ -14,19 +14,47 @@ import { QuestinnaireTypes } from '~/types/questionnaires-enum';
 import CameraAnalysis from '../camera-analysis/camera-analysis';
 import SensorAnalysis from '../sensor-analysis/sensor-analysis';
 
+import { useQuestionsQuery } from './hooks/use-questions-query';
 import QuestionScreen from './question-screen';
-import { useQuestionsQuery } from './questionnaire-api';
+import QuestionnaireSummary from './questionnaire-summary';
 import { mergeQuestionsAndAnswers } from './utils/get-results-translation';
 
 export function QuestionnaireRouter() {
   const [questionIndex, setQuestionIndex] = useState(0);
 
   const { methods } = useMainFormContext();
-  const { data: questions, error } = useQuestionsQuery();
+  const { data: questions, isPending } = useQuestionsQuery();
   const { i18n } = useTranslation();
   const { config } = useConfig();
   const getResults = useGetResults();
   const navigate = useNavigate();
+  const { showError } = useSnackbar();
+
+  function questionnaireSwitcher(currentQuestion: any, handleNext: () => void) {
+    switch (currentQuestion?.question_type) {
+      case QuestinnaireTypes.Scan:
+        return (
+          <SensorAnalysis
+            questionnaireIndex={questionIndex}
+            handleClick={handleNext}
+          />
+        );
+      case QuestinnaireTypes.Camera:
+        handleNext();
+        return <CameraAnalysis handleSubmit={handleNext} />;
+      case QuestinnaireTypes.Question:
+        return (
+          <QuestionScreen
+            questionnaireIndex={questionIndex}
+            question={currentQuestion.question_text}
+            options={currentQuestion.answer_options}
+            handleSubmit={handleNext}
+          />
+        );
+      default:
+        return null;
+    }
+  }
 
   useEffect(() => {
     if (questions && questions[i18n.language]) {
@@ -40,16 +68,9 @@ export function QuestionnaireRouter() {
     }
   }, [questions, i18n.language, methods]);
 
-  useEffect(() => {
-    if (questions) {
-      console.log('Fetched questions:', questions);
-      console.log('Current language:', i18n.language);
-      console.log('Steps:', questions[i18n.language]);
-    }
-    if (error) {
-      console.error('Failed to fetch questions:', error);
-    }
-  }, [questions, error, i18n.language]);
+  if (isPending) {
+    return <LoadingScreen />;
+  }
 
   function handleNext() {
     setQuestionIndex((prev) => prev + 1);
@@ -59,16 +80,21 @@ export function QuestionnaireRouter() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const answers = mergeQuestionsAndAnswers(
+      const mergedAnswers = mergeQuestionsAndAnswers(
         questions,
         data.answers ?? [],
         i18n.language,
       );
       const payload = {
         config: config,
-        answers: answers,
+        answers: mergedAnswers,
       };
       getResults.mutate(payload, {
+        onError: (error) => {
+          showError(
+            `Failed to submit Form Data: ${error.message || 'Unknown error'}`,
+          );
+        },
         onSuccess: (resultData) => {
           console.log('Results:', resultData);
           navigate('/results', { state: { results: resultData } });
@@ -86,67 +112,20 @@ export function QuestionnaireRouter() {
   const currentQuestions = questions?.[i18n.language] || [];
   const currentQuestion = currentQuestions[questionIndex];
 
-  if (currentQuestion?.question_type === QuestinnaireTypes.Scan) {
-    return (
-      <FormProvider {...methods}>
-        <FormLayout
-          steps={currentQuestions.length}
-          currentStep={questionIndex + 1}
-        >
-          <SensorAnalysis
-            questionnaireIndex={questionIndex}
-            handleClick={handleNext}
-          />
-        </FormLayout>
-      </FormProvider>
-    );
-  }
-  if (currentQuestion?.question_type === QuestinnaireTypes.Camera) {
-    handleNext(); //TODO: Remove this line if you want to show the camera analysis screen
-    return (
-      <FormProvider {...methods}>
-        <FormLayout
-          steps={currentQuestions.length}
-          currentStep={questionIndex + 1}
-        >
-          <CameraAnalysis handleSubmit={handleNext} />
-        </FormLayout>
-      </FormProvider>
-    );
-  }
-  if (currentQuestion?.question_type === QuestinnaireTypes.Question) {
-    return (
-      <FormProvider {...methods}>
-        <FormLayout
-          steps={currentQuestions.length}
-          currentStep={questionIndex + 1}
-        >
-          <QuestionScreen
-            questionnaireIndex={questionIndex}
-            question={currentQuestion.question_text}
-            options={currentQuestion.answer_options}
-            handleSubmit={handleNext}
-          />
-        </FormLayout>
-      </FormProvider>
-    );
-  }
-  if (questionIndex === currentQuestions.length) {
-    return (
-      <FormProvider {...methods}>
-        <FormLayout steps={currentQuestions.length} currentStep={questionIndex}>
-          <div className="flex flex-col items-center justify-center w-full h-full">
-            <h2 className="text-2xl font-bold mb-4">
-              Thank you for completing the questionnaire!
-            </h2>
-
-            <DefaultButton text="Submit" handleClick={onSubmit} />
-          </div>
-        </FormLayout>
-      </FormProvider>
-    );
-  }
-  return null;
+  return (
+    <Form onSubmit={onSubmit} methods={methods}>
+      <FormLayout
+        steps={currentQuestions.length}
+        currentStep={questionIndex + 1}
+      >
+        {questionIndex === currentQuestions.length ? (
+          <QuestionnaireSummary onSubmit={onSubmit} />
+        ) : currentQuestion ? (
+          questionnaireSwitcher(currentQuestion, handleNext)
+        ) : null}
+      </FormLayout>
+    </Form>
+  );
 }
 
 export default QuestionnaireRouter;

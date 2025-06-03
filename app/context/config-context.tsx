@@ -1,6 +1,6 @@
 import React, { createContext, useContext } from 'react';
 
-import { useConfigQuery } from '../features/config-load/config-api';
+import { useConfigQuery } from '~/features/config-load/hooks/use-config';
 
 // Define the config context type
 interface ConfigContextType {
