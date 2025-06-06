@@ -3,6 +3,7 @@ import { Button } from '@mui/material';
 import { useSnackbar } from '~/context/snackbar-context';
 
 import type { Route } from './+types/test';
+import NixQuickTest from '~/components/NixQuickTest';
 
 // eslint-disable-next-line
 export function meta({}: Route.MetaArgs) {
@@ -19,10 +20,8 @@ export default function TestPage() {
     showError('This is a test error message!');
   };
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <Button variant="contained" color="primary" onClick={onClick}>
-        Click Me
-      </Button>
+    <div>
+      <NixQuickTest />
     </div>
   );
 }
