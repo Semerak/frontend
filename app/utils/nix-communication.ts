@@ -487,6 +487,23 @@ export class NixSerialCommunication {
     }
   }
 
+  private async drainBuffer(timeoutMs = 100): Promise<void> {
+    if (!this.reader) return;
+    try {
+      while (true) {
+        const timeout = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('drain timeout')), timeoutMs),
+        );
+        const read = this.reader.read();
+        const result = await Promise.race([read, timeout]);
+        if (!result.value || result.value.length === 0) break;
+        // Optionally log: console.log('Drained:', result.value.length, 'bytes');
+      }
+    } catch {
+      // Timeout means buffer is empty, which is what we want
+    }
+  }
+
   // ===== NIX DEVICE SPECIFIC METHODS (from Python implementation) =====
 
   /**
@@ -589,12 +606,18 @@ export class NixSerialCommunication {
         console.log('Color values (L*a*b*):', l, a, b);
       }
 
+      // Drain buffer after reading response
+      await this.drainBuffer();
+      await this.sleep(150); // Short delay after draining
+      // Hard reset connection after scan
+      await this.hardResetConnection();
       return [l, a, b];
     } catch (error) {
       console.error('Error in scanAndPrint:', error);
       throw error;
     }
   }
+
   /**
    * Get full scan results (equivalent to Python's scan_and_print_full() method)
    */
@@ -661,27 +684,21 @@ export class NixSerialCommunication {
           console.log('Sending scan command for CIELAB...');
         }
 
-        // const scanCommand = new Uint8Array([0xc0, 0x02]);
-        // await this.writer.write(scanCommand);
-        // await this.sleep(100);
+        // const resultCommand = new Uint8Array([0xc0, 0x02]);
+        // await this.writer.write(resultCommand);
         const scanResponse = await this.sendArray([0xc0, 0x02]);
         if (this.debug) {
           console.log('Scan command response:', scanResponse.length, 'bytes');
         }
-        // // Try to read scan response but don't fail if there isn't one
-        // try {
-        //   const scanResponse = await this.readWithTimeout(500);
-        //   if (this.debug && scanResponse.length > 0) {
-        //     console.log('Scan response:', scanResponse.length, 'bytes');
-        //   }
-        // } catch (error) {
-        //   if (this.debug) {
-        //     console.log('Scan command had no response (normal for CIELAB)');
-        //   }
-        // }
+        // await this.drainBuffer();
+        await this.sleep(500); // Short delay after draining
 
-        // Send results command
         const response = await this.sendArray([0xc6, 0x02, 0x03, 0x01]);
+        // Drain buffer after reading response
+        await this.drainBuffer();
+        await this.sleep(150); // Short delay after draining
+        // Hard reset connection after scan
+        await this.hardResetConnection();
 
         // Decode ASCII response
         const responseText = new TextDecoder('ascii').decode(response);
@@ -751,6 +768,17 @@ export class NixSerialCommunication {
       throw error;
     }
   }
+
+  /**
+   * Helper to hard reset the serial connection (disconnect and reconnect to the same port)
+   */
+  private async hardResetConnection() {
+    if (!this.port) return;
+    const port = this.port;
+    await this.disconnect();
+    await this.connect(port);
+  }
+
   // ===== UTILITY METHODS =====
   /**
    * Debug scan sequence - step by step testing
@@ -942,6 +970,36 @@ export class NixSerialCommunication {
       console.log('  ✅ Port closed successfully');
     } catch (error) {
       console.log('  ❌ Diagnostic test failed:', error);
+    }
+  }
+
+  /**
+   * Helper to release and reacquire reader and writer
+   */
+  private async resetReaderWriter() {
+    if (this.reader) {
+      try {
+        await this.reader.releaseLock();
+      } catch {
+        // ignore error releasing reader
+      }
+      this.reader = null;
+    }
+    if (this.writer) {
+      try {
+        await this.writer.releaseLock();
+      } catch {
+        // ignore error releasing writer
+      }
+      this.writer = null;
+    }
+    if (this.port) {
+      if (this.port.readable && !this.reader) {
+        this.reader = this.port.readable.getReader();
+      }
+      if (this.port.writable && !this.writer) {
+        this.writer = this.port.writable.getWriter();
+      }
     }
   }
 }
