@@ -57,6 +57,7 @@ export class NixSerialCommunication {
   private reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
   private writer: WritableStreamDefaultWriter<Uint8Array> | null = null;
   private debug: boolean;
+  private isConnecting: boolean = false;
 
   constructor(debug = false) {
     this.debug = debug;
@@ -166,11 +167,24 @@ export class NixSerialCommunication {
   async requestNixDevice(): Promise<SerialDeviceInfo> {
     return this.requestPort([{ usbVendorId: 0x2af6 }]);
   }
-
   /**
    * Connect to serial port (equivalent to Python's serial.Serial())
    */
   async connect(port: SerialPort): Promise<void> {
+    // Prevent duplicate connection attempts
+    if (this.isConnecting) {
+      throw new Error('Connection already in progress');
+    }
+
+    if (this.port) {
+      if (this.debug) {
+        console.log('Already connected to a port');
+      }
+      return;
+    }
+
+    this.isConnecting = true;
+
     try {
       this.port = port;
 
@@ -215,6 +229,8 @@ export class NixSerialCommunication {
         this.writer = null;
       }
       throw error;
+    } finally {
+      this.isConnecting = false;
     }
   }
 
@@ -250,6 +266,9 @@ export class NixSerialCommunication {
       this.reader = null;
       this.writer = null;
       throw error;
+    } finally {
+      // Reset connection flag
+      this.isConnecting = false;
     }
   }
 
@@ -292,9 +311,8 @@ export class NixSerialCommunication {
         if (this.debug && response.length > 0) {
           console.log('Received response:', response.length, 'bytes');
         }
-
         return response;
-      } catch (error) {
+      } catch {
         // Return empty response if timeout (some commands don't return data)
         if (this.debug) {
           console.log('No response received (timeout)');
@@ -421,6 +439,52 @@ export class NixSerialCommunication {
     }
 
     return result;
+  }
+
+  /**
+   * Clear any pending data in the device buffer
+   */
+  private async clearBuffer(): Promise<void> {
+    if (!this.reader) {
+      return;
+    }
+
+    if (this.debug) {
+      console.log('🧹 Clearing device buffer...');
+    }
+
+    try {
+      // Try to read any pending data with a short timeout
+      let totalCleared = 0;
+      let attempts = 0;
+      const maxAttempts = 5;
+
+      while (attempts < maxAttempts) {
+        try {
+          const data = await this.readWithTimeout(100); // Short timeout
+          if (data.length === 0) {
+            break; // No more data
+          }
+          totalCleared += data.length;
+          attempts++;
+
+          if (this.debug) {
+            console.log(`🧹 Cleared ${data.length} bytes from buffer`);
+          }
+        } catch {
+          // Timeout means no more data - this is expected
+          break;
+        }
+      }
+
+      if (this.debug && totalCleared > 0) {
+        console.log(`🧹 Total cleared: ${totalCleared} bytes`);
+      }
+    } catch (error) {
+      if (this.debug) {
+        console.log('Buffer clear error (non-critical):', error);
+      }
+    }
   }
 
   // ===== NIX DEVICE SPECIFIC METHODS (from Python implementation) =====
@@ -555,7 +619,7 @@ export class NixSerialCommunication {
         if (this.debug && scanResponse.length > 0) {
           console.log('Scan response:', scanResponse.length, 'bytes');
         }
-      } catch (error) {
+      } catch {
         if (this.debug) {
           console.log('Scan command had no response (normal)');
         }
@@ -597,10 +661,13 @@ export class NixSerialCommunication {
           console.log('Sending scan command for CIELAB...');
         }
 
-        const scanCommand = new Uint8Array([0xc0, 0x02]);
-        await this.writer.write(scanCommand);
-        await this.sleep(100);
-
+        // const scanCommand = new Uint8Array([0xc0, 0x02]);
+        // await this.writer.write(scanCommand);
+        // await this.sleep(100);
+        const scanResponse = await this.sendArray([0xc0, 0x02]);
+        if (this.debug) {
+          console.log('Scan command response:', scanResponse.length, 'bytes');
+        }
         // // Try to read scan response but don't fail if there isn't one
         // try {
         //   const scanResponse = await this.readWithTimeout(500);
@@ -618,6 +685,9 @@ export class NixSerialCommunication {
 
         // Decode ASCII response
         const responseText = new TextDecoder('ascii').decode(response);
+        if (this.debug) {
+          console.log('CIELAB response:', responseText);
+        }
         const lines = responseText.split('\r\n');
 
         const cielabValues: number[] = [];
@@ -649,7 +719,7 @@ export class NixSerialCommunication {
 
     try {
       return await getCIELABInternal();
-    } catch (error) {
+    } catch {
       // Reconnect and retry like Python does
       if (this.debug) {
         console.log('CIELAB failed, reconnecting and retrying...');
@@ -707,7 +777,7 @@ export class NixSerialCommunication {
           `Scan response: ${scanResponse.length} bytes -`,
           Array.from(scanResponse),
         );
-      } catch (error) {
+      } catch {
         console.log('No scan response (normal)');
       }
 
@@ -739,8 +809,8 @@ export class NixSerialCommunication {
           const b = view.getFloat32(8, true);
           console.log(`📊 Decoded L*a*b*: L=${l}, a=${a}, b=${b}`);
         }
-      } catch (error) {
-        console.log('❌ Failed to read result data:', error);
+      } catch (debugError) {
+        console.log('❌ Failed to read result data:', debugError);
 
         // Try to read any available data
         console.log('🔍 Checking for any available data...');
@@ -751,12 +821,12 @@ export class NixSerialCommunication {
           } else {
             console.log('No data available');
           }
-        } catch (e) {
+        } catch {
           console.log('No data available (timeout)');
         }
       }
-    } catch (error) {
-      console.log('❌ Debug scan sequence failed:', error);
+    } catch (debugSeqError) {
+      console.log('❌ Debug scan sequence failed:', debugSeqError);
     }
   }
 
