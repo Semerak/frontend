@@ -5,7 +5,12 @@ import { useColorSensor, useScanColor } from '~/context/color-sensor';
 // Example component showing how to use both hooks
 export const ColorScannerExample: React.FC = () => {
   // Context hook for general device status
-  const { isConnected, error: connectionError } = useColorSensor();
+  const {
+    isConnected,
+    error: connectionError,
+    connectSensor,
+    needsManualConnect,
+  } = useColorSensor();
 
   // New scan hook with trigger, data, and isPending
   const { trigger, data, isPending, error: scanError } = useScanColor();
@@ -13,6 +18,11 @@ export const ColorScannerExample: React.FC = () => {
   const handleScan = () => {
     trigger(); // Simply call trigger, no need for async/await
   };
+
+  const handleConnect = async () => {
+    await connectSensor();
+  };
+
   return (
     <div className="p-4">
       <h2 className="text-xl font-bold mb-4">Nix Color Scanner</h2>
@@ -25,10 +35,21 @@ export const ColorScannerExample: React.FC = () => {
         {scanError && <p className="text-red-500">Scan Error: {scanError}</p>}
       </div>
 
+      {needsManualConnect && (
+        <div className="mb-4">
+          <button
+            onClick={handleConnect}
+            className="bg-green-600 text-white px-4 py-2 rounded mb-2"
+          >
+            Connect Sensor
+          </button>
+        </div>
+      )}
+
       <div className="mb-4">
         <button
           onClick={handleScan}
-          disabled={isPending}
+          disabled={isPending || !isConnected}
           className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
         >
           {isPending ? 'Scanning...' : 'Scan Color'}
