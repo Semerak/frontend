@@ -22,9 +22,11 @@ interface ColorData {
 // Define the color sensor context type
 interface ColorSensorContextType {
   scanColor: () => Promise<ColorData | null>;
+  connectSensor: () => Promise<boolean>;
   isConnected: boolean;
   isScanning: boolean;
   error: string | null;
+  needsManualConnect: boolean;
 }
 
 // Define the scan color hook return type
@@ -46,38 +48,34 @@ export const ColorSensorProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isConnected, setIsConnected] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [needsManualConnect, setNeedsManualConnect] = useState(false);
   const isInitializingRef = useRef(false);
 
-  // Initialize connection on first render
+  // Try automatic connection on mount
   useEffect(() => {
-    const initializeConnection = async () => {
-      // Prevent multiple initialization attempts (React Strict Mode)
-      if (isInitializingRef.current || nixRef.current) {
-        console.log('🔄 Skipping duplicate initialization attempt');
-        return;
-      }
-
-      isInitializingRef.current = true;
-
+    nixRef.current = new NixSerialCommunication(true);
+    const tryAutoConnect = async () => {
       try {
-        console.log('🔌 Initializing Nix color sensor connection...');
-        nixRef.current = new NixSerialCommunication(true);
-        await connectToDevice();
+        setNeedsManualConnect(false);
+        setError(null);
+        const ports = await nixRef.current.getConnectedPorts();
+        const nixPorts = ports.filter((p) => p.vendorId === 0x2af6);
+        if (nixPorts.length > 0) {
+          await nixRef.current.connect(nixPorts[0].port);
+          setIsConnected(true);
+          setError(null);
+        } else {
+          setNeedsManualConnect(true);
+          setIsConnected(false);
+          setError('No Nix devices found. Please connect manually.');
+        }
       } catch (err) {
-        console.error('❌ Failed to initialize Nix connection:', err);
-        setError(
-          err instanceof Error
-            ? err.message
-            : 'Failed to initialize connection',
-        );
-      } finally {
-        isInitializingRef.current = false;
+        setNeedsManualConnect(true);
+        setIsConnected(false);
+        setError('Automatic connection failed. Please connect manually.');
       }
     };
-
-    initializeConnection();
-
-    // Cleanup on unmount
+    tryAutoConnect();
     return () => {
       if (nixRef.current) {
         nixRef.current.disconnect().catch(console.error);
@@ -85,33 +83,31 @@ export const ColorSensorProvider: React.FC<{ children: React.ReactNode }> = ({
       }
       isInitializingRef.current = false;
     };
-  }, []); // Empty dependency array ensures this only runs once
+  }, []);
 
-  const connectToDevice = async (): Promise<boolean> => {
+  // Manual connect method (user gesture)
+  const connectSensor = async (): Promise<boolean> => {
     if (!nixRef.current) {
       throw new Error('Nix communication not initialized');
     }
-
+    if (isInitializingRef.current) return false;
+    isInitializingRef.current = true;
     try {
-      console.log('🔍 Looking for connected Nix devices...');
-      const ports = await nixRef.current.getConnectedPorts();
-      const nixPorts = ports.filter((p) => p.vendorId === 0x2af6);
-
-      if (nixPorts.length > 0) {
-        console.log(`📱 Found ${nixPorts.length} Nix device(s), connecting...`);
-        await nixRef.current.connect(nixPorts[0].port);
-        setIsConnected(true);
-        setError(null);
-        console.log('✅ Successfully connected to Nix device');
-        return true;
-      } else {
-        throw new Error('No Nix devices found');
-      }
+      setError(null);
+      setNeedsManualConnect(false);
+      // Use requestPort to trigger browser prompt
+      const portInfo = await nixRef.current.requestNixDevice();
+      await nixRef.current.connect(portInfo.port);
+      setIsConnected(true);
+      setError(null);
+      return true;
     } catch (err) {
-      console.error('❌ Connection failed:', err);
       setIsConnected(false);
-      setError(err instanceof Error ? err.message : 'Connection failed');
+      setNeedsManualConnect(true);
+      setError(err instanceof Error ? err.message : 'Manual connection failed');
       return false;
+    } finally {
+      isInitializingRef.current = false;
     }
   };
 
@@ -120,34 +116,25 @@ export const ColorSensorProvider: React.FC<{ children: React.ReactNode }> = ({
       setError('Nix communication not initialized');
       return null;
     }
-
+    if (!isConnected) {
+      setError('Sensor not connected. Please connect first.');
+      setNeedsManualConnect(true);
+      return null;
+    }
     setIsScanning(true);
     setError(null);
-
     try {
-      // Check if connected, if not, try to reconnect
-      if (!isConnected) {
-        console.log('🔄 Device not connected, attempting to reconnect...');
-        const connected = await connectToDevice();
-        if (!connected) {
-          throw new Error('Failed to connect to device');
-        }
-      }
-
       console.log('🎯 Starting color scan...');
-      // const [l, a, b] = await nixRef.current.scanAndPrint();
       const [l, a, b] = await nixRef.current.getCIELAB();
       const hexColor = colord({ l: l, a: a, b: b }).toHex();
-
       console.log(
         `✅ Scan successful! L*a*b* values: L=${l}, a=${a}, b=${b} (HEX: ${hexColor})`,
       );
-
       return { values: [l, a, b], hex_value: hexColor };
     } catch (err) {
-      console.error('❌ Color scan failed:', err);
       setError(err instanceof Error ? err.message : 'Scan failed');
-      setIsConnected(false); // Mark as disconnected on error
+      setIsConnected(false);
+      setNeedsManualConnect(true);
       return null;
     } finally {
       setIsScanning(false);
@@ -156,9 +143,11 @@ export const ColorSensorProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const contextValue: ColorSensorContextType = {
     scanColor,
+    connectSensor,
     isConnected,
     isScanning,
     error,
+    needsManualConnect,
   };
 
   return (
