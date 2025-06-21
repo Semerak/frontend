@@ -1,3 +1,5 @@
+import { colord, extend } from 'colord';
+import labPlugin from 'colord/plugins/lab';
 import React, {
   createContext,
   useContext,
@@ -7,13 +9,14 @@ import React, {
   useCallback,
 } from 'react';
 
+extend([labPlugin]);
+
 import NixSerialCommunication from '~/utils/nix-communication';
 
 // Define the color data type
 interface ColorData {
-  l: number;
-  a: number;
-  b: number;
+  values: [number, number, number];
+  hex_value: string;
 }
 
 // Define the color sensor context type
@@ -134,10 +137,13 @@ export const ColorSensorProvider: React.FC<{ children: React.ReactNode }> = ({
       console.log('🎯 Starting color scan...');
       // const [l, a, b] = await nixRef.current.scanAndPrint();
       const [l, a, b] = await nixRef.current.getCIELAB();
+      const hexColor = colord({ l: l, a: a, b: b }).toHex();
 
-      console.log(`✅ Scan successful! L*a*b* values: L=${l}, a=${a}, b=${b}`);
+      console.log(
+        `✅ Scan successful! L*a*b* values: L=${l}, a=${a}, b=${b} (HEX: ${hexColor})`,
+      );
 
-      return { l, a, b };
+      return { values: [l, a, b], hex_value: hexColor };
     } catch (err) {
       console.error('❌ Color scan failed:', err);
       setError(err instanceof Error ? err.message : 'Scan failed');

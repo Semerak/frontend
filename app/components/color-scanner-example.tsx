@@ -40,13 +40,24 @@ export const ColorScannerExample: React.FC = () => {
           <h3 className="font-semibold mb-2">Last Scan Result:</h3>
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <span className="font-medium">L*:</span> {data.l.toFixed(2)}
+              <span className="font-medium">L*:</span>{' '}
+              {data.values[0].toFixed(2)}
             </div>
             <div>
-              <span className="font-medium">a*:</span> {data.a.toFixed(2)}
+              <span className="font-medium">a*:</span>{' '}
+              {data.values[1].toFixed(2)}
             </div>
             <div>
-              <span className="font-medium">b*:</span> {data.b.toFixed(2)}
+              <span className="font-medium">b*:</span>{' '}
+              {data.values[2].toFixed(2)}
+            </div>
+            <div>
+              <span className="font-medium">HEX:</span> {data.hex_value}
+              <span
+                className="inline-block w-6 h-6 ml-2 rounded border border-gray-300 align-middle"
+                style={{ backgroundColor: data.hex_value }}
+                title={data.hex_value}
+              />
             </div>
           </div>
         </div>

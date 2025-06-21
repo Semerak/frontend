@@ -4,9 +4,11 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DefaultButton } from '~/components/ui/default-button';
+import { useScanColor } from '~/context/color-sensor';
 import { useMainFormContext } from '~/context/main-form-context';
 
-import { useGetSensorData } from '../hooks/use-get-sensor-data';
+// for on device color scanning application
+// import { useGetSensorData } from '../hooks/use-get-sensor-data';
 
 interface SpotDisplayProps {
   questionnaireIndex: number;
@@ -22,10 +24,13 @@ export function SpotDisplay({
 }: SpotDisplayProps) {
   const { t } = useTranslation();
   const { methods } = useMainFormContext();
-  const { mutate, isPending, data } = useGetSensorData();
+  // const { isConnected, error: connectionError } = useColorSensor();
+
+  // New scan hook with trigger, data, and isPending
+  const { trigger, data, isPending } = useScanColor();
 
   const handleClick = () => {
-    mutate();
+    trigger();
   };
 
   // Save scan result to form when data is available

@@ -1,9 +1,8 @@
-import { Button } from '@mui/material';
-
+import ColorScannerExample from '~/components/color-scanner-example';
+import { ColorSensorProvider } from '~/context/color-sensor';
 import { useSnackbar } from '~/context/snackbar-context';
 
 import type { Route } from './+types/test';
-import NixQuickTest from '~/components/NixQuickTest';
 
 // eslint-disable-next-line
 export function meta({}: Route.MetaArgs) {
@@ -21,7 +20,10 @@ export default function TestPage() {
   };
   return (
     <div>
-      <NixQuickTest />
+      {/* <NixQuickTest /> */}
+      <ColorSensorProvider>
+        <ColorScannerExample />
+      </ColorSensorProvider>
     </div>
   );
 }
