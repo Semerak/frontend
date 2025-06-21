@@ -1,5 +1,5 @@
-import { Button } from '@mui/material';
-
+import ColorScannerExample from '~/components/color-scanner-example';
+import { ColorSensorProvider } from '~/context/color-sensor';
 import { useSnackbar } from '~/context/snackbar-context';
 
 import type { Route } from './+types/test';
@@ -19,10 +19,11 @@ export default function TestPage() {
     showError('This is a test error message!');
   };
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <Button variant="contained" color="primary" onClick={onClick}>
-        Click Me
-      </Button>
+    <div>
+      {/* <NixQuickTest /> */}
+      <ColorSensorProvider>
+        <ColorScannerExample />
+      </ColorSensorProvider>
     </div>
   );
 }
