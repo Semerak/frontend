@@ -50,7 +50,6 @@ export const ColorSensorProvider: React.FC<{ children: React.ReactNode }> = ({
   const [error, setError] = useState<string | null>(null);
   const [needsManualConnect, setNeedsManualConnect] = useState(false);
   const isInitializingRef = useRef(false);
-
   // Try automatic connection on mount
   useEffect(() => {
     nixRef.current = new NixSerialCommunication(true);
@@ -58,6 +57,12 @@ export const ColorSensorProvider: React.FC<{ children: React.ReactNode }> = ({
       try {
         setNeedsManualConnect(false);
         setError(null);
+        if (!nixRef.current) {
+          setNeedsManualConnect(true);
+          setIsConnected(false);
+          setError('Nix communication not initialized.');
+          return;
+        }
         const ports = await nixRef.current.getConnectedPorts();
         const nixPorts = ports.filter((p) => p.vendorId === 0x2af6);
         if (nixPorts.length > 0) {
@@ -72,7 +77,10 @@ export const ColorSensorProvider: React.FC<{ children: React.ReactNode }> = ({
       } catch (err) {
         setNeedsManualConnect(true);
         setIsConnected(false);
-        setError('Automatic connection failed. Please connect manually.');
+        setError(
+          'Automatic connection failed. Please connect manually.' +
+            (err instanceof Error ? ` Error: ${err.message}` : ''),
+        );
       }
     };
     tryAutoConnect();
