@@ -1,6 +1,5 @@
 import ColorScannerExample from '~/components/color-scanner-example';
 import { ColorSensorProvider } from '~/context/color-sensor';
-import { useSnackbar } from '~/context/snackbar-context';
 
 import type { Route } from './+types/test';
 
@@ -13,11 +12,6 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function TestPage() {
-  const { showError } = useSnackbar();
-
-  const onClick = () => {
-    showError('This is a test error message!');
-  };
   return (
     <div>
       {/* <NixQuickTest /> */}
