@@ -6,9 +6,10 @@ import {
   Card,
   CardContent,
 } from '@mui/material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Loading } from '~/components/ui/loading';
+import { ColorSensorProvider, useScanColor } from '~/context/color-sensor';
 
 export function meta() {
   return [
@@ -78,14 +79,30 @@ async function postResearchResults(
 
   return response.json();
 }
-
 export default function ResearchPage() {
+  return (
+    <ColorSensorProvider>
+      <ResearchPageInner />
+    </ColorSensorProvider>
+  );
+}
+function ResearchPageInner() {
   const [lValue, setLValue] = useState<string>('58.43');
   const [aValue, setAValue] = useState<string>('12.01');
   const [bValue, setBValue] = useState<string>('15.92');
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<ResearchResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { trigger, data, isPending } = useScanColor();
+
+  // Update L, a, b fields after a successful scan
+  useEffect(() => {
+    if (data && data.values) {
+      setLValue(data.values[0].toFixed(2));
+      setAValue(data.values[1].toFixed(2));
+      setBValue(data.values[2].toFixed(2));
+    }
+  }, [data]);
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -167,6 +184,16 @@ export default function ResearchPage() {
               fullWidth
               placeholder="-128 to 127"
             />
+
+            <Button
+              variant="outlined"
+              onClick={trigger}
+              disabled={isPending}
+              className="mt-2"
+              size="large"
+            >
+              {isPending ? 'Scanning...' : 'Scan Color with Sensor'}
+            </Button>
 
             <Button
               variant="contained"
