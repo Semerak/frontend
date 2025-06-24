@@ -2,17 +2,21 @@ import { LanguagePicker } from '../ui/language-picker';
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden">
-      <div className="absolute top-4 left-4 z-10 w-18">
+    <div className="min-h-screen h-screen flex flex-col">
+      {/* Language picker fixed in top-left corner */}
+      <div className="absolute top-4 left-4 z-20 w-18">
         <LanguagePicker />
       </div>
 
-      <div className="flex flex-col flex-1">
-        <div className="flex-1 overflow-auto flex flex-col justify-start">
+      {/* Main content area that takes all available space but doesn't overflow */}
+      <div className="flex flex-col flex-grow min-h-0">
+        {/* Content area that scrolls if needed */}
+        <div className="flex-grow min-h-0 overflow-auto flex flex-col">
           {children}
         </div>
 
-        <footer className="flex justify-center pb-8  z-10">
+        {/* Footer that always stays at the bottom */}
+        <footer className="flex-shrink-0 flex justify-center pt-4 pb-8 mt-auto">
           <img
             src="/beutechful-logo.png"
             alt="Beutechful Logo"

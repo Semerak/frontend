@@ -1,9 +1,8 @@
 import { Navigate, useLocation } from 'react-router';
 
 import { ResultLayout } from '~/components/layouts/result-layout';
+import ResultsScreenVertical from '~/features/results/results-screen-vertical';
 import { translateProductsToMatches } from '~/features/results/utils/result-translate';
-
-import ResultsScreenHorizontal from '../features/results/results-screen-horizontal';
 
 const mockAnalysisResults = [
   { label: 'Skin Tone', value: 'Fair' },
@@ -24,7 +23,7 @@ const ResultsPage = () => {
 
   return (
     <ResultLayout>
-      <ResultsScreenHorizontal
+      <ResultsScreenVertical
         analysisResults={mockAnalysisResults}
         topMatches={matches}
       />
