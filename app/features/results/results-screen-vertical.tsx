@@ -1,5 +1,5 @@
-import { Typography } from '@mui/material';
-import React from 'react';
+import { Typography, Select, MenuItem, FormControl } from '@mui/material';
+import React, { useState } from 'react';
 
 import { NavButton } from '~/components/ui/nav-button';
 
@@ -85,12 +85,16 @@ export function ResultsScreenVertical({
   analysisResults,
   topMatches,
 }: ResultsScreenVerticalProps) {
+  const [coverageFilter, setCoverageFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [othersFilter, setOthersFilter] = useState('');
+
   return (
     <div className="h-full p-6 bg-background-default flex flex-col gap-4">
       {/* Fixed header section */}
       <div className="flex-shrink-0">
         {/* Analysis Results Section */}
-        <Typography
+        {/* <Typography
           variant="h6"
           fontWeight={600}
           color="text.primary"
@@ -116,17 +120,89 @@ export function ResultsScreenVertical({
               </Typography>
             </div>
           ))}
-        </div>
+        </div> */}
+        <div className="flex flex-col items-center">
+          {/* Top Matches Title - Fixed */}
+          <Typography
+            variant="h3"
+            fontWeight={700}
+            color="text.primary"
+            className="mt-6 mb-4 pb-4"
+          >
+            Your Top Matches
+          </Typography>
 
-        {/* Top Matches Title - Fixed */}
-        <Typography
-          variant="h6"
-          fontWeight={600}
-          color="text.primary"
-          className="mt-6 mb-4"
-        >
-          Your Top Matches
-        </Typography>
+          {/* Filter Dropdowns */}
+          <div className="flex gap-3 mb-4 justify-center">
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <Select
+                value={coverageFilter}
+                onChange={(e) => setCoverageFilter(e.target.value)}
+                displayEmpty
+                sx={{
+                  backgroundColor: 'white',
+                  fontSize: '0.875rem',
+                  '& .MuiSelect-select': {
+                    padding: '8px 12px',
+                  },
+                }}
+              >
+                <MenuItem value="" disabled>
+                  Coverage
+                </MenuItem>
+                <MenuItem value="light">Light</MenuItem>
+                <MenuItem value="medium">Medium</MenuItem>
+                <MenuItem value="full">Full</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <Select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                displayEmpty
+                sx={{
+                  backgroundColor: 'white',
+                  fontSize: '0.875rem',
+                  '& .MuiSelect-select': {
+                    padding: '8px 12px',
+                  },
+                }}
+              >
+                <MenuItem value="" disabled>
+                  Category
+                </MenuItem>
+                <MenuItem value="foundation">Foundation</MenuItem>
+                <MenuItem value="concealer">Concealer</MenuItem>
+                <MenuItem value="powder">Powder</MenuItem>
+                <MenuItem value="primer">Primer</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <Select
+                value={othersFilter}
+                onChange={(e) => setOthersFilter(e.target.value)}
+                displayEmpty
+                sx={{
+                  backgroundColor: 'white',
+                  fontSize: '0.875rem',
+                  '& .MuiSelect-select': {
+                    padding: '8px 12px',
+                  },
+                }}
+              >
+                <MenuItem value="" disabled>
+                  Others
+                </MenuItem>
+                <MenuItem value="price-low">Price: Low to High</MenuItem>
+                <MenuItem value="price-high">Price: High to Low</MenuItem>
+                <MenuItem value="rating">Rating</MenuItem>
+                <MenuItem value="brand">Brand</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
+        </div>
       </div>
 
       {/* Top Matches Section - Scrollable */}
