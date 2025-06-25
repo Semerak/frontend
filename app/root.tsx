@@ -65,9 +65,40 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 s = a.createElement('script');
                 s.src = z + '?apiKey=' + e;
                 s.async = true;
+                s.onload = function() {
+                  console.log('Maze: Script loaded successfully');
+                  // Give Maze a moment to initialize
+                  setTimeout(function() {
+                    if (m.maze) {
+                      console.log('Maze: API available');
+                    } else {
+                      console.warn('Maze: API not available after script load');
+                    }
+                  }, 500);
+                };
+                s.onerror = function() {
+                  console.error('Maze: Failed to load script');
+                };
                 a.getElementsByTagName('head')[0].appendChild(s);
                 m.mazeUniversalSnippetApiKey = e;
               })(window, document, 'https://snippet.maze.co/maze-universal-loader.js', '32194307-52c3-448a-802e-54aa23884b05');
+            `,
+          }}
+        />
+        {/* Additional Maze Configuration */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Ensure Maze can detect React elements
+              window.addEventListener('DOMContentLoaded', function() {
+                // Force Maze to rescan after React hydration
+                setTimeout(function() {
+                  if (window.maze && typeof window.maze.refresh === 'function') {
+                    console.log('Maze: Refreshing element detection');
+                    window.maze.refresh();
+                  }
+                }, 2000);
+              });
             `,
           }}
         />
@@ -91,11 +122,45 @@ function MazeRouteTracker() {
   const location = useLocation();
 
   useEffect(() => {
-    // Track page views on route changes
-    if (typeof window !== 'undefined' && (window as any).maze) {
-      (window as any).maze.trackPageView();
-    }
+    // Wait for Maze to be fully loaded before tracking
+    const trackPageView = () => {
+      if (typeof window !== 'undefined') {
+        const maze = (window as any).maze;
+        if (maze && typeof maze.trackPageView === 'function') {
+          console.log('Maze: Tracking page view for', location.pathname);
+          maze.trackPageView();
+        } else {
+          // Retry after a short delay if Maze isn't ready yet
+          setTimeout(trackPageView, 100);
+        }
+      }
+    };
+
+    // Small delay to ensure Maze is initialized
+    setTimeout(trackPageView, 300);
   }, [location.pathname]);
+
+  // Also ensure Maze detects the initial page load
+  useEffect(() => {
+    const initMazeTracking = () => {
+      if (typeof window !== 'undefined') {
+        const maze = (window as any).maze;
+        if (maze) {
+          console.log('Maze: Initialized and ready');
+          // Force Maze to scan for interactive elements
+          if (typeof maze.refresh === 'function') {
+            maze.refresh();
+          }
+        } else {
+          // Keep checking until Maze is available
+          setTimeout(initMazeTracking, 500);
+        }
+      }
+    };
+
+    // Wait a bit longer for initial setup
+    setTimeout(initMazeTracking, 1000);
+  }, []);
 
   return null;
 }
