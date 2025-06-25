@@ -43,6 +43,32 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        {/* Maze Universal Snippet */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function (m, a, z, e) {
+                var s, t;
+                try {
+                  t = m.sessionStorage.getItem('maze-us');
+                } catch (err) {}
+
+                if (!t) {
+                  t = new Date().getTime();
+                  try {
+                    m.sessionStorage.setItem('maze-us', t);
+                  } catch (err) {}
+                }
+
+                s = a.createElement('script');
+                s.src = z + '?apiKey=' + e;
+                s.async = true;
+                a.getElementsByTagName('head')[0].appendChild(s);
+                m.mazeUniversalSnippetApiKey = e;
+              })(window, document, 'https://snippet.maze.co/maze-universal-loader.js', '32194307-52c3-448a-802e-54aa23884b05');
+            `,
+          }}
+        />
       </head>
       <body className="min-h-screen relative">
         {children}
