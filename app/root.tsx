@@ -1,5 +1,6 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import {
   Outlet,
   Meta,
@@ -7,6 +8,7 @@ import {
   ScrollRestoration,
   Scripts,
   isRouteErrorResponse,
+  useLocation,
 } from 'react-router';
 
 import { MainLayout } from './components/layouts/main-layout';
@@ -84,6 +86,20 @@ export function HydrateFallback() {
   return <LoadingScreen />;
 }
 
+// Component to track route changes for Maze
+function MazeRouteTracker() {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Track page views on route changes
+    if (typeof window !== 'undefined' && (window as any).maze) {
+      (window as any).maze.trackPageView();
+    }
+  }, [location.pathname]);
+
+  return null;
+}
+
 export default function App() {
   const queryClient = new QueryClient();
 
@@ -94,6 +110,7 @@ export default function App() {
           <AuthProvider>
             <ConfigProvider>
               <MainLayout>
+                <MazeRouteTracker />
                 <Outlet />
               </MainLayout>
             </ConfigProvider>
