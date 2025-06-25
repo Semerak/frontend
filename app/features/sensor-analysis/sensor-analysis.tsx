@@ -31,9 +31,9 @@ export function SensorAnalysis({
           {/* Image */}
           <div className="rounded-xl overflow-hidden shadow-md">
             <img
-              src="/sensor-user.png"
+              src="/sensor-user.gif"
               alt="Face"
-              className="w-60 h-72 object-cover"
+              className="w-80 h-92 object-cover"
             />
           </div>
 

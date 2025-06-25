@@ -132,7 +132,7 @@ export function ProductTileHorizontalRanked({
   };
 
   return (
-    <div className="flex flex-row items-center">
+    <div className="flex flex-row items-center w-full">
       <div className="w-16 flex-shrink-0 flex justify-center items-center mr-2">
         <Typography
           variant="h5"
