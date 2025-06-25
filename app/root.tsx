@@ -1,6 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useEffect } from 'react';
 import {
   Outlet,
   Meta,
@@ -8,7 +7,6 @@ import {
   ScrollRestoration,
   Scripts,
   isRouteErrorResponse,
-  useLocation,
 } from 'react-router';
 
 import { MainLayout } from './components/layouts/main-layout';
@@ -45,35 +43,29 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
-        {/* Maze Universal Snippet - Simplified for Query Parameter Approach */}
+        {/* Microsoft Clarity - Free Heatmaps & User Analytics for SPAs */}
+        {/* 
+          Setup Instructions:
+          1. Go to https://clarity.microsoft.com/
+          2. Create a free account and new project
+          3. Replace "YOUR_CLARITY_PROJECT_ID" below with your actual Project ID
+          4. That's it! No npm install needed.
+        */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              (function (m, a, z, e) {
-                var s, t;
-                try {
-                  t = m.sessionStorage.getItem('maze-us');
-                } catch (err) {}
-
-                if (!t) {
-                  t = new Date().getTime();
-                  try {
-                    m.sessionStorage.setItem('maze-us', t);
-                  } catch (err) {}
-                }
-
-                s = a.createElement('script');
-                s.src = z + '?apiKey=' + e;
-                s.async = true;
-                s.onload = function() {
-                  console.log('Maze: Script loaded successfully');
-                };
-                s.onerror = function() {
-                  console.error('Maze: Failed to load script');
-                };
-                a.getElementsByTagName('head')[0].appendChild(s);
-                m.mazeUniversalSnippetApiKey = e;
-              })(window, document, 'https://snippet.maze.co/maze-universal-loader.js', '32194307-52c3-448a-802e-54aa23884b05');
+              (function(c,l,a,r,i,t,y){
+                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+              })(window, document, "clarity", "script", "s4zq1p8icz");
+              
+              // Optional: Enhanced SPA tracking for Clarity
+              if (typeof window !== 'undefined') {
+                window.addEventListener('load', function() {
+                  console.log('Clarity: Loaded and tracking SPA');
+                });
+              }
             `,
           }}
         />
@@ -92,80 +84,6 @@ export function HydrateFallback() {
   return <LoadingScreen />;
 }
 
-// Component to make SPA routes work with Maze by converting them to query parameters
-function MazeRouteTracker() {
-  const location = useLocation();
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    // Convert React Router path to query parameter for Maze compatibility
-    const convertRouteToQueryParam = () => {
-      const currentPath = location.pathname;
-      const currentSearch = location.search;
-      const currentHash = location.hash;
-
-      // Skip if we're already on the home page without parameters
-      if (currentPath === '/' && !currentSearch && !currentHash) {
-        console.log('Maze: On home page, no conversion needed');
-        return;
-      }
-
-      // Create a new URL with the route as a query parameter
-      const mazeCompatibleUrl = new URL(window.location.origin);
-
-      // Convert path to a page parameter that Maze can track
-      if (currentPath !== '/') {
-        mazeCompatibleUrl.searchParams.set('page', currentPath.substring(1)); // Remove leading slash
-      }
-
-      // Preserve existing query parameters
-      if (currentSearch) {
-        const existingParams = new URLSearchParams(currentSearch);
-        existingParams.forEach((value, key) => {
-          mazeCompatibleUrl.searchParams.set(key, value);
-        });
-      }
-
-      // Add hash if present
-      if (currentHash) {
-        mazeCompatibleUrl.hash = currentHash;
-      }
-
-      const newUrl = mazeCompatibleUrl.toString();
-
-      // Only update if the URL is actually different
-      if (newUrl !== window.location.href) {
-        console.log(
-          'Maze: Converting route',
-          currentPath,
-          'to query param URL:',
-          newUrl,
-        );
-
-        // Update the browser URL without triggering React Router navigation
-        window.history.replaceState(null, '', newUrl);
-
-        // Force Maze to recognize this as a new page
-        if (
-          (window as any).maze &&
-          typeof (window as any).maze.refresh === 'function'
-        ) {
-          setTimeout(() => {
-            (window as any).maze.refresh();
-            console.log('Maze: Refreshed after URL conversion');
-          }, 100);
-        }
-      }
-    };
-
-    // Small delay to ensure the route change is complete
-    setTimeout(convertRouteToQueryParam, 100);
-  }, [location.pathname, location.search, location.hash]);
-
-  return null;
-}
-
 export default function App() {
   const queryClient = new QueryClient();
 
@@ -176,7 +94,6 @@ export default function App() {
           <AuthProvider>
             <ConfigProvider>
               <MainLayout>
-                <MazeRouteTracker />
                 <Outlet />
               </MainLayout>
             </ConfigProvider>
