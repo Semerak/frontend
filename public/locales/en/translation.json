@@ -17,6 +17,34 @@
   "sensorAnalysis": {
     "title": "Sensor Analysis",
     "spot": "Scan spot",
-    "instruction": "Place the sensor in three different spots of your face"
+    "instruction": "Grab the sensor and place it in three different spots of your face"
+  },
+  "results": {
+    "title": "Your Top Matches",
+    "filters": {
+      "clear": "Clear All Filters",
+      "coverage": "Coverage",
+      "coverageOptions": {
+        "full": "Full",
+        "medium": "Medium",
+        "light": "Light"
+      },
+      "category": "Category",
+      "categoryOptions": {
+        "bb-cream-cc-cream": "BB-Cream & CC-Cream",
+        "concealer": "concealer",
+        "foundation": "foundation",
+        "highlighter": "highlighter",
+        "powder": "powder"
+      },
+      "other": "Others",
+      "otherOptions": {
+        "vegan": "Vegan",
+        "alcohol-free": "Alcohol Free",
+        "natural": "Natural",
+        "available": "Available"
+      }
+    },
+    "exitButton": "Exit the analysis"
   }
 }

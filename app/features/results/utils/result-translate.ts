@@ -14,7 +14,7 @@ interface Product {
   properties: Record<string, string[]>;
 }
 
-interface Match {
+export interface Match {
   image: string;
   brand: string;
   description: string;

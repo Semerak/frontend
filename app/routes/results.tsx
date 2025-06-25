@@ -18,8 +18,10 @@ const ResultsPage = () => {
     // Redirect to a fallback page if no data is passed
     return <Navigate to="/" />;
   }
+  console.log('Results:', results);
 
-  const matches = translateProductsToMatches(results.products).slice(0, 10);
+  // const matches = translateProductsToMatches(results.products).slice(0, 10);
+  const matches = translateProductsToMatches(results.products);
 
   return (
     <ResultLayout>
