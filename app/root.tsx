@@ -45,7 +45,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
-        {/* Maze Universal Snippet with SPA Configuration */}
+        {/* Maze Universal Snippet - Simplified for Query Parameter Approach */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -67,52 +67,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 s.async = true;
                 s.onload = function() {
                   console.log('Maze: Script loaded successfully');
-                  
-                  // Configure Maze for SPA behavior
-                  setTimeout(function() {
-                    if (m.maze) {
-                      console.log('Maze: API available, configuring for SPA');
-                      
-                      // Set up SPA configuration if available
-                      if (typeof m.maze.configure === 'function') {
-                        m.maze.configure({
-                          spa: true,
-                          trackPageViews: true,
-                          autoDetectPageChanges: true
-                        });
-                        console.log('Maze: Configured for SPA mode');
-                      }
-                      
-                      // Override history methods to notify Maze of navigation
-                      var originalPushState = history.pushState;
-                      var originalReplaceState = history.replaceState;
-                      
-                      history.pushState = function() {
-                        originalPushState.apply(history, arguments);
-                        setTimeout(function() {
-                          if (m.maze && typeof m.maze.refresh === 'function') {
-                            m.maze.refresh();
-                            console.log('Maze: Refreshed after pushState');
-                          }
-                        }, 100);
-                      };
-                      
-                      history.replaceState = function() {
-                        originalReplaceState.apply(history, arguments);
-                        setTimeout(function() {
-                          if (m.maze && typeof m.maze.refresh === 'function') {
-                            m.maze.refresh();
-                            console.log('Maze: Refreshed after replaceState');
-                          }
-                        }, 100);
-                      };
-                      
-                      console.log('Maze: History methods patched for SPA tracking');
-                      
-                    } else {
-                      console.warn('Maze: API not available after script load');
-                    }
-                  }, 500);
                 };
                 s.onerror = function() {
                   console.error('Maze: Failed to load script');
@@ -120,32 +74,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 a.getElementsByTagName('head')[0].appendChild(s);
                 m.mazeUniversalSnippetApiKey = e;
               })(window, document, 'https://snippet.maze.co/maze-universal-loader.js', '32194307-52c3-448a-802e-54aa23884b05');
-            `,
-          }}
-        />
-        {/* Additional Maze SPA Integration */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              // Ensure Maze can detect React elements after hydration
-              window.addEventListener('DOMContentLoaded', function() {
-                setTimeout(function() {
-                  if (window.maze && typeof window.maze.refresh === 'function') {
-                    console.log('Maze: Refreshing element detection after DOM ready');
-                    window.maze.refresh();
-                  }
-                }, 2000);
-              });
-              
-              // Additional SPA support - listen for React Router navigation
-              window.addEventListener('popstate', function() {
-                setTimeout(function() {
-                  if (window.maze && typeof window.maze.refresh === 'function') {
-                    console.log('Maze: Refreshing after popstate event');
-                    window.maze.refresh();
-                  }
-                }, 100);
-              });
             `,
           }}
         />
@@ -164,124 +92,75 @@ export function HydrateFallback() {
   return <LoadingScreen />;
 }
 
-// Component to track route changes for Maze
+// Component to make SPA routes work with Maze by converting them to query parameters
 function MazeRouteTracker() {
   const location = useLocation();
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const notifyMazeOfPageChange = () => {
-      const maze = (window as any).maze;
+    // Convert React Router path to query parameter for Maze compatibility
+    const convertRouteToQueryParam = () => {
+      const currentPath = location.pathname;
+      const currentSearch = location.search;
+      const currentHash = location.hash;
 
-      if (!maze) {
-        console.warn('Maze: API not available for route', location.pathname);
+      // Skip if we're already on the home page without parameters
+      if (currentPath === '/' && !currentSearch && !currentHash) {
+        console.log('Maze: On home page, no conversion needed');
         return;
       }
 
-      console.log('Maze: Notifying of route change to', location.pathname);
-      // Update the URL in Maze's internal state
-      const currentUrl = window.location.href;
-      console.log('Maze: Current URL:', currentUrl);
+      // Create a new URL with the route as a query parameter
+      const mazeCompatibleUrl = new URL(window.location.origin);
 
-      // Method 1: Force a document title change to trigger Maze's page detection
-      const originalTitle = document.title;
-      document.title = originalTitle + ' - ' + Date.now();
-      setTimeout(() => {
-        document.title = originalTitle;
-      }, 100);
-
-      // Method 2: Update window.location properties that Maze might read
-      try {
-        // Trigger Maze to re-read the URL by simulating navigation events
-        const navigationEvent = new Event('maze-navigation', { bubbles: true });
-        (navigationEvent as any).url = currentUrl;
-        window.dispatchEvent(navigationEvent);
-      } catch (e) {
-        console.warn('Maze: Could not dispatch navigation event', e);
+      // Convert path to a page parameter that Maze can track
+      if (currentPath !== '/') {
+        mazeCompatibleUrl.searchParams.set('page', currentPath.substring(1)); // Remove leading slash
       }
 
-      // Method 2: Call Maze tracking functions with explicit URL
-      if (typeof maze.trackPageView === 'function') {
-        try {
-          maze.trackPageView(currentUrl);
-          console.log('Maze: Called trackPageView() with URL');
-        } catch (e) {
-          console.warn('Maze: trackPageView failed', e);
-        }
+      // Preserve existing query parameters
+      if (currentSearch) {
+        const existingParams = new URLSearchParams(currentSearch);
+        existingParams.forEach((value, key) => {
+          mazeCompatibleUrl.searchParams.set(key, value);
+        });
       }
 
-      // Method 3: Force maze to reinitialize for the new page
-      if (typeof maze.init === 'function') {
-        try {
-          maze.init();
-          console.log('Maze: Called init() for new page');
-        } catch (e) {
-          console.warn('Maze: init failed', e);
-        }
+      // Add hash if present
+      if (currentHash) {
+        mazeCompatibleUrl.hash = currentHash;
       }
 
-      // Method 4: Update Maze configuration with new URL
-      if (typeof maze.setConfig === 'function') {
-        try {
-          maze.setConfig({ url: currentUrl });
-          console.log('Maze: Updated config with new URL');
-        } catch (e) {
-          console.warn('Maze: setConfig failed', e);
-        }
-      }
+      const newUrl = mazeCompatibleUrl.toString();
 
-      // Method 5: Trigger a history change event (common for SPA tracking)
-      try {
-        const historyEvent = new PopStateEvent('popstate', { state: null });
-        window.dispatchEvent(historyEvent);
-        console.log('Maze: Dispatched popstate event');
-      } catch (e) {
-        console.warn('Maze: Could not dispatch popstate event', e);
-      }
+      // Only update if the URL is actually different
+      if (newUrl !== window.location.href) {
+        console.log(
+          'Maze: Converting route',
+          currentPath,
+          'to query param URL:',
+          newUrl,
+        );
 
-      // Method 6: Refresh Maze's element detection after DOM updates
-      if (typeof maze.refresh === 'function') {
-        // Multiple refresh attempts to ensure detection
-        setTimeout(() => {
-          maze.refresh();
-          console.log('Maze: First refresh completed');
-        }, 100);
+        // Update the browser URL without triggering React Router navigation
+        window.history.replaceState(null, '', newUrl);
 
-        setTimeout(() => {
-          maze.refresh();
-          console.log('Maze: Second refresh completed');
-        }, 500);
-
-        setTimeout(() => {
-          maze.refresh();
-          console.log('Maze: Final refresh completed');
-        }, 1000);
-      }
-
-      // Method 7: Restart Maze completely for the new page
-      if (
-        typeof maze.destroy === 'function' &&
-        typeof maze.start === 'function'
-      ) {
-        try {
+        // Force Maze to recognize this as a new page
+        if (
+          (window as any).maze &&
+          typeof (window as any).maze.refresh === 'function'
+        ) {
           setTimeout(() => {
-            maze.destroy();
-            maze.start();
-            console.log('Maze: Restarted for new page');
-          }, 200);
-        } catch (e) {
-          console.warn('Maze: Could not restart', e);
+            (window as any).maze.refresh();
+            console.log('Maze: Refreshed after URL conversion');
+          }, 100);
         }
       }
     };
 
-    // Initial call
-    setTimeout(notifyMazeOfPageChange, 100);
-
-    // Additional calls to ensure Maze recognizes the change
-    setTimeout(notifyMazeOfPageChange, 500);
-    setTimeout(notifyMazeOfPageChange, 1000);
+    // Small delay to ensure the route change is complete
+    setTimeout(convertRouteToQueryParam, 100);
   }, [location.pathname, location.search, location.hash]);
 
   return null;
