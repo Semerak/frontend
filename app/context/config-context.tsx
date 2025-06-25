@@ -16,8 +16,16 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const { data: config, isLoading, error } = useConfigQuery();
 
+  const defaultConfig = {
+    store_name: 'dm',
+    store_location: 'D522',
+    language: 'de',
+  };
+
   return (
-    <ConfigContext.Provider value={{ config, isLoading, error }}>
+    <ConfigContext.Provider
+      value={{ config: error ? defaultConfig : config, isLoading, error }}
+    >
       {children}
     </ConfigContext.Provider>
   );

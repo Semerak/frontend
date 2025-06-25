@@ -1,9 +1,8 @@
 import { Navigate, useLocation } from 'react-router';
 
 import { ResultLayout } from '~/components/layouts/result-layout';
+import ResultsScreenVertical from '~/features/results/results-screen-vertical';
 import { translateProductsToMatches } from '~/features/results/utils/result-translate';
-
-import ResultsScreenHorizontal from '../features/results/results-screen-horizontal';
 
 const mockAnalysisResults = [
   { label: 'Skin Tone', value: 'Fair' },
@@ -19,12 +18,14 @@ const ResultsPage = () => {
     // Redirect to a fallback page if no data is passed
     return <Navigate to="/" />;
   }
+  console.log('Results:', results);
 
-  const matches = translateProductsToMatches(results.products).slice(0, 10);
+  // const matches = translateProductsToMatches(results.products).slice(0, 10);
+  const matches = translateProductsToMatches(results.products);
 
   return (
     <ResultLayout>
-      <ResultsScreenHorizontal
+      <ResultsScreenVertical
         analysisResults={mockAnalysisResults}
         topMatches={matches}
       />
