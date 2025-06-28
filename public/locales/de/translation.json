@@ -46,5 +46,21 @@
       }
     },
     "exitButton": "Analyse beenden"
+  },
+  "faceDetection": {
+    "title": "Gesichtsanalyse",
+    "initializing": "Gesichtserkennung wird initialisiert...",
+    "error": "Fehler beim Initialisieren der Kamera oder Gesichtserkennung",
+    "notInitialized": "Gesichtserkennung nicht bereit",
+    "countdown": "Foto wird in {{count}} aufgenommen...",
+    "takingPhoto": "Foto wird aufgenommen...",
+    "lookingAtCamera": "Perfekt! Bereit für das Foto",
+    "lookAway": "Bitte schauen Sie direkt in die Kamera",
+    "positionFace": "Positionieren Sie Ihr Gesicht im Kamerabereich",
+    "confidence": "Erkennungsgenauigkeit: {{confidence}}%",
+    "startCamera": "Kamera starten",
+    "takePhoto": "Foto aufnehmen",
+    "stopCamera": "Kamera stoppen",
+    "instructions": "Schauen Sie direkt in die Kamera. Wenn Ihr Gesicht richtig positioniert ist, wird die Anzeige grün und Sie können ein Foto aufnehmen."
   }
 }

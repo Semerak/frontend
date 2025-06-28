@@ -46,5 +46,21 @@
       }
     },
     "exitButton": "Exit the analysis"
+  },
+  "faceDetection": {
+    "title": "Face Analysis",
+    "initializing": "Initializing face detection...",
+    "error": "Error initializing camera or face detection",
+    "notInitialized": "Face detection not ready",
+    "countdown": "Taking photo in {{count}}...",
+    "takingPhoto": "Taking photo...",
+    "lookingAtCamera": "Perfect! Ready to take photo",
+    "lookAway": "Please look directly at the camera",
+    "positionFace": "Position your face in the camera view",
+    "confidence": "Detection confidence: {{confidence}}%",
+    "startCamera": "Start Camera",
+    "takePhoto": "Take Photo",
+    "stopCamera": "Stop Camera",
+    "instructions": "Look directly at the camera. When your face is properly positioned, the indicator will turn green and you can take a photo."
   }
 }
