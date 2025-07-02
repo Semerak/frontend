@@ -35,6 +35,7 @@ export function FaceDetectionComponent({
     startDetection,
     stopDetection,
     startCountdown,
+    stopCountdown,
     setAutoCountdownEnabled,
     getDebugInfo,
   } = useFaceDetection({
@@ -45,7 +46,7 @@ export function FaceDetectionComponent({
     onPhotoTaken: (imageData: string, landmarks: FaceLandmark[]) => {
       onPhotoTaken(imageData, landmarks);
     },
-    detectionThreshold: 0.97, // Adjust sensitivity as needed
+    detectionThreshold: 0.96, // Adjust sensitivity as needed
   });
 
   useEffect(() => {
@@ -81,7 +82,11 @@ export function FaceDetectionComponent({
 
   const handleTakePhoto = () => {
     if (lastDetectionResult?.isLookingAtCamera) {
-      startCountdown();
+      // Stop any existing countdown and take photo immediately
+      if (countdown !== null) {
+        stopCountdown();
+      }
+      startCountdown(1); // Very short countdown for immediate capture
     }
   };
 
@@ -90,18 +95,19 @@ export function FaceDetectionComponent({
     if (error) return t('faceDetection.error');
     if (!isInitialized) return t('faceDetection.notInitialized');
     if (countdown !== null) {
-      return countdown > 0
-        ? t('faceDetection.countdown', { count: countdown })
-        : t('faceDetection.takingPhoto');
+      if (countdown > 0) {
+        return `Taking photo in ${countdown}...`;
+      } else {
+        return 'Taking photo now!';
+      }
     }
     if (lastDetectionResult) {
       if (lastDetectionResult.isLookingAtCamera) {
         return autoCountdownEnabled
-          ? t('faceDetection.lookingAtCamera') +
-              ' - Keep looking for auto capture!'
-          : t('faceDetection.lookingAtCamera');
+          ? 'Looking at camera - Keep looking to start countdown!'
+          : 'Looking at camera - Auto capture disabled';
       } else {
-        return t('faceDetection.lookAway');
+        return 'Please look directly at the camera';
       }
     }
     return t('faceDetection.positionFace');
@@ -171,16 +177,49 @@ export function FaceDetectionComponent({
         )}
 
         {/* Countdown Overlay */}
-        {countdown !== null && countdown > 0 && (
-          <Box className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-lg">
+        {countdown !== null && (
+          <Box className="absolute inset-0 flex items-center justify-center rounded-lg">
+            {/* Dark overlay that allows camera footage to show through */}
+            <Box
+              className="absolute inset-0 bg-black rounded-lg"
+              sx={{ opacity: 0.6 }}
+            />
+
+            {/* Countdown number */}
             <Typography
               variant="h1"
               color="white"
               fontWeight="bold"
-              className="text-8xl"
+              className="relative z-10"
+              sx={{
+                textShadow:
+                  '0 0 30px rgba(0,0,0,0.8), 0 0 10px rgba(255,255,255,0.5)',
+                fontSize: { xs: '5rem', sm: '7rem', md: '9rem' },
+                animation: countdown > 0 ? 'pulse 1s infinite' : 'none',
+                '@keyframes pulse': {
+                  '0%': { transform: 'scale(1)', opacity: 1 },
+                  '50%': { transform: 'scale(1.1)', opacity: 0.8 },
+                  '100%': { transform: 'scale(1)', opacity: 1 },
+                },
+              }}
             >
-              {countdown}
+              {countdown > 0 ? countdown : '📸'}
             </Typography>
+
+            {/* Additional text for context */}
+            {countdown > 0 && (
+              <Typography
+                variant="h6"
+                color="white"
+                className="absolute bottom-16 left-1/2 transform -translate-x-1/2"
+                sx={{
+                  textShadow: '0 0 10px rgba(0,0,0,0.8)',
+                  fontSize: { xs: '1rem', sm: '1.25rem' },
+                }}
+              >
+                Keep looking at camera
+              </Typography>
+            )}
           </Box>
         )}
       </Box>
@@ -223,14 +262,22 @@ export function FaceDetectionComponent({
               handleClick={() => setAutoCountdownEnabled(!autoCountdownEnabled)}
               style={{ flex: 1 }}
             />
-            <DefaultButton
-              text="Manual Capture"
-              handleClick={handleTakePhoto}
-              disabled={
-                !lastDetectionResult?.isLookingAtCamera || countdown !== null
-              }
-              style={{ flex: 1 }}
-            />
+            {countdown !== null ? (
+              <DefaultButton
+                text="Cancel Countdown"
+                handleClick={stopCountdown}
+                style={{ flex: 1 }}
+              />
+            ) : (
+              <DefaultButton
+                text="Manual Capture"
+                handleClick={handleTakePhoto}
+                disabled={
+                  !lastDetectionResult?.isLookingAtCamera || countdown !== null
+                }
+                style={{ flex: 1 }}
+              />
+            )}
             <DefaultButton
               text={t('faceDetection.stopCamera')}
               handleClick={stopDetection}

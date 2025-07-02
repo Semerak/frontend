@@ -47,6 +47,7 @@ export function useFaceDetection({
   // Auto countdown states
   const [autoCountdownEnabled, setAutoCountdownEnabled] = useState(true);
   const [lookingAtCameraTime, setLookingAtCameraTime] = useState(0);
+  const [countdownActive, setCountdownActive] = useState(false);
 
   const faceLandmarkerRef = useRef<any>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -58,6 +59,7 @@ export function useFaceDetection({
   const userIdRef = useRef<string>(Math.random().toString(36).substr(2, 9));
   const detectionCountRef = useRef<number>(0);
   const lastDetectionTimeRef = useRef<number>(0);
+  const lastDetectionResultRef = useRef<FaceDetectionResult | null>(null);
 
   // Debug logging
   const log = useCallback((message: string, ...args: any[]) => {
@@ -228,7 +230,7 @@ export function useFaceDetection({
 
         const isLookingAtCamera = confidence_dir > detectionThreshold;
         console.log(
-          `[Face Detection] Confidence: ${confidence_dir.toFixed(3)}, Looking at Camera: ${isLookingAtCamera}, Threshold: ${detectionThreshold}`,
+          `[Face Detection] Direction Confidence: ${confidence_dir.toFixed(3)}, Looking at Camera: ${isLookingAtCamera}, Detection Threshold: ${detectionThreshold}`,
         );
 
         return isLookingAtCamera;
@@ -363,6 +365,7 @@ export function useFaceDetection({
           };
 
           setLastDetectionResult(detectionResult);
+          lastDetectionResultRef.current = detectionResult;
 
           // Draw landmarks on canvas overlay
           if (canvas) {
@@ -444,6 +447,7 @@ export function useFaceDetection({
         } else {
           log('detectFaces: No face landmarks detected');
           setLastDetectionResult(null);
+          lastDetectionResultRef.current = null;
         }
       } catch (err) {
         log('Detection error:', err);
@@ -504,6 +508,7 @@ export function useFaceDetection({
     setIsStreamActive(false);
     setCountdown(null);
     setLastDetectionResult(null);
+    lastDetectionResultRef.current = null;
     log('Face detection stopped');
   }, [log, releaseCameraLock]);
 
@@ -600,14 +605,26 @@ export function useFaceDetection({
   ]);
 
   const takePhoto = useCallback(async (): Promise<void> => {
-    if (!videoRef.current || !canvasRef.current || !lastDetectionResult) {
-      log('Cannot take photo - missing requirements');
+    // Use the most recent detection result from the ref, not the stale state
+    const currentDetectionResult = lastDetectionResultRef.current;
+    
+    if (!videoRef.current || !canvasRef.current || !currentDetectionResult) {
+      log('Cannot take photo - missing requirements', {
+        hasVideo: !!videoRef.current,
+        hasCanvas: !!canvasRef.current,
+        hasDetectionResult: !!currentDetectionResult,
+      });
       setError('Cannot take photo: camera not ready or no face detected');
       return;
     }
 
     try {
-      log('Taking photo...');
+      log('Taking photo with current detection result...', {
+        landmarkCount: currentDetectionResult.landmarks.length,
+        isLookingAtCamera: currentDetectionResult.isLookingAtCamera,
+        confidence: currentDetectionResult.confidence,
+      });
+      
       const video = videoRef.current;
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
@@ -623,24 +640,24 @@ export function useFaceDetection({
       // Draw video frame to canvas
       ctx.drawImage(video, 0, 0);
 
-      // Draw landmarks on the captured photo
+      // Draw landmarks on the captured photo using the CURRENT detection result
       if (
-        lastDetectionResult.landmarks &&
-        lastDetectionResult.landmarks.length > 0
+        currentDetectionResult.landmarks &&
+        currentDetectionResult.landmarks.length > 0
       ) {
-        log('Drawing landmarks on captured photo');
+        log('Drawing current landmarks on captured photo');
 
-        // Set colors based on looking at camera
-        ctx.fillStyle = lastDetectionResult.isLookingAtCamera
+        // Set colors based on looking at camera (current state)
+        ctx.fillStyle = currentDetectionResult.isLookingAtCamera
           ? '#00ff00'
           : '#ffff00';
-        ctx.strokeStyle = lastDetectionResult.isLookingAtCamera
+        ctx.strokeStyle = currentDetectionResult.isLookingAtCamera
           ? '#00ff00'
           : '#ffff00';
         ctx.lineWidth = 2;
 
-        // Draw ALL face landmarks on the photo
-        lastDetectionResult.landmarks.forEach((landmark) => {
+        // Draw ALL face landmarks on the photo using current positions
+        currentDetectionResult.landmarks.forEach((landmark) => {
           if (
             landmark &&
             landmark.x >= 0 &&
@@ -679,12 +696,12 @@ export function useFaceDetection({
           318, // Mouth
         ];
 
-        ctx.fillStyle = lastDetectionResult.isLookingAtCamera
+        ctx.fillStyle = currentDetectionResult.isLookingAtCamera
           ? '#00aa00'
           : '#aaaa00';
         keyLandmarkIndices.forEach((idx) => {
-          if (lastDetectionResult.landmarks[idx]) {
-            const landmark = lastDetectionResult.landmarks[idx];
+          if (currentDetectionResult.landmarks[idx]) {
+            const landmark = currentDetectionResult.landmarks[idx];
             const x = landmark.x * canvas.width;
             const y = landmark.y * canvas.height;
 
@@ -701,7 +718,7 @@ export function useFaceDetection({
       const imageData = canvas.toDataURL('image/jpeg', 0.8);
 
       if (onPhotoTaken) {
-        onPhotoTaken(imageData, lastDetectionResult.landmarks);
+        onPhotoTaken(imageData, currentDetectionResult.landmarks);
       }
 
       log('Photo taken successfully');
@@ -709,24 +726,42 @@ export function useFaceDetection({
       log('Photo capture failed:', err);
       setError(err instanceof Error ? err.message : 'Failed to capture photo');
     }
-  }, [lastDetectionResult, onPhotoTaken, log]);
+  }, [onPhotoTaken, log]);
 
   const startCountdown = useCallback(
     (seconds: number = 3): Promise<void> => {
       return new Promise((resolve, reject) => {
-        if (
-          !lastDetectionResult ||
-          lastDetectionResult.confidence < detectionThreshold
-        ) {
-          reject(new Error('No face detected or confidence too low'));
+        if (!lastDetectionResultRef.current) {
+          reject(new Error('No face detected'));
           return;
         }
 
         log(`Starting ${seconds}s countdown`);
         setCountdown(seconds);
+        setCountdownActive(true);
 
         let currentCount = seconds;
         countdownIntervalRef.current = setInterval(() => {
+          // Check if user is still looking at camera using the latest detection result
+          if (!lastDetectionResultRef.current?.isLookingAtCamera) {
+            log(
+              'User looked away during countdown - stopping countdown immediately',
+            );
+            if (countdownIntervalRef.current) {
+              clearInterval(countdownIntervalRef.current);
+              countdownIntervalRef.current = null;
+            }
+            setCountdown(null);
+            setCountdownActive(false);
+            setLookingAtCameraTime(0);
+            // Re-enable auto countdown after a brief delay
+            setTimeout(() => {
+              setAutoCountdownEnabled(true);
+            }, 500);
+            reject(new Error('User looked away during countdown'));
+            return;
+          }
+
           currentCount--;
           setCountdown(currentCount);
 
@@ -736,8 +771,12 @@ export function useFaceDetection({
               countdownIntervalRef.current = null;
             }
             setCountdown(null);
+            setCountdownActive(false);
 
-            // Take photo after countdown
+            // Take photo after countdown with current detection result
+            log(
+              'Countdown finished - taking photo with latest detection result',
+            );
             takePhoto()
               .then(() => resolve())
               .catch(reject);
@@ -745,44 +784,62 @@ export function useFaceDetection({
         }, 1000);
       });
     },
-    [lastDetectionResult, detectionThreshold, takePhoto, log],
+    [takePhoto, log],
   );
+
+  const stopCountdown = useCallback(() => {
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current);
+      countdownIntervalRef.current = null;
+    }
+    setCountdown(null);
+    setCountdownActive(false);
+    setLookingAtCameraTime(0);
+    log('Countdown stopped - user looked away');
+  }, [log]);
 
   // Auto countdown when looking at camera
   useEffect(() => {
-    if (
-      lastDetectionResult?.isLookingAtCamera &&
-      lastDetectionResult.confidence >= detectionThreshold &&
-      autoCountdownEnabled &&
-      countdown === null &&
-      isStreamActive
-    ) {
+    if (!autoCountdownEnabled || !isStreamActive) return;
+
+    if (lastDetectionResult?.isLookingAtCamera) {
       const newTime = lookingAtCameraTime + 1;
       setLookingAtCameraTime(newTime);
 
-      // Start countdown after looking at camera for 1.5 seconds (about 45 frames at 30fps)
-      if (newTime >= 45) {
+      // Start countdown after looking at camera for 1 second (about 30 frames at 30fps)
+      if (newTime >= 30 && countdown === null && !countdownActive) {
         log('User looking at camera - starting auto countdown');
-        setLookingAtCameraTime(0);
         setAutoCountdownEnabled(false); // Prevent multiple countdowns
         startCountdown(3).catch((err) => {
           log('Auto countdown failed:', err);
           setAutoCountdownEnabled(true); // Re-enable if failed
         });
       }
-    } else if (!lastDetectionResult?.isLookingAtCamera) {
-      // Reset timer if not looking at camera
-      setLookingAtCameraTime(0);
+    } else {
+      // User is not looking at camera - stop countdown if active
+      if (countdownActive && countdown !== null) {
+        // User looked away during countdown - stop it
+        log('User looked away during countdown - stopping');
+        stopCountdown();
+        // Re-enable auto countdown immediately when they look away
+        setTimeout(() => {
+          setAutoCountdownEnabled(true);
+        }, 500);
+      } else {
+        // Reset timer if not looking at camera and no countdown is active
+        setLookingAtCameraTime(0);
+      }
     }
   }, [
     lastDetectionResult,
-    detectionThreshold,
     autoCountdownEnabled,
     countdown,
+    countdownActive,
     lookingAtCameraTime,
     isStreamActive,
     log,
     startCountdown,
+    stopCountdown,
   ]);
 
   // Re-enable auto countdown after photo is taken (when countdown resets to null)
@@ -907,6 +964,7 @@ export function useFaceDetection({
     error,
     isStreamActive,
     countdown,
+    countdownActive,
     lastDetectionResult,
     autoCountdownEnabled,
 
@@ -915,6 +973,7 @@ export function useFaceDetection({
     stopDetection,
     takePhoto,
     startCountdown,
+    stopCountdown,
     setAutoCountdownEnabled,
 
     // Refs for video and canvas
