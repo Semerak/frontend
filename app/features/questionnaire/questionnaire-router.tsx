@@ -40,7 +40,7 @@ export function QuestionnaireRouter() {
           />
         );
       case QuestinnaireTypes.Camera:
-        handleNext();
+        // handleNext();
         return <CameraAnalysis handleSubmit={handleNext} />;
       case QuestinnaireTypes.Question:
         return (
