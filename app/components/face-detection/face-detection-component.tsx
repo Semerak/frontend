@@ -1,5 +1,5 @@
 import { Box, Typography, CircularProgress, Alert } from '@mui/material';
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DefaultButton } from 'app/components/ui/default-button';
@@ -29,14 +29,14 @@ export function FaceDetectionComponent({
     countdown,
     isStreamActive,
     lastDetectionResult,
+    autoCountdownEnabled,
     videoRef,
     canvasRef,
-    initializeFaceLandmarker,
-    startCamera,
-    stopCamera,
+    startDetection,
+    stopDetection,
     startCountdown,
-    cleanup,
-    debugHookState,
+    setAutoCountdownEnabled,
+    getDebugInfo,
   } = useFaceDetection({
     onFaceDetected: (result: FaceDetectionResult) => {
       // Optional: Add any additional processing here
@@ -49,44 +49,35 @@ export function FaceDetectionComponent({
   });
 
   useEffect(() => {
-    initializeFaceLandmarker();
-
-    return () => {
-      cleanup();
-    };
-  }, [initializeFaceLandmarker, cleanup]);
-
-  useEffect(() => {
     if (error) {
       onError?.(error);
     }
   }, [error, onError]);
 
-  const handleStartDetection = async () => {
+  const handleStartDetection = useCallback(async () => {
     console.log('Starting face detection...');
 
     // Log initial state
-    debugHookState();
+    console.log('Debug info:', getDebugInfo());
 
     try {
-      if (!isInitialized) {
-        console.log('Initializing face landmarker...');
-        await initializeFaceLandmarker();
+      console.log('Starting detection...');
+      await startDetection();
 
-        // Log state after initialization
-        console.log('After initialization:');
-        debugHookState();
-      }
-      console.log('Starting camera...');
-      await startCamera();
-
-      // Log state after camera start
-      console.log('After camera start:');
-      debugHookState();
+      // Log state after detection start
+      console.log('After detection start:', getDebugInfo());
     } catch (error) {
       console.error('Failed to start detection:', error);
     }
-  };
+  }, [getDebugInfo, startDetection]);
+
+  // Auto-start camera when initialized
+  useEffect(() => {
+    if (isInitialized && !isStreamActive && !isLoading) {
+      console.log('Auto-starting camera detection...');
+      handleStartDetection();
+    }
+  }, [isInitialized, isStreamActive, isLoading, handleStartDetection]);
 
   const handleTakePhoto = () => {
     if (lastDetectionResult?.isLookingAtCamera) {
@@ -104,9 +95,14 @@ export function FaceDetectionComponent({
         : t('faceDetection.takingPhoto');
     }
     if (lastDetectionResult) {
-      return lastDetectionResult.isLookingAtCamera
-        ? t('faceDetection.lookingAtCamera')
-        : t('faceDetection.lookAway');
+      if (lastDetectionResult.isLookingAtCamera) {
+        return autoCountdownEnabled
+          ? t('faceDetection.lookingAtCamera') +
+              ' - Keep looking for auto capture!'
+          : t('faceDetection.lookingAtCamera');
+      } else {
+        return t('faceDetection.lookAway');
+      }
     }
     return t('faceDetection.positionFace');
   };
@@ -135,15 +131,10 @@ export function FaceDetectionComponent({
       <Box className="relative mb-4">
         <video
           ref={videoRef}
-          className="hidden"
+          className="border-2 border-gray-300 rounded-lg"
           autoPlay
           playsInline
           muted
-          style={{ transform: 'scaleX(-1)' }} // Mirror effect
-        />
-        <canvas
-          ref={canvasRef}
-          className="border-2 border-gray-300 rounded-lg"
           style={{
             transform: 'scaleX(-1)', // Mirror effect
             maxWidth: '640px',
@@ -153,6 +144,19 @@ export function FaceDetectionComponent({
             minWidth: '320px',
             minHeight: '240px',
             backgroundColor: '#f0f0f0', // Show gray background when no video
+          }}
+        />
+        <canvas
+          ref={canvasRef}
+          className="absolute top-0 left-0 pointer-events-none"
+          style={{
+            transform: 'scaleX(-1)', // Mirror effect for consistency
+            maxWidth: '640px',
+            maxHeight: '480px',
+            width: '100%',
+            height: 'auto',
+            minWidth: '320px',
+            minHeight: '240px',
           }}
         />
 
@@ -202,16 +206,25 @@ export function FaceDetectionComponent({
       {/* Control Buttons */}
       <Box className="flex gap-4 w-full max-w-md">
         {!isStreamActive ? (
-          <DefaultButton
-            text={t('faceDetection.startCamera')}
-            handleClick={handleStartDetection}
-            disabled={isLoading}
-            fullWidth
-          />
+          <Box className="flex items-center justify-center w-full">
+            <CircularProgress size={24} />
+            <Typography variant="body2" className="ml-2">
+              {isLoading ? 'Starting camera...' : 'Initializing...'}
+            </Typography>
+          </Box>
         ) : (
           <>
             <DefaultButton
-              text={t('faceDetection.takePhoto')}
+              text={
+                autoCountdownEnabled
+                  ? 'Disable Auto Capture'
+                  : 'Enable Auto Capture'
+              }
+              handleClick={() => setAutoCountdownEnabled(!autoCountdownEnabled)}
+              style={{ flex: 1 }}
+            />
+            <DefaultButton
+              text="Manual Capture"
               handleClick={handleTakePhoto}
               disabled={
                 !lastDetectionResult?.isLookingAtCamera || countdown !== null
@@ -220,7 +233,7 @@ export function FaceDetectionComponent({
             />
             <DefaultButton
               text={t('faceDetection.stopCamera')}
-              handleClick={stopCamera}
+              handleClick={stopDetection}
               style={{ flex: 1 }}
             />
           </>
@@ -232,7 +245,7 @@ export function FaceDetectionComponent({
         <DefaultButton
           text="Debug Hook State"
           handleClick={() => {
-            debugHookState();
+            console.log('Hook debug info:', getDebugInfo());
             faceLandmarkerService.logStatus();
           }}
           style={{ fontSize: '0.75rem', padding: '4px 8px' }}
@@ -255,6 +268,13 @@ export function FaceDetectionComponent({
           </Typography>
           <Typography variant="caption" display="block">
             Stream Active: {isStreamActive ? 'Yes' : 'No'}
+          </Typography>
+          <Typography variant="caption" display="block">
+            Auto Countdown: {autoCountdownEnabled ? 'Enabled' : 'Disabled'}
+          </Typography>
+          <Typography variant="caption" display="block">
+            Looking at Camera:{' '}
+            {lastDetectionResult?.isLookingAtCamera ? 'Yes' : 'No'}
           </Typography>
           <Typography variant="caption" display="block">
             Video Dimensions: {videoRef.current?.videoWidth || 0} x{' '}

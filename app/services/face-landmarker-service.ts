@@ -11,6 +11,7 @@ class FaceLandmarkerService {
   private faceLandmarker: FaceLandmarkerWrapper | null = null;
   private initializationPromise: Promise<any> | null = null;
   private isInitializing = false;
+  private initializationListeners: Set<() => void> = new Set();
 
   private constructor() {}
 
@@ -19,6 +20,32 @@ class FaceLandmarkerService {
       FaceLandmarkerService._instance = new FaceLandmarkerService();
     }
     return FaceLandmarkerService._instance;
+  }
+
+  // Add listener for initialization completion
+  onInitialized(callback: () => void): () => void {
+    this.initializationListeners.add(callback);
+
+    // If already initialized, call immediately
+    if (this.faceLandmarker && !this.isInitializing) {
+      callback();
+    }
+
+    // Return cleanup function
+    return () => {
+      this.initializationListeners.delete(callback);
+    };
+  }
+
+  // Notify all listeners when initialization completes
+  private notifyInitializationComplete(): void {
+    this.initializationListeners.forEach((callback) => {
+      try {
+        callback();
+      } catch (error) {
+        console.error('Error in initialization listener:', error);
+      }
+    });
   }
 
   async getFaceLandmarker(): Promise<any> {
@@ -64,6 +91,10 @@ class FaceLandmarkerService {
         'Face landmarker initialized successfully, refCount:',
         this.faceLandmarker.refCount,
       );
+
+      // Notify all listeners that initialization is complete
+      this.notifyInitializationComplete();
+
       return instance;
     } catch (error) {
       console.error('Failed to initialize face landmarker:', error);
@@ -158,6 +189,11 @@ class FaceLandmarkerService {
       refCount: this.faceLandmarker?.refCount || 0,
       isInitializing: this.isInitializing,
     };
+  }
+
+  // Check if the service is ready to use
+  isReady(): boolean {
+    return this.faceLandmarker !== null && !this.isInitializing;
   }
 
   // Debug method to log current state

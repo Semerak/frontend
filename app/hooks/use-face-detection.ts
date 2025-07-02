@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { faceLandmarkerService } from '../services/face-landmarker-service';
 
@@ -20,10 +20,21 @@ export interface UseFaceDetectionOptions {
   detectionThreshold?: number;
 }
 
+// Global camera lock to prevent multiple instances from accessing camera
+const cameraLock: {
+  isLocked: boolean;
+  userId: string | null;
+  stream: MediaStream | null;
+} = {
+  isLocked: false,
+  userId: null,
+  stream: null,
+};
+
 export function useFaceDetection({
   onFaceDetected,
   onPhotoTaken,
-  detectionThreshold = 0.97,
+  detectionThreshold = 0.99,
 }: UseFaceDetectionOptions = {}) {
   const [isInitialized, setIsInitialized] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -33,361 +44,884 @@ export function useFaceDetection({
   const [lastDetectionResult, setLastDetectionResult] =
     useState<FaceDetectionResult | null>(null);
 
+  // Auto countdown states
+  const [autoCountdownEnabled, setAutoCountdownEnabled] = useState(true);
+  const [lookingAtCameraTime, setLookingAtCameraTime] = useState(0);
+
   const faceLandmarkerRef = useRef<any>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const mountedRef = useRef(true);
+  const userIdRef = useRef<string>(Math.random().toString(36).substr(2, 9));
+  const detectionCountRef = useRef<number>(0);
+  const lastDetectionTimeRef = useRef<number>(0);
 
-  const initializeFaceLandmarker = useCallback(async () => {
-    if (isInitialized) return;
+  // Debug logging
+  const log = useCallback((message: string, ...args: any[]) => {
+    console.log(
+      `[FaceDetection Hook ${userIdRef.current}] ${message}`,
+      ...args,
+    );
+  }, []);
 
-    setIsLoading(true);
-    setError(null);
+  const releaseCameraLock = useCallback(() => {
+    const userId = userIdRef.current;
+    if (cameraLock.userId === userId) {
+      log('Releasing camera lock', { userId });
 
-    try {
-      // Use the singleton service instead of creating a new instance
-      faceLandmarkerRef.current =
-        await faceLandmarkerService.getFaceLandmarker();
-      setIsInitialized(true);
-      console.log(
-        'Face landmarker initialized successfully via singleton service',
-      );
-    } catch (err) {
-      const errorMessage = `Failed to initialize face landmarker: ${err}`;
-      console.error(errorMessage);
-      setError(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [isInitialized]);
-
-  const calculateHeadPose = useCallback(
-    (landmarks: FaceLandmark[]) => {
-      if (landmarks.length < 468) {
-        return { isLookingAtCamera: false, confidence: 0 };
+      // Stop any existing stream
+      if (cameraLock.stream) {
+        cameraLock.stream.getTracks().forEach((track) => track.stop());
+        cameraLock.stream = null;
       }
 
-      // Key facial landmarks for head pose estimation
-      const noseTip = landmarks[1]; // Nose tip
-      const leftEye = landmarks[33]; // Left eye outer corner
-      const rightEye = landmarks[263]; // Right eye outer corner
-      const leftMouth = landmarks[61]; // Left mouth corner
-      const rightMouth = landmarks[291]; // Right mouth corner
+      cameraLock.isLocked = false;
+      cameraLock.userId = null;
+    }
+  }, [log]);
 
-      // Calculate distances for symmetry check
-      const leftDistance = Math.sqrt(
-        Math.pow(noseTip.x - leftEye.x, 2) +
-          Math.pow(noseTip.y - leftEye.y, 2) +
-          Math.pow(noseTip.z - leftEye.z, 2),
-      );
+  const acquireCameraLock = useCallback((): boolean => {
+    const userId = userIdRef.current;
+    log('Attempting to acquire camera lock...', {
+      userId,
+      currentLock: cameraLock,
+    });
 
-      const rightDistance = Math.sqrt(
-        Math.pow(noseTip.x - rightEye.x, 2) +
-          Math.pow(noseTip.y - rightEye.y, 2) +
-          Math.pow(noseTip.z - rightEye.z, 2),
-      );
+    if (!cameraLock.isLocked || cameraLock.userId === userId) {
+      cameraLock.isLocked = true;
+      cameraLock.userId = userId;
+      log('Camera lock acquired', { userId });
+      return true;
+    }
 
-      // Calculate symmetry ratio (closer to 1 means more frontal)
-      const symmetryRatio =
-        Math.min(leftDistance, rightDistance) /
-        Math.max(leftDistance, rightDistance);
+    log('Camera lock failed - already in use by', cameraLock.userId);
+    return false;
+  }, [log]);
 
-      // Check if nose is centered between eyes
-      const eyeCenterX = (leftEye.x + rightEye.x) / 2;
-      const noseOffset = Math.abs(noseTip.x - eyeCenterX);
-      const eyeDistance = Math.abs(rightEye.x - leftEye.x);
-      const noseOffsetRatio = noseOffset / eyeDistance;
+  const initializeCamera = useCallback(async (): Promise<MediaStream> => {
+    log('Initializing camera...');
 
-      // Check mouth symmetry
-      const mouthCenterX = (leftMouth.x + rightMouth.x) / 2;
-      const mouthOffset = Math.abs(mouthCenterX - eyeCenterX);
-      const mouthOffsetRatio = mouthOffset / eyeDistance;
+    if (!acquireCameraLock()) {
+      throw new Error('Camera is already in use by another instance');
+    }
 
-      // Calculate confidence based on symmetry and alignment
-      const confidence =
-        symmetryRatio * 0.4 +
-        (1 - noseOffsetRatio) * 0.3 +
-        (1 - mouthOffsetRatio) * 0.3;
+    try {
+      // Reuse existing stream if available
+      if (cameraLock.stream && cameraLock.stream.active) {
+        log('Reusing existing camera stream');
+        return cameraLock.stream;
+      }
 
-      const isLookingAtCamera = confidence > detectionThreshold;
+      // Request new camera stream
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+          facingMode: 'user',
+        },
+      });
 
-      return { isLookingAtCamera, confidence };
+      cameraLock.stream = stream;
+      streamRef.current = stream;
+      log('Camera initialized successfully');
+      return stream;
+    } catch (err) {
+      log('Camera initialization failed:', err);
+      releaseCameraLock();
+      throw err;
+    }
+  }, [log, acquireCameraLock, releaseCameraLock]);
+
+  const calculateConfidence = useCallback((landmarks: any[]): number => {
+    // Simple confidence calculation based on landmark presence and positions
+    if (!landmarks || landmarks.length === 0) return 0;
+
+    // Check if key facial landmarks are present and well-positioned
+    const requiredLandmarks = [
+      1,
+      2,
+      3,
+      4,
+      5, // Face outline
+      33,
+      133,
+      362,
+      263, // Eyes
+      19,
+      94,
+      168,
+      175, // Nose
+      61,
+      84,
+      17,
+      314,
+      405,
+      320,
+      308,
+      324,
+      318, // Mouth
+    ];
+
+    const presentLandmarks = requiredLandmarks.filter(
+      (idx) =>
+        landmarks[idx] &&
+        landmarks[idx].x >= 0 &&
+        landmarks[idx].x <= 1 &&
+        landmarks[idx].y >= 0 &&
+        landmarks[idx].y <= 1,
+    );
+
+    return presentLandmarks.length / requiredLandmarks.length;
+  }, []);
+
+  const checkLookingAtCamera = useCallback(
+    (landmarks: any[]): boolean => {
+      if (!landmarks || landmarks.length < 468) return false;
+
+      try {
+        const noseTip = landmarks[1]; // Nose tip
+        const leftEye = landmarks[33]; // Left eye outer corner
+        const rightEye = landmarks[263]; // Right eye outer corner
+        const leftMouth = landmarks[61]; // Left mouth corner
+        const rightMouth = landmarks[291]; // Right mouth corner
+
+        if (!noseTip || !leftEye || !rightEye || !leftMouth || !rightMouth)
+          return false;
+
+        // Calculate distances for symmetry check
+        const leftDistance = Math.sqrt(
+          Math.pow(noseTip.x - leftEye.x, 2) +
+            Math.pow(noseTip.y - leftEye.y, 2) +
+            Math.pow(noseTip.z - leftEye.z, 2),
+        );
+
+        const rightDistance = Math.sqrt(
+          Math.pow(noseTip.x - rightEye.x, 2) +
+            Math.pow(noseTip.y - rightEye.y, 2) +
+            Math.pow(noseTip.z - rightEye.z, 2),
+        );
+
+        // Calculate symmetry ratio (closer to 1 means more frontal)
+        const symmetryRatio =
+          Math.min(leftDistance, rightDistance) /
+          Math.max(leftDistance, rightDistance);
+
+        // Check if nose is centered between eyes
+        const eyeCenterX = (leftEye.x + rightEye.x) / 2;
+        const noseOffset = Math.abs(noseTip.x - eyeCenterX);
+        const eyeDistance = Math.abs(rightEye.x - leftEye.x);
+        const noseOffsetRatio = noseOffset / eyeDistance;
+
+        // Check mouth symmetry
+        const mouthCenterX = (leftMouth.x + rightMouth.x) / 2;
+        const mouthOffset = Math.abs(mouthCenterX - eyeCenterX);
+        const mouthOffsetRatio = mouthOffset / eyeDistance;
+
+        // Calculate confidence based on symmetry and alignment
+        const confidence_dir =
+          symmetryRatio * 0.4 +
+          (1 - noseOffsetRatio) * 0.3 +
+          (1 - mouthOffsetRatio) * 0.3;
+
+        const isLookingAtCamera = confidence_dir > detectionThreshold;
+        console.log(
+          `[Face Detection] Confidence: ${confidence_dir.toFixed(3)}, Looking at Camera: ${isLookingAtCamera}, Threshold: ${detectionThreshold}`,
+        );
+
+        return isLookingAtCamera;
+      } catch {
+        return false;
+      }
     },
     [detectionThreshold],
   );
 
-  const processVideoFrame = useCallback(async () => {
-    if (!faceLandmarkerRef.current || !videoRef.current || !canvasRef.current) {
-      // Continue trying if face landmarker is not ready yet
-      if (isInitialized && isStreamActive) {
-        animationFrameRef.current = requestAnimationFrame(processVideoFrame);
-      }
-      return;
-    }
+  const detectFaces = useCallback(
+    (forceStart = false) => {
+      const now = Date.now();
+      detectionCountRef.current++;
+      const timeSinceLastDetection = now - lastDetectionTimeRef.current;
+      lastDetectionTimeRef.current = now;
 
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-
-    if (!ctx || video.videoWidth === 0 || video.videoHeight === 0) {
-      animationFrameRef.current = requestAnimationFrame(processVideoFrame);
-      return;
-    }
-
-    // Set canvas size to match video dimensions
-    if (
-      canvas.width !== video.videoWidth ||
-      canvas.height !== video.videoHeight
-    ) {
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      console.log('Canvas resized to:', canvas.width, 'x', canvas.height);
-    }
-
-    try {
-      // Clear canvas and draw video frame first
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      const startTimeMs = performance.now();
-      const results = faceLandmarkerRef.current.detectForVideo(
-        video,
-        startTimeMs,
-      );
-
-      if (results.faceLandmarks && results.faceLandmarks.length > 0) {
-        const landmarks = results.faceLandmarks[0];
-        const { isLookingAtCamera, confidence } = calculateHeadPose(landmarks);
-
-        const detectionResult: FaceDetectionResult = {
-          landmarks,
-          isLookingAtCamera,
-          confidence,
-        };
-
-        setLastDetectionResult(detectionResult);
-        onFaceDetected?.(detectionResult);
-
-        // Draw landmarks on canvas
-        ctx.fillStyle = isLookingAtCamera ? '#00ff00' : '#ff0000';
-        landmarks.forEach((landmark: FaceLandmark) => {
-          ctx.beginPath();
-          ctx.arc(
-            landmark.x * canvas.width,
-            landmark.y * canvas.height,
-            1,
-            0,
-            2 * Math.PI,
-          );
-          ctx.fill();
-        });
-
-        // Draw status indicators
-        ctx.fillStyle = '#ffffff';
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 1;
-        ctx.font = 'bold 16px Arial';
-
-        // const confidenceText = `Confidence: ${(confidence * 100).toFixed(1)}%`;
-        // const statusText = `Looking at camera: ${isLookingAtCamera ? 'Yes' : 'No'}`;
-
-        // Draw text with background for better visibility
-        // ctx.strokeText(confidenceText, 10, 30);
-        // ctx.fillText(confidenceText, 10, 30);
-
-        // ctx.strokeText(statusText, 10, 50);
-        // ctx.fillText(statusText, 10, 50);
-
-        // Draw detection indicator circle
-        const indicatorSize = 20;
-        const indicatorX = canvas.width - indicatorSize - 10;
-        const indicatorY = indicatorSize + 10;
-
-        ctx.beginPath();
-        ctx.arc(indicatorX, indicatorY, indicatorSize, 0, 2 * Math.PI);
-        ctx.fillStyle = isLookingAtCamera ? '#00ff00' : '#ff0000';
-        ctx.fill();
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-      } else {
-        // No face detected
-        setLastDetectionResult(null);
-
-        // Draw "No face detected" message
-        ctx.fillStyle = '#ffffff';
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 1;
-        ctx.font = 'bold 18px Arial';
-        const noFaceText = 'No face detected';
-        const textWidth = ctx.measureText(noFaceText).width;
-        const x = (canvas.width - textWidth) / 2;
-        const y = canvas.height / 2;
-
-        ctx.strokeText(noFaceText, x, y);
-        ctx.fillText(noFaceText, x, y);
-      }
-    } catch (err) {
-      console.error('Error processing video frame:', err);
-    }
-
-    animationFrameRef.current = requestAnimationFrame(processVideoFrame);
-  }, [calculateHeadPose, onFaceDetected, isInitialized, isStreamActive]);
-
-  const startCamera = useCallback(async () => {
-    setError(null);
-
-    try {
-      console.log('Starting camera...');
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-          facingMode: 'user',
-        },
-        audio: false,
+      log('detectFaces: Called', {
+        count: detectionCountRef.current,
+        timeSince: timeSinceLastDetection,
+        mounted: mountedRef.current,
+        streamActive: isStreamActive,
+        hasVideo: !!videoRef.current,
+        hasFaceLandmarker: !!faceLandmarkerRef.current,
+        forceStart,
       });
 
-      streamRef.current = stream;
-      setIsStreamActive(true);
-      console.log('Camera stream obtained');
+      if (
+        !mountedRef.current ||
+        (!isStreamActive && !forceStart) ||
+        !videoRef.current ||
+        !faceLandmarkerRef.current
+      ) {
+        log('detectFaces: Missing requirements', {
+          mounted: mountedRef.current,
+          streamActive: isStreamActive,
+          hasVideo: !!videoRef.current,
+          hasFaceLandmarker: !!faceLandmarkerRef.current,
+          forceStart,
+        });
 
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-
-        const handleVideoLoad = () => {
-          console.log('Video loaded, starting processing');
-          console.log(
-            'Video dimensions:',
-            videoRef.current?.videoWidth,
-            'x',
-            videoRef.current?.videoHeight,
+        // Still schedule next frame if we're just starting
+        if (forceStart && mountedRef.current) {
+          log('detectFaces: Retrying in next frame due to forceStart');
+          animationFrameRef.current = requestAnimationFrame(() =>
+            detectFaces(true),
           );
-          console.log('Is initialized:', isInitialized);
-          console.log('Face landmarker ref:', !!faceLandmarkerRef.current);
+        }
+        return;
+      }
 
-          if (videoRef.current && isInitialized && faceLandmarkerRef.current) {
-            videoRef.current.play();
-            // Start processing after a small delay to ensure video is ready
-            setTimeout(() => {
-              console.log('Starting video frame processing');
-              processVideoFrame();
-            }, 100);
+      try {
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+
+        log('detectFaces: Starting detection', {
+          videoReady: video.readyState >= 2,
+          videoWidth: video.videoWidth,
+          videoHeight: video.videoHeight,
+        });
+
+        let results;
+        try {
+          // Try the correct MediaPipe method name
+          if (typeof faceLandmarkerRef.current.detectForVideo === 'function') {
+            results = faceLandmarkerRef.current.detectForVideo(
+              video,
+              Date.now(),
+            );
+          } else if (typeof faceLandmarkerRef.current.detect === 'function') {
+            results = faceLandmarkerRef.current.detect(video, Date.now());
           } else {
-            console.log('Cannot start processing - missing requirements');
+            log(
+              'Available methods:',
+              Object.getOwnPropertyNames(faceLandmarkerRef.current),
+            );
+            throw new Error(
+              'No valid detection method found on face landmarker',
+            );
           }
-        };
+        } catch (methodError) {
+          log('Method call error:', methodError);
+          throw methodError;
+        }
 
-        videoRef.current.addEventListener('loadedmetadata', handleVideoLoad);
-        videoRef.current.addEventListener('canplay', () => {
-          console.log('Video can play');
+        log('detectFaces: Detection results', {
+          hasFaceLandmarks: !!results.faceLandmarks,
+          faceLandmarksLength: results.faceLandmarks?.length || 0,
+          fullResults: results,
+        });
+
+        // Clear previous drawings
+        if (canvas) {
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            // Set canvas size to match video
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            // Clear the canvas FIRST
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            log('detectFaces: Canvas cleared', {
+              width: canvas.width,
+              height: canvas.height,
+            });
+          }
+        }
+
+        if (results.faceLandmarks && results.faceLandmarks.length > 0) {
+          const landmarks = results.faceLandmarks[0];
+          log('detectFaces: Processing landmarks', {
+            landmarkCount: landmarks.length,
+          });
+
+          // Calculate confidence and looking at camera
+          const confidence = calculateConfidence(landmarks);
+          const isLookingAtCamera = checkLookingAtCamera(landmarks);
+
+          log('detectFaces: Calculated metrics', {
+            confidence,
+            isLookingAtCamera,
+          });
+
+          const detectionResult: FaceDetectionResult = {
+            landmarks: landmarks.map((landmark: any) => ({
+              x: landmark.x,
+              y: landmark.y,
+              z: landmark.z || 0,
+            })),
+            isLookingAtCamera,
+            confidence,
+          };
+
+          setLastDetectionResult(detectionResult);
+
+          // Draw landmarks on canvas overlay
+          if (canvas) {
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+              // Set canvas size to match video for accurate positioning
+              canvas.width = video.videoWidth;
+              canvas.height = video.videoHeight;
+
+              // Clear previous drawings
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+              log('detectFaces: Drawing landmarks on canvas');
+
+              // Set colors based on looking at camera
+              ctx.fillStyle = isLookingAtCamera ? '#00ff00' : '#ffff00';
+              ctx.strokeStyle = isLookingAtCamera ? '#00ff00' : '#ffff00';
+              ctx.lineWidth = 1;
+
+              // Draw ALL 468 face landmarks for real-time tracking
+              landmarks.forEach((landmark: any) => {
+                if (
+                  landmark &&
+                  landmark.x >= 0 &&
+                  landmark.x <= 1 &&
+                  landmark.y >= 0 &&
+                  landmark.y <= 1
+                ) {
+                  const x = landmark.x * canvas.width;
+                  const y = landmark.y * canvas.height;
+
+                  ctx.beginPath();
+                  ctx.arc(x, y, 1.5, 0, 2 * Math.PI);
+                  ctx.fill();
+                }
+              });
+
+              // Highlight key landmarks with larger dots
+              const keyPoints = [
+                1,
+                33,
+                362,
+                263,
+                133, // Face center and eyes
+                19,
+                94,
+                168,
+                175, // Nose
+                61,
+                84,
+                17,
+                314,
+                405,
+                320,
+                308,
+                324,
+                318, // Mouth
+              ];
+
+              ctx.fillStyle = isLookingAtCamera ? '#00aa00' : '#aaaa00';
+              keyPoints.forEach((idx) => {
+                if (landmarks[idx]) {
+                  const x = landmarks[idx].x * canvas.width;
+                  const y = landmarks[idx].y * canvas.height;
+
+                  ctx.beginPath();
+                  ctx.arc(x, y, 3, 0, 2 * Math.PI);
+                  ctx.fill();
+                }
+              });
+
+              log('detectFaces: All landmarks drawn successfully');
+            }
+          }
+
+          if (confidence >= detectionThreshold && onFaceDetected) {
+            onFaceDetected(detectionResult);
+          }
+        } else {
+          log('detectFaces: No face landmarks detected');
+          setLastDetectionResult(null);
+        }
+      } catch (err) {
+        log('Detection error:', err);
+      }
+
+      // ALWAYS continue detection loop when stream is active
+      if (mountedRef.current && isStreamActive) {
+        log('detectFaces: Scheduling next frame (continuous mode)');
+        animationFrameRef.current = requestAnimationFrame(() => detectFaces());
+      } else if (mountedRef.current && forceStart) {
+        log('detectFaces: Scheduling next frame (force start mode)');
+        animationFrameRef.current = requestAnimationFrame(() =>
+          detectFaces(true),
+        );
+      } else {
+        log('detectFaces: Loop stopped', {
+          mounted: mountedRef.current,
+          isStreamActive,
+          forceStart,
         });
       }
-    } catch (err) {
-      const errorMessage = `Failed to access camera: ${err}`;
-      console.error(errorMessage);
-      setError(errorMessage);
-    }
-  }, [processVideoFrame, isInitialized]);
+    },
+    [
+      isStreamActive,
+      detectionThreshold,
+      onFaceDetected,
+      log,
+      calculateConfidence,
+      checkLookingAtCamera,
+    ],
+  );
 
-  const stopCamera = useCallback(() => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
-      setIsStreamActive(false);
-    }
+  const stopDetection = useCallback(() => {
+    log('Stopping face detection...');
 
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
-    }
-
+    // Cancel animation frame
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = null;
     }
 
+    // Clear countdown
     if (countdownIntervalRef.current) {
       clearInterval(countdownIntervalRef.current);
       countdownIntervalRef.current = null;
     }
 
-    setCountdown(null);
-  }, []);
-
-  const startCountdown = useCallback(() => {
-    if (countdown !== null) return; // Already counting down
-
-    let count = 3;
-    setCountdown(count);
-
-    countdownIntervalRef.current = setInterval(() => {
-      count--;
-      setCountdown(count);
-
-      if (count === 0) {
-        // Take photo
-        if (canvasRef.current && lastDetectionResult) {
-          const canvas = canvasRef.current;
-          const imageData = canvas.toDataURL('image/jpeg', 0.8);
-          onPhotoTaken?.(imageData, lastDetectionResult.landmarks);
-        }
-
-        if (countdownIntervalRef.current) {
-          clearInterval(countdownIntervalRef.current);
-          countdownIntervalRef.current = null;
-        }
-        setCountdown(null);
-      }
-    }, 1000);
-  }, [countdown, lastDetectionResult, onPhotoTaken]);
-
-  const cleanup = useCallback(() => {
-    stopCamera();
-
-    if (faceLandmarkerRef.current) {
-      // Release the face landmarker via the singleton service
-      faceLandmarkerService.releaseFaceLandmarker();
-      faceLandmarkerRef.current = null;
+    // Stop video
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.srcObject = null;
     }
 
-    setIsInitialized(false);
-    setIsStreamActive(false);
-  }, [stopCamera]);
+    // Release camera lock
+    releaseCameraLock();
 
-  // Add debugging method to the hook
-  const debugHookState = useCallback(() => {
-    console.log('=== Hook State Debug ===');
-    console.log('isInitialized:', isInitialized);
-    console.log('isLoading:', isLoading);
-    console.log('isStreamActive:', isStreamActive);
-    console.log('error:', error);
-    console.log('faceLandmarkerRef.current:', !!faceLandmarkerRef.current);
-    console.log('videoRef.current:', !!videoRef.current);
-    console.log('canvasRef.current:', !!canvasRef.current);
-    console.log('=======================');
-  }, [isInitialized, isLoading, isStreamActive, error]);
+    streamRef.current = null;
+    setIsStreamActive(false);
+    setCountdown(null);
+    setLastDetectionResult(null);
+    log('Face detection stopped');
+  }, [log, releaseCameraLock]);
+
+  const startDetection = useCallback(async () => {
+    if (!isInitialized) {
+      log('Cannot start detection - service not initialized');
+      setError('Face detection service not initialized');
+      return;
+    }
+
+    if (isStreamActive) {
+      log('Detection already active');
+      return;
+    }
+
+    try {
+      log('Starting face detection...');
+      setIsLoading(true);
+      setError(null);
+
+      // Get MediaPipe instance from service
+      const faceLandmarker = await faceLandmarkerService.getFaceLandmarker();
+      if (!faceLandmarker) {
+        throw new Error('Face landmarker not available');
+      }
+
+      log(
+        'MediaPipe instance methods:',
+        Object.getOwnPropertyNames(faceLandmarker),
+      );
+      log(
+        'MediaPipe instance prototype:',
+        Object.getOwnPropertyNames(Object.getPrototypeOf(faceLandmarker)),
+      );
+
+      faceLandmarkerRef.current = faceLandmarker;
+
+      // Initialize camera
+      const stream = await initializeCamera();
+
+      // Setup video element
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await new Promise<void>((resolve, reject) => {
+          if (!videoRef.current) {
+            reject(new Error('Video element not available'));
+            return;
+          }
+
+          const onLoadedMetadata = () => {
+            videoRef.current?.removeEventListener(
+              'loadedmetadata',
+              onLoadedMetadata,
+            );
+            resolve();
+          };
+
+          videoRef.current.addEventListener('loadedmetadata', onLoadedMetadata);
+          videoRef.current.play().catch(reject);
+        });
+      }
+
+      if (mountedRef.current) {
+        setIsStreamActive(true);
+        setIsLoading(false);
+        log('Face detection started successfully');
+
+        // Start detection loop with force start to bypass initial state check
+        // Also use setTimeout to ensure state has been updated
+        setTimeout(() => {
+          if (mountedRef.current) {
+            log('Starting detection loop after state update');
+            detectFaces(true);
+          }
+        }, 50);
+      }
+    } catch (err) {
+      log('Failed to start detection:', err);
+      releaseCameraLock();
+      if (mountedRef.current) {
+        setError(
+          err instanceof Error ? err.message : 'Failed to start face detection',
+        );
+        setIsLoading(false);
+      }
+    }
+  }, [
+    isInitialized,
+    isStreamActive,
+    initializeCamera,
+    log,
+    releaseCameraLock,
+    detectFaces,
+  ]);
+
+  const takePhoto = useCallback(async (): Promise<void> => {
+    if (!videoRef.current || !canvasRef.current || !lastDetectionResult) {
+      log('Cannot take photo - missing requirements');
+      setError('Cannot take photo: camera not ready or no face detected');
+      return;
+    }
+
+    try {
+      log('Taking photo...');
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+
+      if (!ctx) {
+        throw new Error('Canvas context not available');
+      }
+
+      // Set canvas size to match video
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      // Draw video frame to canvas
+      ctx.drawImage(video, 0, 0);
+
+      // Draw landmarks on the captured photo
+      if (
+        lastDetectionResult.landmarks &&
+        lastDetectionResult.landmarks.length > 0
+      ) {
+        log('Drawing landmarks on captured photo');
+
+        // Set colors based on looking at camera
+        ctx.fillStyle = lastDetectionResult.isLookingAtCamera
+          ? '#00ff00'
+          : '#ffff00';
+        ctx.strokeStyle = lastDetectionResult.isLookingAtCamera
+          ? '#00ff00'
+          : '#ffff00';
+        ctx.lineWidth = 2;
+
+        // Draw ALL face landmarks on the photo
+        lastDetectionResult.landmarks.forEach((landmark) => {
+          if (
+            landmark &&
+            landmark.x >= 0 &&
+            landmark.x <= 1 &&
+            landmark.y >= 0 &&
+            landmark.y <= 1
+          ) {
+            const x = landmark.x * canvas.width;
+            const y = landmark.y * canvas.height;
+
+            ctx.beginPath();
+            ctx.arc(x, y, 2, 0, 2 * Math.PI);
+            ctx.fill();
+          }
+        });
+
+        // Highlight key landmarks with larger dots
+        const keyLandmarkIndices = [
+          1,
+          33,
+          362,
+          263,
+          133, // Face center and eyes
+          19,
+          94,
+          168,
+          175, // Nose
+          61,
+          84,
+          17,
+          314,
+          405,
+          320,
+          308,
+          324,
+          318, // Mouth
+        ];
+
+        ctx.fillStyle = lastDetectionResult.isLookingAtCamera
+          ? '#00aa00'
+          : '#aaaa00';
+        keyLandmarkIndices.forEach((idx) => {
+          if (lastDetectionResult.landmarks[idx]) {
+            const landmark = lastDetectionResult.landmarks[idx];
+            const x = landmark.x * canvas.width;
+            const y = landmark.y * canvas.height;
+
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, 2 * Math.PI);
+            ctx.fill();
+          }
+        });
+
+        log('Landmarks drawn on captured photo successfully');
+      }
+
+      // Get image data with landmarks
+      const imageData = canvas.toDataURL('image/jpeg', 0.8);
+
+      if (onPhotoTaken) {
+        onPhotoTaken(imageData, lastDetectionResult.landmarks);
+      }
+
+      log('Photo taken successfully');
+    } catch (err) {
+      log('Photo capture failed:', err);
+      setError(err instanceof Error ? err.message : 'Failed to capture photo');
+    }
+  }, [lastDetectionResult, onPhotoTaken, log]);
+
+  const startCountdown = useCallback(
+    (seconds: number = 3): Promise<void> => {
+      return new Promise((resolve, reject) => {
+        if (
+          !lastDetectionResult ||
+          lastDetectionResult.confidence < detectionThreshold
+        ) {
+          reject(new Error('No face detected or confidence too low'));
+          return;
+        }
+
+        log(`Starting ${seconds}s countdown`);
+        setCountdown(seconds);
+
+        let currentCount = seconds;
+        countdownIntervalRef.current = setInterval(() => {
+          currentCount--;
+          setCountdown(currentCount);
+
+          if (currentCount <= 0) {
+            if (countdownIntervalRef.current) {
+              clearInterval(countdownIntervalRef.current);
+              countdownIntervalRef.current = null;
+            }
+            setCountdown(null);
+
+            // Take photo after countdown
+            takePhoto()
+              .then(() => resolve())
+              .catch(reject);
+          }
+        }, 1000);
+      });
+    },
+    [lastDetectionResult, detectionThreshold, takePhoto, log],
+  );
+
+  // Auto countdown when looking at camera
+  useEffect(() => {
+    if (
+      lastDetectionResult?.isLookingAtCamera &&
+      lastDetectionResult.confidence >= detectionThreshold &&
+      autoCountdownEnabled &&
+      countdown === null &&
+      isStreamActive
+    ) {
+      const newTime = lookingAtCameraTime + 1;
+      setLookingAtCameraTime(newTime);
+
+      // Start countdown after looking at camera for 1.5 seconds (about 45 frames at 30fps)
+      if (newTime >= 45) {
+        log('User looking at camera - starting auto countdown');
+        setLookingAtCameraTime(0);
+        setAutoCountdownEnabled(false); // Prevent multiple countdowns
+        startCountdown(3).catch((err) => {
+          log('Auto countdown failed:', err);
+          setAutoCountdownEnabled(true); // Re-enable if failed
+        });
+      }
+    } else if (!lastDetectionResult?.isLookingAtCamera) {
+      // Reset timer if not looking at camera
+      setLookingAtCameraTime(0);
+    }
+  }, [
+    lastDetectionResult,
+    detectionThreshold,
+    autoCountdownEnabled,
+    countdown,
+    lookingAtCameraTime,
+    isStreamActive,
+    log,
+    startCountdown,
+  ]);
+
+  // Re-enable auto countdown after photo is taken (when countdown resets to null)
+  useEffect(() => {
+    if (countdown === null && !autoCountdownEnabled) {
+      // Re-enable auto countdown after 2 seconds
+      const timeout = setTimeout(() => {
+        setAutoCountdownEnabled(true);
+        setLookingAtCameraTime(0);
+        log('Auto countdown re-enabled');
+      }, 2000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [countdown, autoCountdownEnabled, log]);
+
+  // Initialize MediaPipe and sync with service state
+  useEffect(() => {
+    mountedRef.current = true;
+    log('Hook mounted, initializing...');
+
+    const initializeService = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        // Check if service is already ready
+        if (faceLandmarkerService.isReady()) {
+          log('Service already ready');
+          setIsInitialized(true);
+          setIsLoading(false);
+          return;
+        }
+
+        // Initialize the service
+        log('Initializing service...');
+        await faceLandmarkerService.getFaceLandmarker();
+
+        if (mountedRef.current) {
+          log('Service initialized successfully');
+          setIsInitialized(true);
+          setIsLoading(false);
+        }
+      } catch (err) {
+        log('Service initialization failed:', err);
+        if (mountedRef.current) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : 'Failed to initialize face detection',
+          );
+          setIsLoading(false);
+        }
+      }
+    };
+
+    // Listen for service initialization events
+    const unsubscribe = faceLandmarkerService.onInitialized(() => {
+      log('Received service initialization event');
+      if (mountedRef.current) {
+        setIsInitialized(true);
+        setIsLoading(false);
+      }
+    });
+
+    initializeService();
+
+    return () => {
+      log('Hook unmounting...');
+      mountedRef.current = false;
+      unsubscribe();
+    };
+  }, [log]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      stopDetection();
+      releaseCameraLock();
+    };
+  }, [stopDetection, releaseCameraLock]);
+
+  // Debug methods
+  const getDebugInfo = useCallback(() => {
+    return {
+      userId: userIdRef.current,
+      isInitialized,
+      isLoading,
+      isStreamActive,
+      error,
+      countdown,
+      lastDetectionResult: lastDetectionResult
+        ? {
+            confidence: lastDetectionResult.confidence,
+            isLookingAtCamera: lastDetectionResult.isLookingAtCamera,
+            landmarkCount: lastDetectionResult.landmarks.length,
+          }
+        : null,
+      cameraLock: {
+        isLocked: cameraLock.isLocked,
+        userId: cameraLock.userId,
+        hasStream: !!cameraLock.stream,
+        streamActive: cameraLock.stream?.active,
+      },
+      serviceState: {
+        isReady: faceLandmarkerService.isReady(),
+      },
+    };
+  }, [
+    isInitialized,
+    isLoading,
+    isStreamActive,
+    error,
+    countdown,
+    lastDetectionResult,
+  ]);
 
   return {
     // State
     isInitialized,
     isLoading,
     error,
-    countdown,
     isStreamActive,
+    countdown,
     lastDetectionResult,
+    autoCountdownEnabled,
 
-    // Refs
+    // Actions
+    startDetection,
+    stopDetection,
+    takePhoto,
+    startCountdown,
+    setAutoCountdownEnabled,
+
+    // Refs for video and canvas
     videoRef,
     canvasRef,
 
-    // Methods
-    initializeFaceLandmarker,
-    startCamera,
-    stopCamera,
-    startCountdown,
-    cleanup,
-    debugHookState, // Expose the debug method
+    // Debug
+    getDebugInfo,
   };
 }
