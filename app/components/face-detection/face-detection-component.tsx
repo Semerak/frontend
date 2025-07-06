@@ -1,14 +1,10 @@
-import { Box, Typography, CircularProgress, Alert } from '@mui/material';
+import { Typography } from '@mui/material';
 import { useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { DefaultButton } from 'app/components/ui/default-button';
-import { faceLandmarkerService } from 'app/services/face-landmarker-service';
 
 import {
   useFaceDetection,
   type FaceLandmark,
-  type FaceDetectionResult,
 } from '../../hooks/use-face-detection';
 
 interface FaceDetectionComponentProps {
@@ -33,16 +29,7 @@ export function FaceDetectionComponent({
     videoRef,
     canvasRef,
     startDetection,
-    stopDetection,
-    startCountdown,
-    stopCountdown,
-    setAutoCountdownEnabled,
-    getDebugInfo,
   } = useFaceDetection({
-    onFaceDetected: (result: FaceDetectionResult) => {
-      // Optional: Add any additional processing here
-      console.log('Face detected:', result);
-    },
     onPhotoTaken: (imageData: string, landmarks: FaceLandmark[]) => {
       onPhotoTaken(imageData, landmarks);
     },
@@ -56,39 +43,19 @@ export function FaceDetectionComponent({
   }, [error, onError]);
 
   const handleStartDetection = useCallback(async () => {
-    console.log('Starting face detection...');
-
-    // Log initial state
-    console.log('Debug info:', getDebugInfo());
-
     try {
-      console.log('Starting detection...');
       await startDetection();
-
-      // Log state after detection start
-      console.log('After detection start:', getDebugInfo());
-    } catch (error) {
-      console.error('Failed to start detection:', error);
+    } catch {
+      // Error handling is done in the hook
     }
-  }, [getDebugInfo, startDetection]);
+  }, [startDetection]);
 
   // Auto-start camera when initialized
   useEffect(() => {
     if (isInitialized && !isStreamActive && !isLoading) {
-      console.log('Auto-starting camera detection...');
       handleStartDetection();
     }
   }, [isInitialized, isStreamActive, isLoading, handleStartDetection]);
-
-  const handleTakePhoto = () => {
-    if (lastDetectionResult?.isLookingAtCamera) {
-      // Stop any existing countdown and take photo immediately
-      if (countdown !== null) {
-        stopCountdown();
-      }
-      startCountdown(1); // Very short countdown for immediate capture
-    }
-  };
 
   const getStatusMessage = () => {
     if (isLoading) return t('faceDetection.initializing');
@@ -96,18 +63,18 @@ export function FaceDetectionComponent({
     if (!isInitialized) return t('faceDetection.notInitialized');
     if (countdown !== null) {
       if (countdown > 0) {
-        return `Taking photo in ${countdown}...`;
+        return t('faceDetection.takingPhotoIn', { seconds: countdown });
       } else {
-        return 'Taking photo now!';
+        return t('faceDetection.takingPhotoNow');
       }
     }
     if (lastDetectionResult) {
       if (lastDetectionResult.isLookingAtCamera) {
         return autoCountdownEnabled
-          ? 'Looking at camera - Keep looking to start countdown!'
-          : 'Looking at camera - Auto capture disabled';
+          ? t('faceDetection.lookingAtCameraAuto')
+          : t('faceDetection.lookingAtCameraManual');
       } else {
-        return 'Please look directly at the camera';
+        return t('faceDetection.lookDirectly');
       }
     }
     return t('faceDetection.positionFace');
@@ -121,10 +88,10 @@ export function FaceDetectionComponent({
   };
 
   return (
-    <Box className="flex flex-col items-center justify-center w-full h-full p-4">
+    <div className="flex flex-col items-center justify-center w-full h-full p-4">
       {/* Title */}
       <Typography
-        variant="h5"
+        variant="h4"
         fontWeight={600}
         color="text.primary"
         align="center"
@@ -134,33 +101,28 @@ export function FaceDetectionComponent({
       </Typography>
 
       {/* Camera Preview */}
-      <Box className="relative mb-4">
+      <div className="relative mb-4">
         <video
           ref={videoRef}
-          className="border-2 border-gray-300 rounded-lg"
+          className="border-2 border-gray-300 rounded-lg w-full h-auto bg-gray-100"
           autoPlay
           playsInline
           muted
           style={{
-            transform: 'scaleX(-1)', // Mirror effect
+            transform: 'scaleX(-1)', // Mirror effect - keep this as it's not available in Tailwind
             maxWidth: '640px',
             maxHeight: '480px',
-            width: '100%',
-            height: 'auto',
             minWidth: '320px',
             minHeight: '240px',
-            backgroundColor: '#f0f0f0', // Show gray background when no video
           }}
         />
         <canvas
           ref={canvasRef}
-          className="absolute top-0 left-0 pointer-events-none"
+          className="absolute top-0 left-0 pointer-events-none w-full h-auto"
           style={{
-            transform: 'scaleX(-1)', // Mirror effect for consistency
+            transform: 'scaleX(-1)', // Mirror effect for consistency - keep this as it's not available in Tailwind
             maxWidth: '640px',
             maxHeight: '480px',
-            width: '100%',
-            height: 'auto',
             minWidth: '320px',
             minHeight: '240px',
           }}
@@ -168,39 +130,35 @@ export function FaceDetectionComponent({
 
         {/* Loading indicator when camera is starting */}
         {isLoading && (
-          <Box className="absolute inset-0 flex items-center justify-center bg-gray-200 rounded-lg">
-            <CircularProgress size={40} />
-            <Typography variant="body2" className="ml-2">
-              Starting camera...
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-200 rounded-lg">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+            <Typography variant="body2" className="ml-2" color="text.secondary">
+              {t('faceDetection.startingCamera')}
             </Typography>
-          </Box>
+          </div>
         )}
 
         {/* Countdown Overlay */}
         {countdown !== null && (
-          <Box className="absolute inset-0 flex items-center justify-center rounded-lg">
+          <div className="absolute inset-0 flex items-center justify-center rounded-lg">
             {/* Dark overlay that allows camera footage to show through */}
-            <Box
-              className="absolute inset-0 bg-black rounded-lg"
-              sx={{ opacity: 0.6 }}
-            />
+            <div className="absolute inset-0 bg-black opacity-60 rounded-lg" />
 
             {/* Countdown number */}
             <Typography
               variant="h1"
               color="white"
               fontWeight="bold"
-              className="relative z-10"
+              className={`relative z-10 text-center ${
+                countdown > 0 ? 'animate-pulse' : ''
+              }`}
               sx={{
                 textShadow:
                   '0 0 30px rgba(0,0,0,0.8), 0 0 10px rgba(255,255,255,0.5)',
-                fontSize: { xs: '5rem', sm: '7rem', md: '9rem' },
-                animation: countdown > 0 ? 'pulse 1s infinite' : 'none',
-                '@keyframes pulse': {
-                  '0%': { transform: 'scale(1)', opacity: 1 },
-                  '50%': { transform: 'scale(1.1)', opacity: 0.8 },
-                  '100%': { transform: 'scale(1)', opacity: 1 },
-                },
+                fontSize:
+                  countdown > 0
+                    ? { xs: '5rem', sm: '7rem', md: '9rem' }
+                    : { xs: '3rem', sm: '5rem', md: '6rem' },
               }}
             >
               {countdown > 0 ? countdown : '📸'}
@@ -211,66 +169,71 @@ export function FaceDetectionComponent({
               <Typography
                 variant="h6"
                 color="white"
-                className="absolute bottom-16 left-1/2 transform -translate-x-1/2"
+                className="absolute bottom-16 left-1/2 transform -translate-x-1/2 text-center"
                 sx={{
                   textShadow: '0 0 10px rgba(0,0,0,0.8)',
-                  fontSize: { xs: '1rem', sm: '1.25rem' },
+                  fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' },
                 }}
               >
-                Keep looking at camera
+                {t('faceDetection.keepLooking')}
               </Typography>
             )}
-          </Box>
+          </div>
         )}
-      </Box>
+      </div>
 
       {/* Status Message */}
-      <Alert
-        severity={getStatusColor()}
-        className="mb-4 w-full max-w-md"
-        icon={isLoading ? <CircularProgress size={20} /> : undefined}
+      <div
+        className={`mb-4 w-full max-w-md rounded-lg p-3 flex items-center ${
+          getStatusColor() === 'error'
+            ? 'bg-red-50 border border-red-200 text-red-700'
+            : getStatusColor() === 'warning'
+              ? 'bg-yellow-50 border border-yellow-200 text-yellow-700'
+              : getStatusColor() === 'success'
+                ? 'bg-green-50 border border-green-200 text-green-700'
+                : 'bg-blue-50 border border-blue-200 text-blue-700'
+        }`}
       >
-        <Typography variant="body2" align="center">
+        {isLoading && (
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-current mr-2"></div>
+        )}
+        <Typography variant="body2" className="text-center flex-1">
           {getStatusMessage()}
         </Typography>
-        {lastDetectionResult && (
-          <Typography variant="caption" display="block" align="center">
-            {t('faceDetection.confidence', {
-              confidence: (lastDetectionResult.confidence * 100).toFixed(1),
-            })}
-          </Typography>
-        )}
-      </Alert>
+      </div>
 
       {/* Control Buttons */}
-      <Box className="flex gap-4 w-full max-w-md">
+      <div className="flex gap-4 w-full max-w-md">
         {!isStreamActive ? (
-          <Box className="flex items-center justify-center w-full">
-            <CircularProgress size={24} />
-            <Typography variant="body2" className="ml-2">
-              {isLoading ? 'Starting camera...' : 'Initializing...'}
+          <div className="flex items-center justify-center w-full">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+            <Typography variant="body2" className="ml-2" color="text.secondary">
+              {isLoading
+                ? t('faceDetection.startingCamera')
+                : t('faceDetection.initializing')}
             </Typography>
-          </Box>
+          </div>
         ) : (
           <>
-            <DefaultButton
+            {/* Commented out buttons as per user requirement */}
+            {/* <DefaultButton
               text={
                 autoCountdownEnabled
-                  ? 'Disable Auto Capture'
-                  : 'Enable Auto Capture'
+                  ? t('faceDetection.disableAutoCapture')
+                  : t('faceDetection.enableAutoCapture')
               }
               handleClick={() => setAutoCountdownEnabled(!autoCountdownEnabled)}
               style={{ flex: 1 }}
             />
             {countdown !== null ? (
               <DefaultButton
-                text="Cancel Countdown"
+                text={t('faceDetection.cancelCountdown')}
                 handleClick={stopCountdown}
                 style={{ flex: 1 }}
               />
             ) : (
               <DefaultButton
-                text="Manual Capture"
+                text={t('faceDetection.manualCapture')}
                 handleClick={handleTakePhoto}
                 disabled={
                   !lastDetectionResult?.isLookingAtCamera || countdown !== null
@@ -282,58 +245,18 @@ export function FaceDetectionComponent({
               text={t('faceDetection.stopCamera')}
               handleClick={stopDetection}
               style={{ flex: 1 }}
-            />
+            /> */}
           </>
         )}
-      </Box>
-
-      {/* Debug Button */}
-      <Box className="flex gap-2 mt-2 w-full max-w-md">
-        <DefaultButton
-          text="Debug Hook State"
-          handleClick={() => {
-            console.log('Hook debug info:', getDebugInfo());
-            faceLandmarkerService.logStatus();
-          }}
-          style={{ fontSize: '0.75rem', padding: '4px 8px' }}
-        />
-      </Box>
+      </div>
 
       {/* Instructions */}
-      <Box className="mt-4 text-center max-w-md">
+      <div className="mt-4 text-center max-w-md">
         <Typography variant="body2" color="text.secondary">
           {t('faceDetection.instructions')}
         </Typography>
-
-        {/* Debug Information */}
-        <Box className="mt-2 p-2 bg-gray-100 rounded text-left">
-          <Typography variant="caption" display="block">
-            Initialized: {isInitialized ? 'Yes' : 'No'}
-          </Typography>
-          <Typography variant="caption" display="block">
-            Loading: {isLoading ? 'Yes' : 'No'}
-          </Typography>
-          <Typography variant="caption" display="block">
-            Stream Active: {isStreamActive ? 'Yes' : 'No'}
-          </Typography>
-          <Typography variant="caption" display="block">
-            Auto Countdown: {autoCountdownEnabled ? 'Enabled' : 'Disabled'}
-          </Typography>
-          <Typography variant="caption" display="block">
-            Looking at Camera:{' '}
-            {lastDetectionResult?.isLookingAtCamera ? 'Yes' : 'No'}
-          </Typography>
-          <Typography variant="caption" display="block">
-            Video Dimensions: {videoRef.current?.videoWidth || 0} x{' '}
-            {videoRef.current?.videoHeight || 0}
-          </Typography>
-          <Typography variant="caption" display="block">
-            Canvas Dimensions: {canvasRef.current?.width || 0} x{' '}
-            {canvasRef.current?.height || 0}
-          </Typography>
-        </Box>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }
 

@@ -21,59 +21,71 @@ export function CameraAnalysis({ handleSubmit }: CameraAnalysisProps) {
 
   const handlePhotoTaken = (imageData: string, landmarks: FaceLandmark[]) => {
     setPhotoData({ imageData, landmarks });
-    console.log('Photo taken with landmarks:', {
-      imageData: imageData.substring(0, 50) + '...', // Log first 50 chars
-      landmarksCount: landmarks.length,
-      landmarks: landmarks.slice(0, 10), // Log first 10 landmarks as sample
-    });
   };
 
   const handleError = (errorMessage: string) => {
     setError(errorMessage);
-    console.error('Face detection error:', errorMessage);
   };
 
   if (photoData) {
     return (
-      <main className="flex flex-col items-center justify-center bg-white w-full h-full p-4">
-        <div className="p-4">
+      <main className="flex flex-col items-center justify-center bg-white w-full h-full p-6">
+        {/* Page Title */}
+        <div className="mb-6">
           <Typography
             variant="h4"
             fontWeight={600}
             color="text.primary"
             align="center"
+            className="mb-2"
           >
-            {t('faceDetection.title')} - Results
+            {t('cameraAnalysis.resultsTitle')}
+          </Typography>
+          <Typography variant="body1" color="text.secondary" align="center">
+            {t('cameraAnalysis.resultsSubtitle')}
           </Typography>
         </div>
 
         {/* Display captured photo */}
-        <div className="mb-4">
+        <div className="mb-6">
           <img
             src={photoData.imageData}
-            alt="Captured face"
-            className="max-w-md max-h-96 border-2 border-gray-300 rounded-lg"
+            alt={t('cameraAnalysis.capturedPhotoAlt')}
+            className="max-w-lg max-h-96 border-2 border-gray-300 rounded-lg shadow-lg"
             style={{ transform: 'scaleX(-1)' }} // Mirror to match camera view
           />
         </div>
 
-        {/* Display landmark count */}
-        <Typography variant="body1" className="mb-4">
-          Detected {photoData.landmarks.length} facial landmarks
+        {/* Success message */}
+        <Typography
+          variant="body1"
+          color="success.main"
+          className="mb-6 text-center"
+          sx={{ fontWeight: 500 }}
+        >
+          {t('cameraAnalysis.analysisComplete')}
         </Typography>
 
+        {/* Error display if any */}
         {error && (
-          <Typography color="error" className="mb-4">
+          <Typography
+            color="error"
+            className="mb-6 text-center"
+            variant="body2"
+          >
             {error}
           </Typography>
         )}
 
+        {/* Continue button */}
         <DefaultButton
-          text={t('common.nextPage')}
+          text={t('cameraAnalysis.continueButton')}
           handleClick={() => {
-            // You can pass the photo data and landmarks to the next step
-            console.log('Proceeding with face analysis data:', photoData);
             handleSubmit();
+          }}
+          style={{
+            minWidth: '200px',
+            padding: '12px 24px',
           }}
         />
       </main>

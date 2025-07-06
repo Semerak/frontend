@@ -607,7 +607,7 @@ export function useFaceDetection({
   const takePhoto = useCallback(async (): Promise<void> => {
     // Use the most recent detection result from the ref, not the stale state
     const currentDetectionResult = lastDetectionResultRef.current;
-    
+
     if (!videoRef.current || !canvasRef.current || !currentDetectionResult) {
       log('Cannot take photo - missing requirements', {
         hasVideo: !!videoRef.current,
@@ -624,7 +624,7 @@ export function useFaceDetection({
         isLookingAtCamera: currentDetectionResult.isLookingAtCamera,
         confidence: currentDetectionResult.confidence,
       });
-      
+
       const video = videoRef.current;
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
