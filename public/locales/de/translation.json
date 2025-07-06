@@ -47,20 +47,31 @@
     },
     "exitButton": "Analyse beenden"
   },
+  "cameraAnalysis": {
+    "resultsTitle": "Gesichtsanalyse - Ergebnisse",
+    "resultsSubtitle": "Ihr Foto wurde erfolgreich mit erkannten Gesichtsmarkierungen aufgenommen.",
+    "capturedPhotoAlt": "Aufgenommenes Gesicht mit Markierungen",
+    "analysisComplete": "✓ Gesichtsanalyse erfolgreich abgeschlossen",
+    "continueButton": "Weiter zum nächsten Schritt"
+  },
   "faceDetection": {
     "title": "Gesichtsanalyse",
     "initializing": "Gesichtserkennung wird initialisiert...",
-    "error": "Fehler beim Initialisieren der Kamera oder Gesichtserkennung",
-    "notInitialized": "Gesichtserkennung nicht bereit",
-    "countdown": "Foto wird in {{count}} aufgenommen...",
-    "takingPhoto": "Foto wird aufgenommen...",
-    "lookingAtCamera": "Perfekt! Bereit für das Foto",
-    "lookAway": "Bitte schauen Sie direkt in die Kamera",
-    "positionFace": "Positionieren Sie Ihr Gesicht im Kamerabereich",
-    "confidence": "Erkennungsgenauigkeit: {{confidence}}%",
-    "startCamera": "Kamera starten",
-    "takePhoto": "Foto aufnehmen",
+    "startingCamera": "Kamera wird gestartet...",
+    "error": "Fehler bei der Gesichtserkennung aufgetreten",
+    "notInitialized": "Gesichtserkennung nicht initialisiert",
+    "takingPhotoIn": "Foto wird in {{seconds}} aufgenommen...",
+    "takingPhotoNow": "Foto wird jetzt aufgenommen!",
+    "lookingAtCameraAuto": "Schauen Sie in die Kamera - Halten Sie den Blick für den Countdown!",
+    "lookingAtCameraManual": "Schauen Sie in die Kamera - Automatische Aufnahme deaktiviert",
+    "lookDirectly": "Bitte schauen Sie direkt in die Kamera",
+    "positionFace": "Positionieren Sie Ihr Gesicht in der Kamera",
+    "keepLooking": "Weiter in die Kamera schauen",
+    "disableAutoCapture": "Automatische Aufnahme deaktivieren",
+    "enableAutoCapture": "Automatische Aufnahme aktivieren",
+    "cancelCountdown": "Countdown abbrechen",
+    "manualCapture": "Manuelle Aufnahme",
     "stopCamera": "Kamera stoppen",
-    "instructions": "Schauen Sie direkt in die Kamera. Wenn Ihr Gesicht richtig positioniert ist, wird die Anzeige grün und Sie können ein Foto aufnehmen."
+    "instructions": "Schauen Sie direkt in die Kamera. Das System erkennt automatisch, wenn Sie hineinschauen und macht nach einem 3-Sekunden-Countdown ein Foto."
   }
 }

@@ -47,20 +47,31 @@
     },
     "exitButton": "Exit the analysis"
   },
+  "cameraAnalysis": {
+    "resultsTitle": "Face Analysis - Results",
+    "resultsSubtitle": "Your photo has been captured successfully with facial landmarks detected.",
+    "capturedPhotoAlt": "Captured face with landmarks",
+    "analysisComplete": "✓ Face analysis completed successfully",
+    "continueButton": "Continue to Next Step"
+  },
   "faceDetection": {
-    "title": "Face Analysis",
+    "title": "Face Detection",
     "initializing": "Initializing face detection...",
-    "error": "Error initializing camera or face detection",
-    "notInitialized": "Face detection not ready",
-    "countdown": "Taking photo in {{count}}...",
-    "takingPhoto": "Taking photo...",
-    "lookingAtCamera": "Perfect! Ready to take photo",
-    "lookAway": "Please look directly at the camera",
-    "positionFace": "Position your face in the camera view",
-    "confidence": "Detection confidence: {{confidence}}%",
-    "startCamera": "Start Camera",
-    "takePhoto": "Take Photo",
+    "startingCamera": "Starting camera...",
+    "error": "Face detection error occurred",
+    "notInitialized": "Face detection not initialized",
+    "takingPhotoIn": "Taking photo in {{seconds}}...",
+    "takingPhotoNow": "Taking photo now!",
+    "lookingAtCameraAuto": "Looking at camera - Keep looking to start countdown!",
+    "lookingAtCameraManual": "Looking at camera - Auto capture disabled",
+    "lookDirectly": "Please look directly at the camera",
+    "positionFace": "Position your face in the camera",
+    "keepLooking": "Keep looking at camera",
+    "disableAutoCapture": "Disable Auto Capture",
+    "enableAutoCapture": "Enable Auto Capture",
+    "cancelCountdown": "Cancel Countdown",
+    "manualCapture": "Manual Capture",
     "stopCamera": "Stop Camera",
-    "instructions": "Look directly at the camera. When your face is properly positioned, the indicator will turn green and you can take a photo."
+    "instructions": "Look directly at the camera. The system will automatically detect when you're looking and take a photo after a 3-second countdown."
   }
 }
