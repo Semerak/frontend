@@ -1,7 +1,9 @@
 import { Typography } from '@mui/material';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { NavButton } from '~/components/ui/nav-button';
+import { ConsentPopup } from '~/components/consent-popup';
+import { DefaultButton } from '~/components/ui/default-button';
 
 import type { Route } from './+types/welcome';
 
@@ -15,6 +17,28 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Welcome() {
   const { t } = useTranslation();
+  const [showConsentPopup, setShowConsentPopup] = useState(false);
+
+  const handleStartAnalysis = () => {
+    // Always show consent popup when starting analysis
+    setShowConsentPopup(true);
+  };
+
+  const handleConsentAccept = () => {
+    setShowConsentPopup(false);
+    // Proceed to questionnaire after consent
+    window.location.href = '/questionnaire';
+  };
+
+  const handleConsentDecline = () => {
+    setShowConsentPopup(false);
+    // Stay on welcome page after declining
+  };
+
+  const handleConsentClose = () => {
+    // Just close the popup without proceeding
+    setShowConsentPopup(false);
+  };
 
   return (
     <div className="relative w-full h-full min-h-0 overflow-hidden">
@@ -31,9 +55,9 @@ export default function Welcome() {
       <div className="relative z-10 flex flex-col h-full">
         {/* Main Content Area - Button centered */}
         <div className="flex-1 flex items-center justify-center px-6">
-          <NavButton
+          <DefaultButton
             text={t('startPage.startAnalysis')}
-            url="/questionnaire"
+            handleClick={handleStartAnalysis}
             size="xlarge"
           />
         </div>
@@ -61,6 +85,14 @@ export default function Welcome() {
           </Typography>
         </div>
       </div>
+
+      {/* Consent Popup */}
+      <ConsentPopup
+        isOpen={showConsentPopup}
+        onAccept={handleConsentAccept}
+        onDecline={handleConsentDecline}
+        onClose={handleConsentClose}
+      />
     </div>
   );
 }
