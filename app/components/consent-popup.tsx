@@ -121,6 +121,7 @@ export function ConsentPopup({
               component="h1"
               fontWeight={600}
               className="mb-2"
+              color="text.primary"
             >
               {consentData.title}
             </Typography>
@@ -129,6 +130,7 @@ export function ConsentPopup({
               component="h2"
               fontWeight={500}
               className="mb-2"
+              color="text.primary"
             >
               {consentData.subtitle}
             </Typography>
@@ -143,6 +145,7 @@ export function ConsentPopup({
               <Typography
                 variant="body2"
                 className="text-justify leading-relaxed whitespace-pre-line"
+                color="text.primary"
               >
                 {consentData.content}
               </Typography>
@@ -181,7 +184,11 @@ export function ConsentPopup({
                 />
               }
               label={
-                <Typography variant="body2" className="text-sm">
+                <Typography
+                  variant="body2"
+                  className="text-sm"
+                  color="text.primary"
+                >
                   {consentData.consent}
                 </Typography>
               }
