@@ -1,3 +1,4 @@
+import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
@@ -43,6 +44,32 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        {/* Microsoft Clarity - Free Heatmaps & User Analytics for SPAs */}
+        {/* 
+          Setup Instructions:
+          1. Go to https://clarity.microsoft.com/
+          2. Create a free account and new project
+          3. Replace "YOUR_CLARITY_PROJECT_ID" below with your actual Project ID
+          4. That's it! No npm install needed.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(c,l,a,r,i,t,y){
+                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+              })(window, document, "clarity", "script", "s4zq1p8icz");
+              
+              // Optional: Enhanced SPA tracking for Clarity
+              if (typeof window !== 'undefined') {
+                window.addEventListener('load', function() {
+                  console.log('Clarity: Loaded and tracking SPA');
+                });
+              }
+            `,
+          }}
+        />
       </head>
       <body className="min-h-screen relative">
         {children}
@@ -64,6 +91,7 @@ export default function App() {
   return (
     <SnackbarProvider>
       <ThemeProvider theme={theme}>
+        <CssBaseline />
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <ConfigProvider>
