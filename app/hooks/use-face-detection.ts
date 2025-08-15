@@ -326,9 +326,13 @@ export function useFaceDetection({
         if (canvas) {
           const ctx = canvas.getContext('2d');
           if (ctx) {
-            // Set canvas size to match video
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
+            // Get the actual display size of the video element
+            const displayWidth = video.clientWidth;
+            const displayHeight = video.clientHeight;
+
+            // Set canvas size to match the displayed video size
+            canvas.width = displayWidth;
+            canvas.height = displayHeight;
 
             // Clear the canvas FIRST
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -371,12 +375,38 @@ export function useFaceDetection({
           if (canvas) {
             const ctx = canvas.getContext('2d');
             if (ctx) {
-              // Set canvas size to match video for accurate positioning
-              canvas.width = video.videoWidth;
-              canvas.height = video.videoHeight;
+              // Get the actual display size of the video element
+              const videoElement = video;
+              const displayWidth = videoElement.clientWidth;
+              const displayHeight = videoElement.clientHeight;
+
+              // Set canvas size to match the displayed video size (not the actual video resolution)
+              canvas.width = displayWidth;
+              canvas.height = displayHeight;
 
               // Clear previous drawings
               ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+              // Calculate the scaling and cropping for object-cover
+              const videoAspectRatio = video.videoWidth / video.videoHeight;
+              const displayAspectRatio = displayWidth / displayHeight;
+
+              let scaleX: number,
+                scaleY: number,
+                offsetX = 0,
+                offsetY = 0;
+
+              if (videoAspectRatio > displayAspectRatio) {
+                // Video is wider - crop horizontally (our case with 2:3 container)
+                scaleY = displayHeight / video.videoHeight;
+                scaleX = scaleY;
+                offsetX = (video.videoWidth * scaleX - displayWidth) / 2;
+              } else {
+                // Video is taller - crop vertically
+                scaleX = displayWidth / video.videoWidth;
+                scaleY = scaleX;
+                offsetY = (video.videoHeight * scaleY - displayHeight) / 2;
+              }
 
               log('detectFaces: Drawing landmarks on canvas');
 
@@ -394,12 +424,25 @@ export function useFaceDetection({
                   landmark.y >= 0 &&
                   landmark.y <= 1
                 ) {
-                  const x = landmark.x * canvas.width;
-                  const y = landmark.y * canvas.height;
+                  // Convert normalized coordinates to video coordinates, then to display coordinates
+                  const videoX = landmark.x * video.videoWidth;
+                  const videoY = landmark.y * video.videoHeight;
 
-                  ctx.beginPath();
-                  ctx.arc(x, y, 1.5, 0, 2 * Math.PI);
-                  ctx.fill();
+                  // Apply scaling and offset for object-cover cropping
+                  const x = videoX * scaleX - offsetX;
+                  const y = videoY * scaleY - offsetY;
+
+                  // Only draw if the point is visible in the cropped area
+                  if (
+                    x >= 0 &&
+                    x <= canvas.width &&
+                    y >= 0 &&
+                    y <= canvas.height
+                  ) {
+                    ctx.beginPath();
+                    ctx.arc(x, y, 1.5, 0, 2 * Math.PI);
+                    ctx.fill();
+                  }
                 }
               });
 
@@ -428,12 +471,25 @@ export function useFaceDetection({
               ctx.fillStyle = isLookingAtCamera ? '#00aa00' : '#aaaa00';
               keyPoints.forEach((idx) => {
                 if (landmarks[idx]) {
-                  const x = landmarks[idx].x * canvas.width;
-                  const y = landmarks[idx].y * canvas.height;
+                  // Convert normalized coordinates to video coordinates, then to display coordinates
+                  const videoX = landmarks[idx].x * video.videoWidth;
+                  const videoY = landmarks[idx].y * video.videoHeight;
 
-                  ctx.beginPath();
-                  ctx.arc(x, y, 3, 0, 2 * Math.PI);
-                  ctx.fill();
+                  // Apply scaling and offset for object-cover cropping
+                  const x = videoX * scaleX - offsetX;
+                  const y = videoY * scaleY - offsetY;
+
+                  // Only draw if the point is visible in the cropped area
+                  if (
+                    x >= 0 &&
+                    x <= canvas.width &&
+                    y >= 0 &&
+                    y <= canvas.height
+                  ) {
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, 2 * Math.PI);
+                    ctx.fill();
+                  }
                 }
               });
 
@@ -633,12 +689,51 @@ export function useFaceDetection({
         throw new Error('Canvas context not available');
       }
 
-      // Set canvas size to match video
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      // Get the actual display size of the video element
+      const displayWidth = video.clientWidth;
+      const displayHeight = video.clientHeight;
 
-      // Draw video frame to canvas
-      ctx.drawImage(video, 0, 0);
+      // Set canvas size to match the displayed video size (cropped view)
+      canvas.width = displayWidth;
+      canvas.height = displayHeight;
+
+      // Calculate the scaling and cropping for object-cover
+      const videoAspectRatio = video.videoWidth / video.videoHeight;
+      const displayAspectRatio = displayWidth / displayHeight;
+
+      let scaleX: number,
+        scaleY: number,
+        sourceX = 0,
+        sourceY = 0,
+        sourceWidth = video.videoWidth,
+        sourceHeight = video.videoHeight;
+
+      if (videoAspectRatio > displayAspectRatio) {
+        // Video is wider - crop horizontally to fit display
+        scaleY = displayHeight / video.videoHeight;
+        scaleX = scaleY;
+        sourceWidth = displayWidth / scaleX;
+        sourceX = (video.videoWidth - sourceWidth) / 2;
+      } else {
+        // Video is taller - crop vertically to fit display
+        scaleX = displayWidth / video.videoWidth;
+        scaleY = scaleX;
+        sourceHeight = displayHeight / scaleY;
+        sourceY = (video.videoHeight - sourceHeight) / 2;
+      }
+
+      // Draw the cropped video frame to canvas
+      ctx.drawImage(
+        video,
+        sourceX,
+        sourceY,
+        sourceWidth,
+        sourceHeight, // Source rectangle (cropped from video)
+        0,
+        0,
+        displayWidth,
+        displayHeight, // Destination rectangle (full canvas)
+      );
 
       // Draw landmarks on the captured photo using the CURRENT detection result
       if (
@@ -656,7 +751,7 @@ export function useFaceDetection({
           : '#ffff00';
         ctx.lineWidth = 2;
 
-        // Draw ALL face landmarks on the photo using current positions
+        // Draw ALL face landmarks on the photo using current positions with coordinate transformation
         currentDetectionResult.landmarks.forEach((landmark) => {
           if (
             landmark &&
@@ -665,12 +760,20 @@ export function useFaceDetection({
             landmark.y >= 0 &&
             landmark.y <= 1
           ) {
-            const x = landmark.x * canvas.width;
-            const y = landmark.y * canvas.height;
+            // Convert normalized coordinates to video coordinates, then to display coordinates
+            const videoX = landmark.x * video.videoWidth;
+            const videoY = landmark.y * video.videoHeight;
 
-            ctx.beginPath();
-            ctx.arc(x, y, 2, 0, 2 * Math.PI);
-            ctx.fill();
+            // Apply the same transformation used for cropping
+            const x = (videoX - sourceX) * scaleX;
+            const y = (videoY - sourceY) * scaleY;
+
+            // Only draw if the point is visible in the cropped area
+            if (x >= 0 && x <= canvas.width && y >= 0 && y <= canvas.height) {
+              ctx.beginPath();
+              ctx.arc(x, y, 2, 0, 2 * Math.PI);
+              ctx.fill();
+            }
           }
         });
 
@@ -702,12 +805,21 @@ export function useFaceDetection({
         keyLandmarkIndices.forEach((idx) => {
           if (currentDetectionResult.landmarks[idx]) {
             const landmark = currentDetectionResult.landmarks[idx];
-            const x = landmark.x * canvas.width;
-            const y = landmark.y * canvas.height;
 
-            ctx.beginPath();
-            ctx.arc(x, y, 4, 0, 2 * Math.PI);
-            ctx.fill();
+            // Convert normalized coordinates to video coordinates, then to display coordinates
+            const videoX = landmark.x * video.videoWidth;
+            const videoY = landmark.y * video.videoHeight;
+
+            // Apply the same transformation used for cropping
+            const x = (videoX - sourceX) * scaleX;
+            const y = (videoY - sourceY) * scaleY;
+
+            // Only draw if the point is visible in the cropped area
+            if (x >= 0 && x <= canvas.width && y >= 0 && y <= canvas.height) {
+              ctx.beginPath();
+              ctx.arc(x, y, 4, 0, 2 * Math.PI);
+              ctx.fill();
+            }
           }
         });
 
@@ -781,7 +893,7 @@ export function useFaceDetection({
               .then(() => resolve())
               .catch(reject);
           }
-        }, 1000);
+        }, 700);
       });
     },
     [takePhoto, log],

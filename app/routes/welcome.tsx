@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ConsentPopup } from '~/components/consent-popup';
 import { DefaultButton } from '~/components/ui/default-button';
+import { TimeButton } from '~/components/ui/time-button';
 
 import type { Route } from './+types/welcome';
 
