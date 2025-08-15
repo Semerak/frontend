@@ -18,9 +18,17 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         {/* Footer that always stays at the bottom */}
         <footer className="flex-shrink-0 flex justify-center pt-4 pb-8 mt-auto">
           <img
-            src="/beutechful-logo.png"
+            src="/footer_logo.svg"
             alt="Beutechful Logo"
-            className="w-1/3 sm:w-1/4 md:w-1/5 max-w-44"
+            className="
+              object-contain
+              portrait:w-1/2 portrait:max-w-72 portrait:h-18
+              landscape:w-1/2 landscape:max-w-66 landscape:h-auto
+              sm:portrait:w-3/5 sm:portrait:max-w-84 sm:portrait:h-21
+              md:portrait:w-3/4 md:portrait:max-w-96 md:portrait:h-24
+              lg:landscape:w-2/5
+              xl:landscape:w-1/3
+            "
           />
         </footer>
       </div>
