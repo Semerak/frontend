@@ -89,10 +89,10 @@ export function ConsentPopup({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-hidden relative shadow-2xl">
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-[5%]">
+      <div className="bg-white rounded-lg w-full h-full max-w-none max-h-none overflow-hidden relative shadow-2xl flex flex-col landscape:max-w-[60vh] landscape:h-[90vh] landscape:w-auto">
         {/* Close Button */}
-        <div className="w-full z-10 flex justify-end">
+        <div className="w-full z-10 flex justify-end flex-shrink-0 p-2">
           <IconButton
             onClick={handleClose}
             className="z-10"
@@ -113,63 +113,72 @@ export function ConsentPopup({
         </div>
 
         {/* Content */}
-        <div className="p-6 pt-0">
+        <div className="p-6 pt-0 flex-1 flex flex-col min-h-0">
           {/* Header */}
-          <div className="text-center mb-6">
+          <div className="text-center mb-6 flex-shrink-0">
             <Typography
-              variant="h5"
+              variant="h4"
               component="h1"
               fontWeight={600}
-              className="mb-2"
+              className="mb-4"
               color="text.primary"
             >
               {consentData.title}
             </Typography>
             <Typography
-              variant="h6"
+              variant="h5"
               component="h2"
               fontWeight={500}
-              className="mb-2"
+              className="mb-4"
               color="text.primary"
             >
               {consentData.subtitle}
             </Typography>
-            <Typography variant="body2" color="text.secondary" className="mb-4">
+            <Typography variant="h6" color="text.secondary" className="mb-6">
               {consentData.date}
             </Typography>
           </div>
 
           {/* Scrollable Content */}
-          <div className="max-h-64 overflow-y-auto mb-4 px-2">
+          <div className="flex-1 overflow-y-auto mb-6 px-2 min-h-0">
             {!showPdf ? (
               <Typography
-                variant="body2"
+                variant="body1"
                 className="text-justify leading-relaxed whitespace-pre-line"
                 color="text.primary"
+                sx={{ fontSize: '1.1rem', lineHeight: 1.6 }}
               >
                 {consentData.content}
               </Typography>
             ) : (
               <iframe
-                src="/legal/Datenschutzerklärung.pdf"
-                className="w-full h-64 border-0"
+                src="/legal/Datenschutzerklärung.pdf#toolbar=0&navpanes=0&scrollbar=0&statusbar=0&messages=0&scrollbar=0&view=FitH"
+                className="w-full h-full border-0"
                 title="Datenschutzerklärung"
+                style={{
+                  overflow: 'hidden',
+                  border: 'none',
+                  outline: 'none',
+                }}
               />
             )}
           </div>
 
           {/* Toggle Button */}
-          <div className="text-center mb-4">
+          <div className="text-center mb-6 flex-shrink-0">
             <button
               onClick={togglePdfView}
-              className="text-sm text-blue-600 hover:text-blue-800 underline"
+              className="text-base underline py-2 px-4"
+              style={{
+                color: theme.palette.primary.main,
+              }}
             >
               {!showPdf ? 'Datenschutzerklärung anzeigen' : 'Zurück zum Text'}
             </button>
           </div>
 
           {/* Checkbox */}
-          <div className="mb-6">
+          <div className="mb-8 flex-shrink-0">
             <FormControlLabel
               control={
                 <Checkbox
@@ -180,13 +189,14 @@ export function ConsentPopup({
                     '&.Mui-checked': {
                       color: 'primary.main',
                     },
+                    transform: 'scale(1.2)',
                   }}
                 />
               }
               label={
                 <Typography
-                  variant="body2"
-                  className="text-sm"
+                  variant="body1"
+                  className="text-base ml-2"
                   color="text.primary"
                 >
                   {consentData.consent}
@@ -196,12 +206,13 @@ export function ConsentPopup({
           </div>
 
           {/* Buttons */}
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col sm:flex-row gap-4 flex-shrink-0">
             <DefaultButton
               text={consentData.buttons.accept}
               handleClick={handleAccept}
               disabled={!isChecked}
               fullWidth
+              size="large"
               style={{
                 backgroundColor: isChecked
                   ? theme.palette.primary.main
@@ -209,12 +220,15 @@ export function ConsentPopup({
                 color: isChecked
                   ? theme.palette.background.default
                   : theme.palette.text.secondary,
+                padding: '12px 24px',
+                fontSize: '1.1rem',
               }}
             />
             <DefaultButton
               text={consentData.buttons.decline}
               handleClick={handleDecline}
               fullWidth
+              size="large"
               style={{
                 backgroundColor: isChecked
                   ? theme.palette.primary.main
@@ -222,6 +236,8 @@ export function ConsentPopup({
                 color: isChecked
                   ? theme.palette.background.default
                   : theme.palette.text.secondary,
+                padding: '12px 24px',
+                fontSize: '1.1rem',
               }}
             />
           </div>
