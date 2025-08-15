@@ -101,89 +101,94 @@ export function FaceDetectionComponent({
       </Typography>
 
       {/* Camera Preview */}
-      <div className="relative mb-4">
-        <video
-          ref={videoRef}
-          className="border-2 border-gray-300 rounded-lg w-full h-auto bg-gray-100"
-          autoPlay
-          playsInline
-          muted
+      <div className="relative mb-4 mt-8">
+        {/* Portrait container (2/3 aspect ratio) with horizontal cropping */}
+        <div
+          className="relative overflow-hidden border-2 border-gray-300 rounded-lg bg-gray-100"
           style={{
-            transform: 'scaleX(-1)', // Mirror effect - keep this as it's not available in Tailwind
-            maxWidth: '640px',
-            maxHeight: '480px',
-            minWidth: '320px',
-            minHeight: '240px',
+            width: '66.666vw',
+            maxWidth:
+              window.innerWidth > window.innerHeight ? '200px' : undefined, // 200px only for landscape screens
+            aspectRatio: '2/3', // Portrait orientation
           }}
-        />
-        <canvas
-          ref={canvasRef}
-          className="absolute top-0 left-0 pointer-events-none w-full h-auto"
-          style={{
-            transform: 'scaleX(-1)', // Mirror effect for consistency - keep this as it's not available in Tailwind
-            maxWidth: '640px',
-            maxHeight: '480px',
-            minWidth: '320px',
-            minHeight: '240px',
-          }}
-        />
-
-        {/* Loading indicator when camera is starting */}
-        {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-200 rounded-lg">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
-            <Typography variant="body2" className="ml-2" color="text.secondary">
-              {t('faceDetection.startingCamera')}
-            </Typography>
-          </div>
-        )}
-
-        {/* Countdown Overlay */}
-        {countdown !== null && (
-          <div className="absolute inset-0 flex items-center justify-center rounded-lg">
-            {/* Dark overlay that allows camera footage to show through */}
-            <div className="absolute inset-0 bg-black opacity-60 rounded-lg" />
-
-            {/* Countdown number */}
-            <Typography
-              variant="h1"
-              color="white"
-              fontWeight="bold"
-              className={`relative z-10 text-center ${
-                countdown > 0 ? 'animate-pulse' : ''
-              }`}
-              sx={{
-                textShadow:
-                  '0 0 30px rgba(0,0,0,0.8), 0 0 10px rgba(255,255,255,0.5)',
-                fontSize:
-                  countdown > 0
-                    ? { xs: '5rem', sm: '7rem', md: '9rem' }
-                    : { xs: '3rem', sm: '5rem', md: '6rem' },
-              }}
-            >
-              {countdown > 0 ? countdown : '📸'}
-            </Typography>
-
-            {/* Additional text for context */}
-            {countdown > 0 && (
+        >
+          <video
+            ref={videoRef}
+            className="w-full h-full object-cover"
+            autoPlay
+            playsInline
+            muted
+            style={{
+              transform: 'scaleX(-1)', // Mirror effect - keep this as it's not available in Tailwind
+            }}
+          />
+          <canvas
+            ref={canvasRef}
+            className="absolute top-0 left-0 pointer-events-none w-full h-full"
+            style={{
+              transform: 'scaleX(-1)', // Mirror effect for consistency - keep this as it's not available in Tailwind
+            }}
+          />
+          Loading indicator when camera is starting
+          {isLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-200 rounded-lg">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
               <Typography
-                variant="h6"
+                variant="body2"
+                className="ml-2"
+                color="text.secondary"
+              >
+                {t('faceDetection.startingCamera')}
+              </Typography>
+            </div>
+          )}
+          {/* Countdown Overlay */}
+          {countdown !== null && (
+            <div className="absolute inset-0 flex items-center justify-center rounded-lg">
+              {/* Dark overlay that allows camera footage to show through */}
+              <div className="absolute inset-0 bg-black opacity-60 rounded-lg" />
+
+              {/* Countdown number */}
+              <Typography
+                variant="h1"
                 color="white"
-                className="absolute bottom-16 left-1/2 transform -translate-x-1/2 text-center"
+                fontWeight="bold"
+                className={`relative z-10 text-center ${
+                  countdown > 0 ? 'animate-pulse' : ''
+                }`}
                 sx={{
-                  textShadow: '0 0 10px rgba(0,0,0,0.8)',
-                  fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' },
+                  textShadow:
+                    '0 0 30px rgba(0,0,0,0.8), 0 0 10px rgba(255,255,255,0.5)',
+                  fontSize:
+                    countdown > 0
+                      ? { xs: '4rem', sm: '5rem', md: '6rem' }
+                      : { xs: '2.5rem', sm: '3rem', md: '4rem' },
                 }}
               >
-                {t('faceDetection.keepLooking')}
+                {countdown > 0 ? countdown : '📸'}
               </Typography>
-            )}
-          </div>
-        )}
+
+              {/* Additional text for context */}
+              {countdown > 0 && (
+                <Typography
+                  variant="h6"
+                  color="white"
+                  className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-center"
+                  sx={{
+                    textShadow: '0 0 10px rgba(0,0,0,0.8)',
+                    fontSize: { xs: '0.9rem', sm: '1rem', md: '1.25rem' },
+                  }}
+                >
+                  {t('faceDetection.keepLooking')}
+                </Typography>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Status Message */}
-      <div
+      {/* <div
         className={`mb-4 w-full max-w-md rounded-lg p-3 flex items-center ${
           getStatusColor() === 'error'
             ? 'bg-red-50 border border-red-200 text-red-700'
@@ -200,7 +205,7 @@ export function FaceDetectionComponent({
         <Typography variant="body2" className="text-center flex-1">
           {getStatusMessage()}
         </Typography>
-      </div>
+      </div> */}
 
       {/* Control Buttons */}
       <div className="flex gap-4 w-full max-w-md">
