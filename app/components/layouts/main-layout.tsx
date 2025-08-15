@@ -2,7 +2,7 @@ import { LanguagePicker } from '../ui/language-picker';
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen h-screen flex flex-col">
+    <div className="h-dvh flex flex-col">
       {/* Language picker fixed in top-left corner */}
       <div className="absolute top-4 left-4 z-20 w-18">
         <LanguagePicker />
