@@ -94,6 +94,8 @@ export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
     coverageFilter.length > 0 ||
     categoryFilter.length > 0 ||
     othersFilter.length > 0;
+  const isLargeScreen = window.innerWidth >= 1024;
+  const minWidth = isLargeScreen ? 240 : 100;
   return (
     <>
       {/* Filter Dropdowns */}
@@ -101,7 +103,7 @@ export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
         {/* Filter Dropdowns Row */}
         <div className="flex gap-3 justify-center items-center">
           {' '}
-          <FormControl size="small" sx={{ minWidth: 120 }}>
+          <FormControl size="small" sx={{ minWidth: minWidth }}>
             <Select
               multiple
               value={coverageFilter}
@@ -162,7 +164,7 @@ export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
               ))}
             </Select>
           </FormControl>
-          <FormControl size="small" sx={{ minWidth: 120 }}>
+          <FormControl size="small" sx={{ minWidth: minWidth }}>
             <Select
               multiple
               value={categoryFilter}
@@ -223,7 +225,7 @@ export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
               ))}
             </Select>
           </FormControl>
-          <FormControl size="small" sx={{ minWidth: 120 }}>
+          <FormControl size="small" sx={{ minWidth: minWidth }}>
             <Select
               multiple
               value={othersFilter}

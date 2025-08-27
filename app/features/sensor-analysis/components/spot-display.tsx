@@ -42,17 +42,24 @@ export function SpotDisplay({
       );
     }
   }, [data, number, methods]);
-
+  const size_rem =
+    typeof window !== 'undefined' && window.innerWidth >= 1024
+      ? '2rem'
+      : '1.5rem';
   return (
     <div className="flex flex-row items-center gap-4">
       <span
-        className="w-9 h-9 rounded-full border border-gray-300 transition-shadow duration-200 group-hover:shadow-lg flex items-center justify-center"
+        className="
+          rounded-full border border-gray-300 transition-shadow duration-200 group-hover:shadow-lg flex items-center justify-center
+          w-9 h-9
+          lg:w-18 lg:h-18
+        "
         style={{ backgroundColor: !data ? color : data.hex_value }}
       >
         {isPending ? (
-          <CircularProgress color="secondary" size="1.5rem" />
+          <CircularProgress color="secondary" size={size_rem} />
         ) : data?.hex_value ? (
-          <CheckIcon htmlColor="background" />
+          <CheckIcon htmlColor="background" style={{ fontSize: size_rem }} />
         ) : null}
       </span>
       <DefaultButton

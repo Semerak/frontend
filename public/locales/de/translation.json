@@ -45,6 +45,7 @@
         "available": "Verfügbar"
       }
     },
+    "qrCodeInstructions": "QR-Code scannen & Ergebnisse sofort aufs Handy erhalten",
     "exitButton": "Analyse beenden"
   },
   "cameraAnalysis": {

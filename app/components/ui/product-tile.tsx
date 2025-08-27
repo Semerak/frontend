@@ -1,9 +1,12 @@
 import { Typography } from '@mui/material';
 import React from 'react';
 
+import { SmallLarge } from '../layouts/small-large';
+
 import AvailabilityLight, {
   type AvailabilityStatus,
 } from './availability-light';
+import { TypographyMultiSize } from './typograthy-multi-size';
 
 interface ProductTileProps {
   image: string;
@@ -73,41 +76,49 @@ export function ProductTileHorizontal({
   availability,
 }: ProductTileProps) {
   return (
-    <div className="flex flex-row items-center bg-white rounded-xl shadow p-4 w-full max-w-2xl min-h-[120px]">
+    <div className="flex flex-row items-center bg-white rounded-xl shadow-md p-4 w-full max-w-5/6 min-h-[120px]">
       {/* Image */}
-      <div className="flex-shrink-0 flex items-center justify-center w-24 h-28 bg-gray-50 rounded-lg mr-4">
-        <img src={image} alt={brand} className="object-contain h-24 w-16" />
+      <div className="flex-shrink-0 flex items-center justify-center w-24  bg-gray-50 rounded-lg mr-4">
+        <img src={image} alt={brand} className="object-contain h-full w-5/6" />
       </div>
       {/* Details */}
       <div className="flex flex-1 flex-col justify-between h-full">
         <div>
-          <Typography
-            variant="body1"
-            fontWeight={600}
+          <TypographyMultiSize
+            text={brand}
+            variant_small="body1"
+            variant_large="h4"
+            fontWeight={700}
             color="text.primary"
             className="mb-2"
-          >
-            {brand}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" className="mb-1">
-            {description}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" className="italic">
-            {type}
-          </Typography>
+          />
+          <TypographyMultiSize
+            text={description}
+            variant_small="body2"
+            variant_large="h5"
+            color="text.secondary"
+            className="mb-1"
+          />
+          <TypographyMultiSize
+            text={type}
+            variant_small="body2"
+            variant_large="h5"
+            color="text.secondary"
+            className="italic"
+          />
         </div>
         <div className="flex items-center justify-between mt-4">
           <div />
           <div className="flex items-center">
             {availability && <AvailabilityLight status={availability} />}
-            <Typography
-              variant="body1"
+            <TypographyMultiSize
+              text={price}
+              variant_small="body1"
+              variant_large="h5"
               fontWeight={600}
               color="text.primary"
               className="ml-2"
-            >
-              {price}
-            </Typography>
+            />
           </div>
         </div>
       </div>
@@ -133,16 +144,16 @@ export function ProductTileHorizontalRanked({
 
   return (
     <div className="flex flex-row items-center w-full">
-      <div className="w-16 flex-shrink-0 flex justify-center items-center mr-2">
-        <Typography
-          variant="h5"
+      <div className="w-1/6 flex-shrink-0 flex justify-center items-center mr-2">
+        <TypographyMultiSize
+          text={getOrdinal(rank)}
+          variant_small="h6"
+          variant_large="h3"
           fontWeight={700}
           color="text.primary"
           className="text-black"
           style={{ minWidth: 40, textAlign: 'center' }}
-        >
-          {getOrdinal(rank)}
-        </Typography>
+        />
       </div>
       <ProductTileHorizontal
         image={image}

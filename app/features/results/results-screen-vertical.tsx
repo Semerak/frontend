@@ -2,10 +2,13 @@ import { Typography } from '@mui/material';
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { SmallLarge } from '~/components/layouts/small-large';
 import { NavButton } from '~/components/ui/nav-button';
 import ProductFilters, {
   type FilterState,
 } from '~/components/ui/product-filters';
+import { QRCodeBanner } from '~/components/ui/qr-code-banner';
+import { TypographyMultiSize } from '~/components/ui/typograthy-multi-size';
 
 import { ProductTileHorizontalRanked } from '../../components/ui/product-tile';
 
@@ -114,14 +117,14 @@ export function ResultsScreenVertical({
       <div className="flex-shrink-0">
         <div className="flex flex-col items-center">
           {/* Top Matches Title - Fixed */}
-          <Typography
-            variant="h3"
+          <TypographyMultiSize
+            text={t('results.title')}
+            variant_small="h4"
+            variant_large="h2"
             fontWeight={700}
             color="text.primary"
             className="mt-6 mb-4 pb-4"
-          >
-            {t('results.title')}
-          </Typography>
+          />
           <ProductFilters onFilterChange={handleFilterChange} />
         </div>
       </div>
@@ -130,7 +133,7 @@ export function ResultsScreenVertical({
       <div className="flex flex-col flex-1 min-h-0">
         {/* Scrollable product list */}
         <div className="flex-1 min-h-0 overflow-auto flex justify-center">
-          <div className="flex flex-col gap-4 pb-4 w-full max-w-3xl">
+          <div className="flex flex-col gap-4 pb-4 w-full max-w-9/10">
             {filteredMatches.slice(0, 3).map((match, index) => (
               <div key={index} className="flex-shrink-0">
                 <ProductTileHorizontalRanked
@@ -146,6 +149,12 @@ export function ResultsScreenVertical({
             ))}
           </div>
         </div>
+
+        {/* QR code link */}
+        <SmallLarge
+          child_large={<QRCodeBanner link="https://beautechful.com" />}
+          child_small={<div />}
+        />
 
         {/* Fixed footer button - always visible */}
         <div className="flex justify-center mt-4 mb-2 flex-shrink-0">

@@ -1,6 +1,6 @@
 import { Typography } from '@mui/material';
 
-import { DefaultButton } from 'app/components/ui/default-button';
+import { TimeButton } from '~/components/ui/time-button';
 
 interface QuestionnaireSummaryProps {
   onSubmit: () => void;
@@ -19,7 +19,13 @@ export function QuestionnaireSummary({ onSubmit }: QuestionnaireSummaryProps) {
           Thank you for completing the questionnaire!
         </Typography>
       </div>
-      <DefaultButton text="Submit" handleClick={onSubmit} />
+      <TimeButton
+        text="Submit"
+        handleClick={onSubmit}
+        autoPress={true}
+        size="xlarge"
+        timeDelay={3000}
+      />
     </main>
   );
 }

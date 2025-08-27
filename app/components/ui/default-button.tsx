@@ -1,3 +1,4 @@
+import { useMediaQuery } from '@mui/material';
 import Button from '@mui/material/Button';
 import type { ButtonHTMLAttributes } from 'react';
 
@@ -20,6 +21,14 @@ export function DefaultButton({
   size = 'medium',
   fullWidth = false,
 }: DefaultButtonProps) {
+  const isLargeScreen = useMediaQuery('(min-width:1000px)');
+  if (isLargeScreen) {
+    if (size === 'small') {
+      size = 'large';
+    } else {
+      size = 'xlarge';
+    }
+  }
   const getXlButtonStyle = () => {
     if (size !== 'xlarge') return {};
 

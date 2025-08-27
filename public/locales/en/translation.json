@@ -45,6 +45,7 @@
         "available": "Available"
       }
     },
+    "qrCodeInstructions": "QR code & get results instantly on your phone",
     "exitButton": "Exit the analysis"
   },
   "cameraAnalysis": {

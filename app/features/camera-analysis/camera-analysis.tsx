@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FaceDetectionComponent } from 'app/components/face-detection/face-detection-component';
-import { DefaultButton } from 'app/components/ui/default-button';
+import { QuestionnaireTitle } from '~/components/ui/questionnaire-title';
 import { TimeButton } from '~/components/ui/time-button';
 
 import type { FaceLandmark } from '../../hooks/use-face-detection';
@@ -32,20 +32,10 @@ export function CameraAnalysis({ handleSubmit }: CameraAnalysisProps) {
     return (
       <main className="flex flex-col items-center justify-center bg-white w-full h-full p-6">
         {/* Page Title */}
-        <div className="mb-6">
-          <Typography
-            variant="h4"
-            fontWeight={600}
-            color="text.primary"
-            align="center"
-            className="mb-2"
-          >
-            {t('cameraAnalysis.resultsTitle')}
-          </Typography>
-          <Typography variant="body1" color="text.secondary" align="center">
-            {t('cameraAnalysis.resultsSubtitle')}
-          </Typography>
-        </div>
+        <QuestionnaireTitle
+          title={t('cameraAnalysis.resultsTitle')}
+          subtitle={t('cameraAnalysis.resultsSubtitle')}
+        />
 
         {/* Display captured photo - matching camera preview */}
         <div className="mb-6">
