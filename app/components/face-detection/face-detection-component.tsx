@@ -6,6 +6,7 @@ import {
   useFaceDetection,
   type FaceLandmark,
 } from '../../hooks/use-face-detection';
+import { QuestionnaireTitle } from '../ui/questionnaire-title';
 
 interface FaceDetectionComponentProps {
   onPhotoTaken: (imageData: string, landmarks: FaceLandmark[]) => void;
@@ -90,16 +91,7 @@ export function FaceDetectionComponent({
   return (
     <div className="flex flex-col items-center justify-center w-full h-full p-4">
       {/* Title */}
-      <Typography
-        variant="h4"
-        fontWeight={600}
-        color="text.primary"
-        align="center"
-        className="mb-4"
-      >
-        {t('faceDetection.title')}
-      </Typography>
-
+      <QuestionnaireTitle title={t('faceDetection.title')} />
       {/* Camera Preview */}
       <div className="relative mb-4 mt-8">
         {/* Portrait container (2/3 aspect ratio) with horizontal cropping */}
