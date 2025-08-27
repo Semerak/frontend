@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { FaceDetectionComponent } from 'app/components/face-detection/face-detection-component';
 import { DefaultButton } from 'app/components/ui/default-button';
+import { TimeButton } from '~/components/ui/time-button';
 
 import type { FaceLandmark } from '../../hooks/use-face-detection';
 
@@ -46,13 +47,19 @@ export function CameraAnalysis({ handleSubmit }: CameraAnalysisProps) {
           </Typography>
         </div>
 
-        {/* Display captured photo */}
+        {/* Display captured photo - matching camera preview */}
         <div className="mb-6">
           <img
             src={photoData.imageData}
             alt={t('cameraAnalysis.capturedPhotoAlt')}
-            className="max-w-lg max-h-96 border-2 border-gray-300 rounded-lg shadow-lg"
-            style={{ transform: 'scaleX(-1)' }} // Mirror to match camera view
+            className="border-2 border-gray-300 rounded-lg shadow-lg object-cover"
+            style={{
+              transform: 'scaleX(-1)', // Mirror to match camera view
+              width: '66.666vw',
+              maxWidth:
+                window.innerWidth > window.innerHeight ? '200px' : undefined, // 200px only for landscape screens
+              aspectRatio: '2/3', // Same as camera preview
+            }}
           />
         </div>
 
@@ -78,7 +85,7 @@ export function CameraAnalysis({ handleSubmit }: CameraAnalysisProps) {
         )}
 
         {/* Continue button */}
-        <DefaultButton
+        {/* <DefaultButton
           text={t('cameraAnalysis.continueButton')}
           handleClick={() => {
             handleSubmit();
@@ -87,6 +94,14 @@ export function CameraAnalysis({ handleSubmit }: CameraAnalysisProps) {
             minWidth: '200px',
             padding: '12px 24px',
           }}
+        /> */}
+        <TimeButton
+          text={t('cameraAnalysis.continueButton')}
+          handleClick={() => {
+            handleSubmit();
+          }}
+          timeDelay={2000}
+          autoPress={true}
         />
       </main>
     );
