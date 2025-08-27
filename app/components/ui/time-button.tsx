@@ -110,7 +110,7 @@ export function TimeButton({
   // Create overlay style for the darkening effect
   const getBorderRadius = () => {
     if (size === 'xlarge') return '20px';
-    return '4px'; // Material-UI default border radius
+    return '4px'; // Material-UI default border radius for contained buttons
   };
 
   const overlayStyle: React.CSSProperties = {
