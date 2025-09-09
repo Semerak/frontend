@@ -32,9 +32,12 @@ export function SensorAnalysis({
     <main className="flex flex-col items-center justify-center">
       <ColorSensorProvider>
         {/* Title */}
-        <QuestionnaireTitle title={t('sensorAnalysis.title')} />
+        <QuestionnaireTitle
+          title={t('sensorAnalysis.title')}
+          subtitle={t('sensorAnalysis.instruction')}
+        />
 
-        <div className="flex flex-row items-center justify-evenly h-full">
+        <div className="flex flex-row items-center justify-evenly h-full mb-12">
           {/* Image */}
           <div className="rounded-3xl w-3/5 overflow-hidden justify-center flex h-full">
             <img
@@ -49,41 +52,34 @@ export function SensorAnalysis({
             <SpotDisplay
               questionnaireIndex={questionnaireIndex}
               number={1}
+              text={t('sensorAnalysis.spot1')}
               color="background.paper"
+              focus={spotValues.length === 0}
             />
             <SpotDisplay
               questionnaireIndex={questionnaireIndex}
               number={2}
+              text={t('sensorAnalysis.spot2')}
               color="background.paper"
+              disabled={spotValues.length < 1 && !spotValues[0]}
+              focus={spotValues.length === 1}
             />
             <SpotDisplay
               questionnaireIndex={questionnaireIndex}
               number={3}
+              text={t('sensorAnalysis.spot3')}
               color="background.paper"
+              disabled={spotValues.length < 2 && !spotValues[1]}
+              focus={spotValues.length === 2}
             />
           </div>
-        </div>
-
-        {/* Instruction */}
-        <div className=" m-4 mt-8 mb-2 text-center">
-          <SmallLarge
-            child_small={
-              <Typography variant="body1" fontWeight={400} color="gray">
-                {t('sensorAnalysis.instruction')}
-              </Typography>
-            }
-            child_large={
-              <Typography variant="h4" fontWeight={600} color="gray" m={8}>
-                {t('sensorAnalysis.instruction')}
-              </Typography>
-            }
-          />
         </div>
 
         <DefaultButton
           text={t('common.nextPage')}
           handleClick={() => handleClick(QuestinnairePages.QuestionScreen)}
           disabled={!allSpotsScanned}
+          focus={allSpotsScanned}
         />
       </ColorSensorProvider>
     </main>

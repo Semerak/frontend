@@ -17,6 +17,9 @@
   "sensorAnalysis": {
     "title": "Sensor-Analyse",
     "spot": "Scanne Stelle",
+    "spot1": "STIRN Scannen",
+    "spot2": "BACKE Scannen",
+    "spot3": "HALS Scannen",
     "instruction": "Platziere den Sensor an drei verschiedenen Stellen deines Gesichts"
   },
   "results": {
@@ -31,7 +34,7 @@
       },
       "category": "Kategorie",
       "categoryOptions": {
-        "bb-cream-cc-cream": "BB-Cream & CC-Cream",
+        "bb-cream-cc-cream": "BB-Cream and CC-Cream",
         "concealer": "concealer",
         "foundation": "foundation",
         "highlighter": "highlighter",
