@@ -1,9 +1,7 @@
-import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { DefaultButton } from 'app/components/ui/default-button';
 import { QuestinnairePages } from 'app/types/pages-enum';
-import { SmallLarge } from '~/components/layouts/small-large';
 import { QuestionnaireTitle } from '~/components/ui/questionnaire-title';
 import { ColorSensorProvider } from '~/context/color-sensor';
 import { useMainFormContext } from '~/context/main-form-context';

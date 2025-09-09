@@ -24,7 +24,7 @@ export function QuestionnaireSummary({ onSubmit }: QuestionnaireSummaryProps) {
         handleClick={onSubmit}
         autoPress={true}
         size="xlarge"
-        timeDelay={3000}
+        timeDelay={1} // imediately submit
       />
     </main>
   );
