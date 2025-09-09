@@ -16,6 +16,8 @@ interface SpotDisplayProps {
   color: string;
   text?: string;
   disabled?: boolean;
+  focus?: boolean;
+  focusTimeout?: number;
   onClick?: () => void;
 }
 
@@ -25,6 +27,8 @@ export function SpotDisplay({
   color,
   text,
   disabled,
+  focus = false,
+  focusTimeout = 3000,
 }: SpotDisplayProps) {
   const { t } = useTranslation();
   const { methods } = useMainFormContext();
@@ -72,6 +76,8 @@ export function SpotDisplay({
         handleClick={handleClick}
         fullWidth={true}
         disabled={disabled || isPending}
+        focus={focus}
+        focusTimeout={focusTimeout}
       />
     </div>
   );

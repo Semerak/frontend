@@ -54,6 +54,7 @@ export function SensorAnalysis({
               number={1}
               text={t('sensorAnalysis.spot1')}
               color="background.paper"
+              focus={spotValues.length === 0}
             />
             <SpotDisplay
               questionnaireIndex={questionnaireIndex}
@@ -61,6 +62,7 @@ export function SensorAnalysis({
               text={t('sensorAnalysis.spot2')}
               color="background.paper"
               disabled={spotValues.length < 1 && !spotValues[0]}
+              focus={spotValues.length === 1}
             />
             <SpotDisplay
               questionnaireIndex={questionnaireIndex}
@@ -68,6 +70,7 @@ export function SensorAnalysis({
               text={t('sensorAnalysis.spot3')}
               color="background.paper"
               disabled={spotValues.length < 2 && !spotValues[1]}
+              focus={spotValues.length === 2}
             />
           </div>
         </div>
@@ -76,6 +79,7 @@ export function SensorAnalysis({
           text={t('common.nextPage')}
           handleClick={() => handleClick(QuestinnairePages.QuestionScreen)}
           disabled={!allSpotsScanned}
+          focus={allSpotsScanned}
         />
       </ColorSensorProvider>
     </main>
