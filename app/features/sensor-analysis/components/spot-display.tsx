@@ -14,6 +14,8 @@ interface SpotDisplayProps {
   questionnaireIndex: number;
   number: number;
   color: string;
+  text?: string;
+  disabled?: boolean;
   onClick?: () => void;
 }
 
@@ -21,6 +23,8 @@ export function SpotDisplay({
   questionnaireIndex,
   number,
   color,
+  text,
+  disabled,
 }: SpotDisplayProps) {
   const { t } = useTranslation();
   const { methods } = useMainFormContext();
@@ -53,6 +57,7 @@ export function SpotDisplay({
           rounded-full border border-gray-300 transition-shadow duration-200 group-hover:shadow-lg flex items-center justify-center
           w-9 h-9
           lg:w-18 lg:h-18
+          shrink-0
         "
         style={{ backgroundColor: !data ? color : data.hex_value }}
       >
@@ -63,8 +68,10 @@ export function SpotDisplay({
         ) : null}
       </span>
       <DefaultButton
-        text={`${t('sensorAnalysis.spot')} ${number}`}
+        text={text || `${t('sensorAnalysis.spot')} ${number}`}
         handleClick={handleClick}
+        fullWidth={true}
+        disabled={disabled || isPending}
       />
     </div>
   );

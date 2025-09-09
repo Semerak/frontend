@@ -1,8 +1,6 @@
 import { Typography } from '@mui/material';
 import React from 'react';
 
-import { SmallLarge } from '../layouts/small-large';
-
 import AvailabilityLight, {
   type AvailabilityStatus,
 } from './availability-light';
