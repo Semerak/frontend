@@ -189,28 +189,33 @@ export function ConsentPopup({
                     '&.Mui-checked': {
                       color: 'primary.main',
                     },
-                    transform: 'scale(1.2)',
+                    '& .MuiSvgIcon-root': {
+                      fontSize: '3rem',
+                    },
                   }}
                 />
               }
               label={
                 <Typography
-                  variant="body1"
-                  className="text-base ml-2"
+                  variant="h6"
+                  className="text-base ml-4"
                   color="text.primary"
                 >
                   {consentData.consent}
                 </Typography>
               }
+              sx={{
+                alignItems: 'flex-start',
+                margin: 0,
+              }}
             />
           </div>
 
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 flex-shrink-0">
             <DefaultButton
-              text={consentData.buttons.accept}
-              handleClick={handleAccept}
-              disabled={!isChecked}
+              text={consentData.buttons.decline}
+              handleClick={handleDecline}
               fullWidth
               size="large"
               style={{
@@ -225,8 +230,9 @@ export function ConsentPopup({
               }}
             />
             <DefaultButton
-              text={consentData.buttons.decline}
-              handleClick={handleDecline}
+              text={consentData.buttons.accept}
+              handleClick={handleAccept}
+              disabled={!isChecked}
               fullWidth
               size="large"
               style={{

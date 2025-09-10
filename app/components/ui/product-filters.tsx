@@ -8,7 +8,7 @@ import {
   Chip,
   Box,
 } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export interface FilterState {
@@ -25,7 +25,9 @@ export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
   const { t } = useTranslation();
   const [coverageFilter, setCoverageFilter] = useState<string[]>([]);
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
-  const [othersFilter, setOthersFilter] = useState<string[]>([]);
+  const [othersFilter, setOthersFilter] = useState<string[]>([
+    t('results.filters.otherOptions.available'),
+  ]);
 
   const coverageOptions = [
     t('results.filters.coverageOptions.full'),
@@ -45,6 +47,16 @@ export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
     t('results.filters.otherOptions.natural'),
     t('results.filters.otherOptions.available'),
   ];
+
+  // Initialize filters with default "Available" filter
+  useEffect(() => {
+    onFilterChange({
+      coverage: coverageFilter,
+      category: categoryFilter,
+      others: othersFilter,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCoverageChange = (event: any) => {
     const value = event.target.value;
