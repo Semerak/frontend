@@ -24,6 +24,8 @@
   },
   "results": {
     "title": "Deine Top Matches",
+    "bestMatch": "Beste Übereinstimmung",
+    "feedback": "Hilf uns, uns zu verbessern",
     "filters": {
       "clear": "Alle Filter löschen",
       "coverage": "Deckkraft",

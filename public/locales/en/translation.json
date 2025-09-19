@@ -24,6 +24,8 @@
   },
   "results": {
     "title": "Your Top Matches",
+    "bestMatch": "Best match",
+    "feedback": "Help us improve",
     "filters": {
       "clear": "Clear All Filters",
       "coverage": "Coverage",

@@ -13,6 +13,7 @@ declare module '@mui/material/styles' {
       shadow: string;
     };
   }
+
   interface PaletteOptions {
     availability?: {
       available: string;
@@ -30,6 +31,7 @@ const theme = createTheme({
     primary: {
       main: '#906B4D',
       dark: '#4d3725',
+      light: '#E1BC9D',
     },
     secondary: {
       main: '#C49E91',
@@ -55,6 +57,14 @@ const theme = createTheme({
     fontFamily: 'Poppins, Arial, sans-serif',
     button: {
       textTransform: 'none',
+    },
+    h3: {
+      fontWeight: 700,
+      fontSize: '1.5rem',
+      lineHeight: 1.2,
+      [`@media (min-width:600px)`]: {
+        fontSize: '2.5rem',
+      },
     },
   },
 });

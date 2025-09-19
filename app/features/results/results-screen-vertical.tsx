@@ -10,7 +10,6 @@ import ProductFilters, {
   type FilterState,
 } from '~/components/ui/product-filters';
 import { QRCodeBanner } from '~/components/ui/qr-code-banner';
-import { TypographyMultiSize } from '~/components/ui/typograthy-multi-size';
 import { useUserFlowExit } from '~/features/user-flow/hooks/use-user-flow-exit';
 
 import { ProductTileHorizontalRanked } from '../../components/ui/product-tile';
@@ -165,14 +164,10 @@ export function ResultsScreenVertical({
 
   return (
     <div className="h-full p-6 bg-background-default flex flex-col gap-4">
-      {/* Fixed header section */}
       <div className="flex-shrink-0">
         <div className="flex flex-col items-center">
-          {/* Top Matches Title - Fixed */}
-          <TypographyMultiSize
-            text={t('results.title')}
-            variant_small="h4"
-            variant_large="h2"
+          <Typography
+            variant="h3"
             fontWeight={700}
             color="text.primary"
             className="mt-6 mb-4 pb-4"
@@ -181,7 +176,6 @@ export function ResultsScreenVertical({
         </div>
       </div>
 
-      {/* Top Matches Section - Scrollable */}
       <div className="flex flex-col flex-1 min-h-0">
         {/* Scrollable product list */}
         <div className="flex-1 min-h-0 overflow-auto flex justify-center">

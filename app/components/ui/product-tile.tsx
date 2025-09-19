@@ -4,7 +4,8 @@ import React from 'react';
 import AvailabilityLight, {
   type AvailabilityStatus,
 } from './availability-light';
-import { TypographyMultiSize } from './typograthy-multi-size';
+import { cn } from '~/utils/cn';
+import { useTranslation } from 'react-i18next';
 
 interface ProductTileProps {
   image: string;
@@ -13,6 +14,7 @@ interface ProductTileProps {
   type: string;
   price: string;
   availability?: AvailabilityStatus;
+  rank: number;
 }
 
 export function ProductTile({
@@ -72,57 +74,64 @@ export function ProductTileHorizontal({
   type,
   price,
   availability,
+  rank,
 }: ProductTileProps) {
+  const { t } = useTranslation();
   return (
-    <div className="flex flex-row items-center bg-white rounded-xl shadow-md p-4 w-full max-w-5/6 min-h-[120px]">
-      {/* Image */}
-      <div className="flex-shrink-0 flex items-center justify-center w-24  bg-gray-50 rounded-lg mr-4">
-        <img src={image} alt={brand} className="object-contain h-full w-5/6" />
+    <div
+      className={cn(
+        'relative grid grid-cols-6 gap-2 items-center bg-white rounded-xl p-4 w-full max-w-3xl outline h-[150px] outline-[#EEEDEC]',
+        { ['outline-[#6EB771]']: rank === 1 },
+      )}
+    >
+      <div>
+        <span
+          className={cn(
+            'absolute -top-7 left-2 w-fit bg-[#6EB771] rounded-x-md rounded-t-md py-1 px-2 text-white text-sm',
+            {
+              hidden: rank !== 1,
+            },
+          )}
+        >
+          {t('results.bestMatch')}
+        </span>
+        <div className="col-span-1">
+          <img src={image} alt={brand} className="object-contain h-24 w-16" />
+        </div>
       </div>
-      {/* Details */}
-      <div className="flex flex-1 flex-col justify-between h-full">
-        <div>
-          <TypographyMultiSize
-            text={brand}
-            variant_small="body1"
-            variant_large="h4"
-            fontWeight={700}
+
+      <div className="flex flex-col col-span-5 gap-2">
+        <div className="flex flex-col gap-1">
+          <Typography variant="body1" fontWeight={500} color="text.primary">
+            {brand}
+          </Typography>
+          <Typography
+            variant="body2"
             color="text.primary"
-            className="mb-2"
-          />
-          <TypographyMultiSize
-            text={description}
-            variant_small="body2"
-            variant_large="h5"
-            color="text.secondary"
-            className="mb-1"
-          />
-          <TypographyMultiSize
-            text={type}
-            variant_small="body2"
-            variant_large="h5"
-            color="text.secondary"
-            className="italic"
-          />
+            className="line-clamp-2"
+          >
+            {description}
+          </Typography>
         </div>
-        <div className="flex items-center justify-between mt-4">
-          <div />
-          <div className="flex items-center">
-            {availability && <AvailabilityLight status={availability} />}
-            <TypographyMultiSize
-              text={price}
-              variant_small="body1"
-              variant_large="h5"
-              fontWeight={600}
-              color="text.primary"
-              className="ml-2"
-            />
-          </div>
-        </div>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          className="italic capitalize"
+        >
+          {type}
+        </Typography>
+
+        <span className="flex items-center text-xs">
+          {availability && (
+            <AvailabilityLight status={availability} className="mr-2" />
+          )}
+          {price}
+        </span>
       </div>
     </div>
   );
 }
+
 export function ProductTileHorizontalRanked({
   image,
   brand,
@@ -132,27 +141,8 @@ export function ProductTileHorizontalRanked({
   availability,
   rank,
 }: ProductTileProps & { rank: number }) {
-  // Helper to get ordinal suffix
-  const getOrdinal = (n: number) => {
-    if (n === 1) return '1st';
-    if (n === 2) return '2nd';
-    if (n === 3) return '3rd';
-    return `${n}th`;
-  };
-
   return (
-    <div className="flex flex-row items-center w-full">
-      <div className="w-1/6 flex-shrink-0 flex justify-center items-center mr-2">
-        <TypographyMultiSize
-          text={getOrdinal(rank)}
-          variant_small="h6"
-          variant_large="h3"
-          fontWeight={700}
-          color="text.primary"
-          className="text-black"
-          style={{ minWidth: 40, textAlign: 'center' }}
-        />
-      </div>
+    <div className="flex flex-row items-center w-full pt-2">
       <ProductTileHorizontal
         image={image}
         brand={brand}
@@ -160,6 +150,7 @@ export function ProductTileHorizontalRanked({
         type={type}
         price={price}
         availability={availability}
+        rank={rank}
       />
     </div>
   );
