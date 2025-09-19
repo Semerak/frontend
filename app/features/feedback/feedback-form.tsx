@@ -17,6 +17,8 @@ import {
 import { useSnackbar } from '~/context/snackbar-context';
 import { usePostFeedback } from '~/features/feedback/hooks/use-post-feedback';
 import { ImprovementOption, type Rating } from '~/features/feedback/types';
+import theme from '~/styles/theme';
+import { cn } from '~/utils/cn';
 
 const ratingIcons: Record<Rating, React.FC<IconType>> = {
   1: RatingFirst,
@@ -43,6 +45,8 @@ export function FeedbackForm() {
   const ratings: Rating[] = [1, 2, 3, 4, 5];
 
   const selectedRating = watch('rating');
+
+  const isButtonDisabled = selectedRating === 0 || isPending;
 
   const handleClickRating = (num: Rating) => {
     setValue('rating', selectedRating === num ? 0 : num, {
@@ -90,7 +94,9 @@ export function FeedbackForm() {
                 >
                   <Icon
                     className="h-20 w-20 sm:w-28 sm:h-28 transform transition-transform duration-400 hover:scale-105"
-                    color={isSelected ? '#C49E91' : 'currentColor'}
+                    color={
+                      isSelected ? theme.palette.secondary.main : 'currentColor'
+                    }
                   />
                 </button>
               );
@@ -118,12 +124,21 @@ export function FeedbackForm() {
                   key={option}
                   type="button"
                   onClick={() => toggleImprovement(option)}
-                  className={`rounded-[15px] border px-4 py-2 text-left transition-colors
-            ${
-              isSelected
-                ? 'bg-[#906B4D] text-white border-[#906B4D]'
-                : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'
-            }`}
+                  className={cn(
+                    'rounded-[15px] border px-4 py-2 text-left transition-colors',
+                    {
+                      'text-white': isSelected,
+                      'bg-white text-gray-800 hover:bg-gray-100': !isSelected,
+                    },
+                  )}
+                  style={{
+                    backgroundColor: isSelected
+                      ? theme.palette.primary.main
+                      : theme.palette.background.default,
+                    borderColor: isSelected
+                      ? theme.palette.primary.main
+                      : theme.palette.border.shadow,
+                  }}
                 >
                   {t(`feedback.improvement.options.${option}`)}
                 </button>
@@ -140,8 +155,11 @@ export function FeedbackForm() {
           </Typography>
           <textarea
             rows={4}
-            className=" resize-none rounded-xl border border-[#EEEDEC] p-3 h-[153px] w-[400px] sm:w-[624px] focus:border-[#906B4D]
+            className="resize-none rounded-xl border p-3 h-[153px] w-[400px] sm:w-[624px] focus:border-[#906B4D]
             focus:ring-2 focus:ring-[#906B4D] focus:outline-none"
+            style={{
+              borderColor: theme.palette.border.shadow,
+            }}
             placeholder={t('feedback.othersPlaceholder')}
             {...register('opinions')}
           />
@@ -149,11 +167,16 @@ export function FeedbackForm() {
         {/* Submit */}
         <div>
           <button
-            disabled={selectedRating === 0 || isPending}
+            disabled={isButtonDisabled}
             type="submit"
             className="text-xl rounded bg.primary.main px-4 py-2 text-white
                transform transition-transform duration-400 font-semibold
-               enabled:hover:scale-105 bg-[#906B4D] disabled:bg-[#e6e6e6] disabled:cursor-not-allowe"
+               enabled:hover:scale-105 disabled:cursor-not-allowed"
+            style={{
+              backgroundColor: isButtonDisabled
+                ? theme.palette.border.shadow
+                : theme.palette.primary.main,
+            }}
           >
             {t('feedback.submit')}
           </button>
