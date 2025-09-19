@@ -73,5 +73,22 @@
     "manualCapture": "Manual Capture",
     "stopCamera": "Stop Camera",
     "instructions": "Look directly at the camera. The system will automatically detect when you're looking and take a photo after a 3-second countdown."
+  },
+  "feedback": {
+    "title": "We want your feedback!",
+    "text": "How was the Make-up Match Experience?",
+    "improvement": {
+      "title": "Tell us what could be improved:",
+      "options": {
+        "colorMatch": "Color Match",
+        "suggestions": "Suggestions",
+        "speed": "Speed",
+        "scanning": "Scanning",
+        "hygenic": "Hygenic"
+      }
+    },
+    "others": "Others",
+    "othersPlaceholder": "Other Suggestions...",
+    "submit": "Submit"
   }
 }

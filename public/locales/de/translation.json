@@ -73,5 +73,22 @@
     "manualCapture": "Manuelle Aufnahme",
     "stopCamera": "Kamera stoppen",
     "instructions": "Schauen Sie direkt in die Kamera. Das System erkennt automatisch, wenn Sie hineinschauen und macht nach einem 3-Sekunden-Countdown ein Foto."
+  },
+  "feedback": {
+    "title": "Wir möchten Ihr Feedback!",
+    "text": "Wie war das Make-up-Match-Erlebnis?",
+    "improvement": {
+      "title": "Teilen Sie uns mit, was verbessert werden könnte:",
+      "options": {
+        "colorMatch": "Farbabgleich",
+        "suggestions": "Vorschläge",
+        "speed": "Geschwindigkeit",
+        "scanning": "Scannen",
+        "hygenic": "Hygienisch"
+      }
+    },
+    "others": "Andere",
+    "othersPlaceholder": "Weitere Vorschläge...",
+    "submit": "Absenden"
   }
 }
