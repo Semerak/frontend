@@ -111,7 +111,7 @@ export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
   return (
     <>
       {/* Filter Dropdowns */}
-      <div className="flex flex-col items-center gap-4 mb-4">
+      <div className="flex flex-row gap-4 mb-4 justify-between w-full max-w-3xl">
         {/* Filter Dropdowns Row */}
         <div className="flex gap-3 justify-center items-center">
           {' '}
@@ -298,28 +298,28 @@ export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
               ))}
             </Select>
           </FormControl>
-          {/* Clear Filters Button - positioned on the side */}
-          {hasActiveFilters && (
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={clearAllFilters}
-              sx={{
-                textTransform: 'none',
-                fontSize: '0.875rem',
-                color: '#906B4D',
-                borderColor: '#906B4D',
-                marginLeft: 2,
-                '&:hover': {
-                  borderColor: '#4d3725',
-                  backgroundColor: 'rgba(144, 107, 77, 0.04)',
-                },
-              }}
-            >
-              {t('results.filters.clear')}
-            </Button>
-          )}
         </div>
+        {/* Clear Filters Button - positioned on the side */}
+        {hasActiveFilters && (
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={clearAllFilters}
+            sx={{
+              textTransform: 'none',
+              fontSize: '0.875rem',
+              color: '#906B4D',
+              borderColor: '#906B4D',
+              marginLeft: 2,
+              '&:hover': {
+                borderColor: '#4d3725',
+                backgroundColor: 'rgba(144, 107, 77, 0.04)',
+              },
+            }}
+          >
+            {t('results.filters.clear')}
+          </Button>
+        )}
       </div>
     </>
   );

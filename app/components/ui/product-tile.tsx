@@ -1,11 +1,13 @@
 import { Typography } from '@mui/material';
 import React from 'react';
 
+import { useTranslation } from 'react-i18next';
 import AvailabilityLight, {
   type AvailabilityStatus,
 } from './availability-light';
+
 import { cn } from '~/utils/cn';
-import { useTranslation } from 'react-i18next';
+
 
 interface ProductTileProps {
   image: string;
@@ -80,7 +82,7 @@ export function ProductTileHorizontal({
   return (
     <div
       className={cn(
-        'relative grid grid-cols-6 gap-2 items-center bg-white rounded-xl p-4 w-full max-w-3xl outline h-[150px] outline-[#EEEDEC]',
+        'relative grid grid-cols-6 gap-2 items-center bg-white rounded-xl py-4 px-1 sm:p-4 w-full max-w-3xl outline h-[150px] outline-[#EEEDEC]',
         { ['outline-[#6EB771]']: rank === 1 },
       )}
     >

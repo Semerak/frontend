@@ -37,10 +37,10 @@
       "category": "Category",
       "categoryOptions": {
         "bb-cream-cc-cream": "BB-Cream and CC-Cream",
-        "concealer": "concealer",
-        "foundation": "foundation",
-        "highlighter": "highlighter",
-        "powder": "powder"
+        "concealer": "Concealer",
+        "foundation": "Foundation",
+        "highlighter": "Highlighter",
+        "powder": "Powder"
       },
       "other": "Others",
       "otherOptions": {
