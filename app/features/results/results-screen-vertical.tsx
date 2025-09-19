@@ -1,14 +1,17 @@
 import { Typography } from '@mui/material';
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router';
 
 import { SmallLarge } from '~/components/layouts/small-large';
+import { DefaultButton } from '~/components/ui/default-button';
 import { NavButton } from '~/components/ui/nav-button';
 import ProductFilters, {
   type FilterState,
 } from '~/components/ui/product-filters';
 import { QRCodeBanner } from '~/components/ui/qr-code-banner';
 import { TypographyMultiSize } from '~/components/ui/typograthy-multi-size';
+import { useUserFlowExit } from '~/features/user-flow/hooks/use-user-flow-exit';
 
 import { ProductTileHorizontalRanked } from '../../components/ui/product-tile';
 
@@ -93,7 +96,15 @@ export function ResultsScreenVerticalRef({
 export function ResultsScreenVertical({
   topMatches,
 }: ResultsScreenVerticalProps) {
+  const numberOfProductsToShow = 3;
   const { t } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const userFlowExitMutation = useUserFlowExit();
+
+  // Get user_id from location state (passed from previous screen)
+  const userId = location.state?.results?.user_id;
+
   const [activeFilters, setActiveFilters] = useState<FilterState>({
     coverage: [],
     category: [],
@@ -107,9 +118,50 @@ export function ResultsScreenVertical({
 
   // Filter the products based on active filters
   const filteredMatches = useMemo(
-    () => filterProducts(topMatches, activeFilters),
+    () =>
+      filterProducts(topMatches, activeFilters).slice(
+        0,
+        numberOfProductsToShow,
+      ),
     [topMatches, activeFilters],
   );
+
+  function PressExitButton() {
+    console.log('Exit button pressed');
+    const userFlowExit = {
+      filters: activeFilters,
+      final_recommendations: filteredMatches,
+    };
+    console.log('User Flow Exit Data:', userFlowExit);
+
+    // Send user flow exit data to backend if we have a user ID
+    if (userId) {
+      console.log('Sending user flow exit data for user ID:', userId);
+      userFlowExitMutation.mutate(
+        {
+          userId,
+          data: userFlowExit,
+        },
+        {
+          onSuccess: () => {
+            console.log('User flow exit data sent successfully');
+            // Navigate to home page after successful POST
+            navigate('/');
+          },
+          onError: (error) => {
+            console.error('Failed to send user flow exit data:', error);
+            // Still navigate to home even if the API call fails
+            // You can change this behavior if you want to show an error message instead
+            navigate('/');
+          },
+        },
+      );
+    } else {
+      console.warn('No user ID available for user flow exit tracking');
+      // Navigate to home immediately if no user ID
+      navigate('/');
+    }
+  }
 
   return (
     <div className="h-full p-6 bg-background-default flex flex-col gap-4">
@@ -134,7 +186,7 @@ export function ResultsScreenVertical({
         {/* Scrollable product list */}
         <div className="flex-1 min-h-0 overflow-auto flex justify-center">
           <div className="flex flex-col gap-4 pb-4 w-full max-w-9/10">
-            {filteredMatches.slice(0, 3).map((match, index) => (
+            {filteredMatches.map((match, index) => (
               <div key={index} className="flex-shrink-0">
                 <ProductTileHorizontalRanked
                   image={match.image}
@@ -158,7 +210,11 @@ export function ResultsScreenVertical({
 
         {/* Fixed footer button - always visible */}
         <div className="flex justify-center mt-4 mb-2 flex-shrink-0">
-          <NavButton text={t('results.exitButton')} url="/" />
+          {/* <NavButton text={t('results.exitButton')} url="/" /> */}
+          <DefaultButton
+            text={t('results.exitButton')}
+            handleClick={PressExitButton}
+          />
         </div>
       </div>
     </div>
