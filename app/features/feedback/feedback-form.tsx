@@ -93,7 +93,7 @@ export function FeedbackForm() {
                   onClick={() => handleClickRating(num)}
                 >
                   <Icon
-                    className="h-20 w-20 sm:w-28 sm:h-28 transform transition-transform duration-400 hover:scale-105"
+                    className="h-18 w-18 sm:w-28 sm:h-28 transform transition-transform duration-400 hover:scale-105"
                     color={
                       isSelected ? theme.palette.secondary.main : 'currentColor'
                     }
@@ -115,7 +115,7 @@ export function FeedbackForm() {
             {t('feedback.improvement.title')}
           </Typography>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 lg:pb-8">
             {Object.values(ImprovementOption).map((option) => {
               const isSelected = watch('improvements')?.includes(option);
 
@@ -149,13 +149,13 @@ export function FeedbackForm() {
           <input type="hidden" {...register('improvements')} />
         </div>
         {/* Opinions */}
-        <div className="flex gap-2 flex-col">
+        <div className="flex gap-2 flex-col w-full lg:hidden">
           <Typography variant="h6" fontWeight={600} color="text.primary">
             {t('feedback.others')}
           </Typography>
           <textarea
             rows={4}
-            className="resize-none rounded-xl border p-3 h-[153px] w-[400px] sm:w-[624px] focus:border-[#906B4D]
+            className="resize-none rounded-xl border p-3 h-[153px] w-full focus:border-[#906B4D]
             focus:ring-2 focus:ring-[#906B4D] focus:outline-none"
             style={{
               borderColor: theme.palette.border.shadow,
