@@ -13,6 +13,7 @@ export default [
       index('routes/dev/home.tsx'),
       route('product-scanner', 'routes/dev/product-scanner.tsx'),
       route('system-status', 'routes/dev/system-status.tsx'),
+      route('clients-db', 'routes/dev/clients-db.tsx'),
     ]),
   ]),
   route('/login', 'routes/login.tsx'),
