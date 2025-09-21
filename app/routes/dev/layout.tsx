@@ -37,7 +37,9 @@ export default function DevLayout() {
 
   const fetchSystemStatus = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_CLOUD_URL}/system/status`);
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_CLOUD_URL}/system/status`,
+      );
       const data = await response.json();
       setSystemStatus(data);
     } catch (error) {
@@ -58,12 +60,7 @@ export default function DevLayout() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             🛠️ Developer Tools
           </Typography>
-          <Button
-            color="inherit"
-            component={Link}
-            to="/"
-            sx={{ ml: 2 }}
-          >
+          <Button color="inherit" component={Link} to="/" sx={{ ml: 2 }}>
             ← Back to App
           </Button>
         </Toolbar>
@@ -76,21 +73,24 @@ export default function DevLayout() {
               System Status
             </Typography>
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2 }}>
-              <Alert 
-                severity={systemStatus.firestore_available ? 'success' : 'warning'}
+              <Alert
+                severity={
+                  systemStatus.firestore_available ? 'success' : 'warning'
+                }
                 variant="outlined"
                 sx={{ flex: 1, minWidth: 200 }}
               >
-                Firestore: {systemStatus.firestore_available ? 'Connected' : 'Offline'}
+                Firestore:{' '}
+                {systemStatus.firestore_available ? 'Connected' : 'Offline'}
               </Alert>
-              <Alert 
+              <Alert
                 severity="info"
                 variant="outlined"
                 sx={{ flex: 1, minWidth: 200 }}
               >
                 Foundation Service: {systemStatus.foundation_matching_service}
               </Alert>
-              <Alert 
+              <Alert
                 severity="info"
                 variant="outlined"
                 sx={{ flex: 1, minWidth: 200 }}
@@ -120,7 +120,9 @@ export default function DevLayout() {
               Home
             </Button>
             <Button
-              variant={isActivePath('/dev/product-scanner') ? 'contained' : 'outlined'}
+              variant={
+                isActivePath('/dev/product-scanner') ? 'contained' : 'outlined'
+              }
               component={Link}
               to="/dev/product-scanner"
               startIcon="📦"
@@ -128,12 +130,24 @@ export default function DevLayout() {
               Product Scanner
             </Button>
             <Button
-              variant={isActivePath('/dev/system-status') ? 'contained' : 'outlined'}
+              variant={
+                isActivePath('/dev/system-status') ? 'contained' : 'outlined'
+              }
               component={Link}
               to="/dev/system-status"
               startIcon="⚙️"
             >
               System Status
+            </Button>
+            <Button
+              variant={
+                isActivePath('/dev/clients-db') ? 'contained' : 'outlined'
+              }
+              component={Link}
+              to="/dev/clients-db"
+              startIcon="🗄️"
+            >
+              Clients Database
             </Button>
           </Box>
         </Paper>
