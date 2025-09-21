@@ -4,10 +4,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import AvailabilityLight, {
   type AvailabilityStatus,
-} from './availability-light';
+} from '../../../components/ui/availability-light';
 
 import { cn } from '~/utils/cn';
-
 
 interface ProductTileProps {
   image: string;

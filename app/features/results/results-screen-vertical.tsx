@@ -6,13 +6,14 @@ import { useLocation, useNavigate } from 'react-router';
 import { SmallLarge } from '~/components/layouts/small-large';
 import { DefaultButton } from '~/components/ui/default-button';
 import { NavButton } from '~/components/ui/nav-button';
-import ProductFilters, {
-  type FilterState,
-} from '~/components/ui/product-filters';
 import { QRCodeBanner } from '~/components/ui/qr-code-banner';
+import {
+  type FilterState,
+  ProductFilters,
+} from '~/features/results/components/product-filters';
+import ProductFiltersMobile from '~/features/results/components/product-filters-mobile';
+import { ProductTileHorizontalRanked } from '~/features/results/components/product-tile';
 import { useUserFlowExit } from '~/features/user-flow/hooks/use-user-flow-exit';
-
-import { ProductTileHorizontalRanked } from '../../components/ui/product-tile';
 
 import { filterProducts } from './utils/filter-products';
 
@@ -171,8 +172,15 @@ export function ResultsScreenVertical({
             fontWeight={700}
             color="text.primary"
             className="mt-6 mb-4 pb-4"
-          />
-          <ProductFilters onFilterChange={handleFilterChange} />
+          >
+            {t('results.title')}
+          </Typography>
+          <div className="hidden sm:flex w-full">
+            <ProductFilters onFilterChange={handleFilterChange} />
+          </div>
+          <div className="flex sm:hidden w-full">
+            <ProductFiltersMobile onFilterChange={handleFilterChange} />
+          </div>
         </div>
       </div>
 

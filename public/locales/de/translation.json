@@ -28,6 +28,7 @@
     "feedback": "Hilf uns, uns zu verbessern",
     "filters": {
       "clear": "Alle Filter löschen",
+      "title": "Filters",
       "coverage": "Deckkraft",
       "coverageOptions": {
         "full": "Volldeckend",
@@ -48,7 +49,8 @@
         "alcohol-free": "Alkoholfrei",
         "natural": "Naturkosmetik",
         "available": "Verfügbar"
-      }
+      },
+      "applyButton": "Filter anwenden"
     },
     "qrCodeInstructions": "QR-Code scannen & Ergebnisse sofort aufs Handy erhalten",
     "exitButton": "Analyse beenden"

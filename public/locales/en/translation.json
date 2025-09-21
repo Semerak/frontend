@@ -27,6 +27,7 @@
     "bestMatch": "Best match",
     "feedback": "Help us improve",
     "filters": {
+      "title": "Filters",
       "clear": "Clear All Filters",
       "coverage": "Coverage",
       "coverageOptions": {
@@ -48,7 +49,8 @@
         "alcohol-free": "Alcohol Free",
         "natural": "Natural",
         "available": "Available"
-      }
+      },
+      "applyButton": "Apply filters"
     },
     "qrCodeInstructions": "QR code & get results instantly on your phone",
     "exitButton": "Exit the analysis"
