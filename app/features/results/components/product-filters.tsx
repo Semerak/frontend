@@ -47,7 +47,7 @@ export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
       {/* Filters & Clear Button Row */}
       <div className="flex items-center justify-between w-full max-w-3xl mx-auto">
         {/* Left Filters */}
-        <div className="flex gap-3">
+        <div className="flex gap-3 mb-4">
           <CoverageFilters
             filter={coverageFilter}
             setFilter={setCoverageFilter}

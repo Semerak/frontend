@@ -81,7 +81,7 @@ export function ProductFiltersMobile({
       >
         <Box
           sx={{
-            width: 300, // adjust drawer width
+            width: 300,
             p: 2,
             display: 'flex',
             flexDirection: 'column',

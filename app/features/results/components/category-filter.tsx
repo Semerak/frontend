@@ -10,6 +10,7 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import type { FilterProps } from '~/features/results/components/product-filters';
+import theme from '~/styles/theme';
 
 export const CategoryFilters = (props: FilterProps) => {
   const { t } = useTranslation();
@@ -41,7 +42,7 @@ export const CategoryFilters = (props: FilterProps) => {
         renderValue={(selected) => {
           if (selected.length === 0) {
             return (
-              <span style={{ color: '#999' }}>
+              <span style={{ color: theme.palette.text.primary }}>
                 {t('results.filters.category')}
               </span>
             );
@@ -59,7 +60,7 @@ export const CategoryFilters = (props: FilterProps) => {
                   size="small"
                   sx={{
                     height: 20,
-                    fontSize: '0.75rem',
+                    fontSize: '14px',
                     backgroundColor: '#906B4D',
                     color: 'white',
                   }}
@@ -71,7 +72,7 @@ export const CategoryFilters = (props: FilterProps) => {
         sx={{
           borderRadius: '12px',
           backgroundColor: 'white',
-          fontSize: '0.875rem',
+          fontSize: '14px',
           '& .MuiSelect-select': {
             padding: '8px 12px',
           },
@@ -79,24 +80,44 @@ export const CategoryFilters = (props: FilterProps) => {
         MenuProps={{
           PaperProps: {
             sx: {
+              mt: '6px',
               backgroundColor: 'white',
+              borderRadius: '8px',
+              '& .MuiMenu-list': {
+                p: 0,
+              },
             },
           },
         }}
       >
         {categoryOptions.map((option) => (
-          <MenuItem key={option} value={option}>
+          <MenuItem
+            key={option}
+            value={option}
+            sx={{
+              p: '2px',
+            }}
+          >
             <Checkbox
               checked={filter.indexOf(option) > -1}
               size="small"
               sx={{
+                px: '8px',
+                py: '2px',
                 color: '#906B4D',
                 '&.Mui-checked': {
                   color: '#906B4D',
                 },
               }}
             />
-            <ListItemText primary={option} />
+            <ListItemText
+              primary={option}
+              sx={{
+                '& .MuiTypography-root': {
+                  fontSize: '14px',
+                },
+              }}
+            />
           </MenuItem>
         ))}
       </Select>
