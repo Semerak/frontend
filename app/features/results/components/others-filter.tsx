@@ -69,6 +69,7 @@ export const OthersFilters = (props: FilterProps) => {
           );
         }}
         sx={{
+          borderRadius: '12px',
           backgroundColor: 'white',
           fontSize: '0.875rem',
           '& .MuiSelect-select': {

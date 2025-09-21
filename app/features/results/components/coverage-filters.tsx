@@ -8,6 +8,7 @@ import {
   Select,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+
 import type { FilterProps } from '~/features/results/components/product-filters';
 
 export const CoverageFilters = (props: FilterProps) => {
@@ -67,6 +68,7 @@ export const CoverageFilters = (props: FilterProps) => {
           );
         }}
         sx={{
+          borderRadius: '12px',
           backgroundColor: 'white',
           fontSize: '0.875rem',
           '& .MuiSelect-select': {

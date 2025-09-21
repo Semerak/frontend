@@ -59,6 +59,7 @@ export function ProductFiltersMobile({
         size="small"
         onClick={toggleDrawer(true)}
         sx={{
+          borderRadius: '8px',
           marginBottom: '12px',
           textTransform: 'none',
           fontSize: '0.875rem',
@@ -91,23 +92,10 @@ export function ProductFiltersMobile({
           onKeyDown={toggleDrawer(false)}
         >
           {/* Header */}
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', pb: 4 }}>
             <span style={{ fontWeight: 600, fontSize: '1rem' }}>
               {t('results.filters.title')}
             </span>
-            {hasActiveFilters && (
-              <Button
-                size="small"
-                onClick={clearAllFilters}
-                sx={{
-                  textTransform: 'none',
-                  fontSize: '0.8rem',
-                  color: '#906B4D',
-                }}
-              >
-                {t('results.filters.clear')}
-              </Button>
-            )}
           </Box>
 
           {/* Filters Section */}
@@ -133,12 +121,29 @@ export function ProductFiltersMobile({
           </Box>
 
           {/* Footer Apply Button */}
-          <Box sx={{ mt: 3 }}>
+          <Box className="flex flex-col gap-3">
+            {hasActiveFilters && (
+              <Button
+                fullWidth
+                variant="outlined"
+                onClick={clearAllFilters}
+                sx={{
+                  borderRadius: '8px',
+                  backgroundColor: 'white',
+                  textTransform: 'none',
+                  '&:hover': { backgroundColor: '#4d3725' },
+                }}
+              >
+                {t('results.filters.clear')}
+              </Button>
+            )}
+
             <Button
               fullWidth
               variant="contained"
               onClick={toggleDrawer(false)}
               sx={{
+                borderRadius: '8px',
                 backgroundColor: '#906B4D',
                 textTransform: 'none',
                 '&:hover': { backgroundColor: '#4d3725' },
