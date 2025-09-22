@@ -108,7 +108,7 @@ export function ResultsScreenVertical({
 
       <div className="flex flex-col flex-1 min-h-0">
         <div className="flex-1 min-h-0 flex justify-center">
-          <div className="flex flex-col gap-4 pb-4 max-w-3xl mx-auto w-full items-center">
+          <div className="flex flex-col gap-4 pb-4 max-w-3xl mx-auto w-full items-center overflow-y-scroll px-1 pt-8 sm:pt-4">
             {filteredMatches.map((match, index) => (
               <ProductTileHorizontalRanked
                 key={index}
@@ -129,7 +129,7 @@ export function ResultsScreenVertical({
           child_small={<div />}
         />
 
-        <div className="flex justify-center mt-4 mb-2 flex-shrink-0">
+        <div className="sm:flex justify-center mt-4 mb-2 flex-shrink-0 hidden">
           <DefaultButton
             text={t('results.exitButton')}
             handleClick={pressExitButton}

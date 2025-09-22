@@ -1,6 +1,7 @@
-import { Typography } from '@mui/material';
+import { Typography, useMediaQuery } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
+import theme from '~/styles/theme';
 import { cn } from '~/utils/cn';
 
 import AvailabilityLight, {
@@ -77,10 +78,12 @@ export function ProductTileHorizontal({
   rank,
 }: ProductTileProps) {
   const { t } = useTranslation();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
     <div
       className={cn(
-        'relative grid grid-cols-6 gap-2 items-center bg-white rounded-xl py-4 px-1 sm:p-4 w-full max-w-3xl outline h-[150px] outline-[#EEEDEC]',
+        'relative grid grid-cols-6 gap-2 sm:gap-6 bg-white rounded-xl py-4 px-1 sm:p-6 w-full max-w-3xl outline h-[150px] sm:h-[240px] outline-[#EEEDEC]',
         { ['outline-[#6EB771]']: rank === 1 },
       )}
     >
@@ -95,33 +98,43 @@ export function ProductTileHorizontal({
         >
           {t('results.bestMatch')}
         </span>
-        <div className="col-span-1">
-          <img src={image} alt={brand} className="object-contain h-24 w-16" />
+        <div className="flex col-span-1 justify-center w-full">
+          <img
+            src={image}
+            alt={brand}
+            className="object-contain h-28 sm:h-50 w-auto"
+          />
         </div>
       </div>
 
-      <div className="flex flex-col col-span-5 gap-2">
-        <div className="flex flex-col gap-1">
-          <Typography variant="body1" fontWeight={500} color="text.primary">
-            {brand}
-          </Typography>
+      <div className="flex flex-col col-span-5 gap-2 justify-between sm:py-2">
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1">
+            <Typography
+              variant={isMobile ? 'body1' : 'h5'}
+              fontWeight={500}
+              color="text.primary"
+            >
+              {brand}
+            </Typography>
+            <Typography
+              variant={isMobile ? 'body2' : 'h6'}
+              color="text.primary"
+              className="line-clamp-2"
+            >
+              {description}
+            </Typography>
+          </div>
           <Typography
-            variant="body2"
-            color="text.primary"
-            className="line-clamp-2"
+            variant={isMobile ? 'body2' : 'body1'}
+            color="text.secondary"
+            className="italic capitalize"
           >
-            {description}
+            {type}
           </Typography>
         </div>
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          className="italic capitalize"
-        >
-          {type}
-        </Typography>
 
-        <span className="flex items-center text-xs">
+        <span className="flex items-center text-xs sm:text-lg">
           {availability && (
             <AvailabilityLight status={availability} className="mr-2" />
           )}
