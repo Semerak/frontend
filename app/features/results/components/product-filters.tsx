@@ -1,10 +1,9 @@
 import { Button } from '@mui/material';
-import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { CoverageFilters } from '~/features/results/components/coverage-filters';
 import { CategoryFilters } from '~/features/results/components/category-filter';
-import { OthersFilters } from './others-filter';
+import { CoverageFilters } from '~/features/results/components/coverage-filters';
+import { OthersFilters } from '~/features/results/components/others-filter';
 
 export interface FilterState {
   coverage?: string[];
@@ -14,18 +13,30 @@ export interface FilterState {
 
 type ProductFiltersProps = {
   onFilterChange: (filters: Partial<FilterState>) => void;
+  coverageFilter: string[];
+  setCoverageFilter: (filters: string[]) => void;
+  categoryFilter: string[];
+  setCategoryFilter: (filters: string[]) => void;
+  othersFilter: string[];
+  setOthersFilter: (filters: string[]) => void;
 };
 
 export type FilterProps = {
   filter: string[];
   setFilter: (filter: string[]) => void;
-} & ProductFiltersProps;
+  onFilterChange?: (filters: Partial<FilterState>) => void;
+};
 
-export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
+export function ProductFilters({
+  onFilterChange,
+  coverageFilter,
+  setCoverageFilter,
+  setCategoryFilter,
+  setOthersFilter,
+  othersFilter,
+  categoryFilter,
+}: ProductFiltersProps) {
   const { t } = useTranslation();
-  const [coverageFilter, setCoverageFilter] = useState<string[]>([]);
-  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
-  const [othersFilter, setOthersFilter] = useState<string[]>([]);
 
   const clearAllFilters = () => {
     setCoverageFilter([]);
@@ -44,10 +55,8 @@ export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
     othersFilter.length > 0;
   return (
     <>
-      {/* Filters & Clear Button Row */}
-      <div className="flex items-center justify-between w-full max-w-3xl mx-auto">
-        {/* Left Filters */}
-        <div className="flex gap-3 mb-4">
+      <div className="flex items-center justify-between w-full max-w-3xl mx-auto mb-4 ">
+        <div className="flex gap-3 items-center">
           <CoverageFilters
             filter={coverageFilter}
             setFilter={setCoverageFilter}
@@ -65,7 +74,6 @@ export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
           />
         </div>
 
-        {/* Right Clear Button */}
         {hasActiveFilters && (
           <Button
             variant="outlined"
@@ -88,7 +96,6 @@ export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
         )}
       </div>
     </>
-
   );
 }
 

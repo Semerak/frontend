@@ -1,7 +1,5 @@
 import {
-  Box,
   Checkbox,
-  Chip,
   FormControl,
   ListItemText,
   MenuItem,
@@ -10,7 +8,7 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import type { FilterProps } from '~/features/results/components/product-filters';
-import theme from '~/styles/theme';
+import { cn } from '~/utils/cn';
 
 export const CategoryFilters = (props: FilterProps) => {
   const { t } = useTranslation();
@@ -28,55 +26,27 @@ export const CategoryFilters = (props: FilterProps) => {
     const value = event.target.value;
     const newValue = typeof value === 'string' ? value.split(',') : value;
     setFilter(newValue);
-    onFilterChange({
+    onFilterChange?.({
       category: newValue,
     });
   };
   return (
-    <FormControl size="small" sx={{ minWidth: 120 }}>
+    <FormControl size="small" className="sm:w-40">
       <Select
+        className={filter.length > 0 ? 'has-filters' : ''}
         multiple
         value={filter}
         onChange={handleCategoryChange}
         displayEmpty
-        renderValue={(selected) => {
-          if (selected.length === 0) {
-            return (
-              <span style={{ color: theme.palette.text.primary }}>
-                {t('results.filters.category')}
-              </span>
-            );
-          }
-          return (
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-              {selected.slice(0, 1).map((value) => (
-                <Chip
-                  key={value}
-                  label={
-                    selected.length > 1
-                      ? `${value} +${selected.length - 1}`
-                      : value
-                  }
-                  size="small"
-                  sx={{
-                    height: 20,
-                    fontSize: '14px',
-                    backgroundColor: '#906B4D',
-                    color: 'white',
-                  }}
-                />
-              ))}
-            </Box>
-          );
-        }}
-        sx={{
-          borderRadius: '12px',
-          backgroundColor: 'white',
-          fontSize: '14px',
-          '& .MuiSelect-select': {
-            padding: '8px 12px',
-          },
-        }}
+        renderValue={(selected) => (
+          <span
+            className={cn('text-[#302f2f]', {
+              'text-[#906B4D]': selected.length > 0,
+            })}
+          >
+            {t('results.filters.category')}
+          </span>
+        )}
         MenuProps={{
           PaperProps: {
             sx: {
@@ -84,7 +54,7 @@ export const CategoryFilters = (props: FilterProps) => {
               backgroundColor: 'white',
               borderRadius: '8px',
               '& .MuiMenu-list': {
-                p: 0,
+                py: 0,
               },
             },
           },
@@ -102,8 +72,6 @@ export const CategoryFilters = (props: FilterProps) => {
               checked={filter.indexOf(option) > -1}
               size="small"
               sx={{
-                px: '8px',
-                py: '2px',
                 color: '#906B4D',
                 '&.Mui-checked': {
                   color: '#906B4D',

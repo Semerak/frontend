@@ -60,10 +60,36 @@ const theme = createTheme({
     },
     h3: {
       fontWeight: 700,
-      fontSize: '1.5rem',
+      fontSize: '2rem',
       lineHeight: 1.2,
       [`@media (min-width:600px)`]: {
         fontSize: '2.5rem',
+      },
+    },
+  },
+  components: {
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          fontSize: '14px',
+          backgroundColor: 'white',
+          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#906B4D',
+          },
+          '&.has-filters .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#906B4D',
+          },
+          '&.has-filters': {
+            color: '#906B4D',
+          },
+        },
+        notchedOutline: {
+          borderColor: '#ccc',
+        },
+        input: {
+          padding: '8px 12px',
+        },
       },
     },
   },

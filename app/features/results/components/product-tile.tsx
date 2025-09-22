@@ -143,7 +143,7 @@ export function ProductTileHorizontalRanked({
   rank,
 }: ProductTileProps & { rank: number }) {
   return (
-    <div className="flex flex-row items-center w-full pt-2">
+    <div className="flex flex-row items-center w-full sm:pt-4">
       <ProductTileHorizontal
         image={image}
         brand={brand}
