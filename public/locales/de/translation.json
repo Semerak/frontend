@@ -49,8 +49,7 @@
         "alcohol-free": "Alkoholfrei",
         "natural": "Naturkosmetik",
         "available": "Verfügbar"
-      },
-      "applyButton": "Filter anwenden"
+      }
     },
     "qrCodeInstructions": "QR-Code scannen & Ergebnisse sofort aufs Handy erhalten",
     "exitButton": "Analyse beenden"

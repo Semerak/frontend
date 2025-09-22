@@ -1,12 +1,11 @@
 import { Typography } from '@mui/material';
-import React from 'react';
-
 import { useTranslation } from 'react-i18next';
+
+import { cn } from '~/utils/cn';
+
 import AvailabilityLight, {
   type AvailabilityStatus,
 } from '../../../components/ui/availability-light';
-
-import { cn } from '~/utils/cn';
 
 interface ProductTileProps {
   image: string;

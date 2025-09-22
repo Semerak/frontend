@@ -7,27 +7,29 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
-import type { FilterProps } from '~/features/results/components/product-filters';
 import { cn } from '~/utils/cn';
 
-export const CoverageFilters = (props: FilterProps) => {
+type MultiSelectFilterProps = {
+  filter: string[];
+  setFilter: (filter: string) => void;
+  labelKey: string;
+  optionKeys: string[];
+};
+
+export const MultiSelectFilter = ({
+  filter,
+  setFilter,
+  labelKey,
+  optionKeys,
+}: MultiSelectFilterProps) => {
   const { t } = useTranslation();
-  const { onFilterChange, filter, setFilter } = props;
 
-  const coverageOptions = [
-    t('results.filters.coverageOptions.full'),
-    t('results.filters.coverageOptions.medium'),
-    t('results.filters.coverageOptions.light'),
-  ];
+  const options = optionKeys.map((key: string) => t(key));
 
-  const handleCoverageChange = (event: any) => {
+  const handleChange = (event: any) => {
     const value = event.target.value;
     const newValue = typeof value === 'string' ? value.split(',') : value;
     setFilter(newValue);
-
-    onFilterChange?.({
-      coverage: newValue,
-    });
   };
 
   return (
@@ -36,7 +38,7 @@ export const CoverageFilters = (props: FilterProps) => {
         className={filter.length > 0 ? 'has-filters' : ''}
         multiple
         value={filter}
-        onChange={handleCoverageChange}
+        onChange={handleChange}
         displayEmpty
         renderValue={(selected) => (
           <span
@@ -44,7 +46,7 @@ export const CoverageFilters = (props: FilterProps) => {
               'text-[#906B4D]': selected.length > 0,
             })}
           >
-            {t('results.filters.coverage')}
+            {t(labelKey)}
           </span>
         )}
         MenuProps={{
@@ -60,14 +62,8 @@ export const CoverageFilters = (props: FilterProps) => {
           },
         }}
       >
-        {coverageOptions.map((option) => (
-          <MenuItem
-            key={option}
-            value={option}
-            sx={{
-              p: '2px',
-            }}
-          >
+        {options.map((option: string) => (
+          <MenuItem key={option} value={option} sx={{ p: '2px' }}>
             <Checkbox
               checked={filter.indexOf(option) > -1}
               size="small"

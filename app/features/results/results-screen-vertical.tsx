@@ -1,13 +1,12 @@
 import { Typography } from '@mui/material';
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import {
-  type FilterState,
-  ProductFilters,
-} from '~/features/results/components/product-filters';
-import ProductFiltersMobile from '~/features/results/components/product-filters-mobile';
+import { ProductFilters } from '~/features/results/components/product-filters';
+import { ProductFiltersMobile } from '~/features/results/components/product-filters-mobile';
 import { ProductTileHorizontalRanked } from '~/features/results/components/product-tile';
+import { useFilters } from '~/features/results/hooks/use-filters-hook';
+
 import { filterProducts } from './utils/filter-products';
 
 interface ResultsScreenVerticalProps {
@@ -21,27 +20,18 @@ interface ResultsScreenVerticalProps {
     availability: 'available' | 'online' | 'unavailable' | 'unknown';
   }[];
 }
+
 export function ResultsScreenVertical({
   topMatches,
 }: ResultsScreenVerticalProps) {
   const { t } = useTranslation();
-  const [coverageFilter, setCoverageFilter] = useState<string[]>([]);
-  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
-  const [othersFilter, setOthersFilter] = useState<string[]>([]);
 
-  const [activeFilters, setActiveFilters] = useState<FilterState>({
-    coverage: [],
-    category: [],
-    others: [],
-  });
-
-  const handleFilterChange = (filters: FilterState) => {
-    setActiveFilters(filters);
-  };
+  const { filters, setFilters, clearAllFilters, hasActiveFilters } =
+    useFilters();
 
   const filteredMatches = useMemo(
-    () => filterProducts(topMatches, activeFilters),
-    [topMatches, activeFilters],
+    () => filterProducts(topMatches, filters),
+    [topMatches, filters],
   );
 
   return (
@@ -56,26 +46,21 @@ export function ResultsScreenVertical({
           >
             {t('results.title')}
           </Typography>
+
           <div className="hidden sm:flex w-full items-center">
             <ProductFilters
-              onFilterChange={handleFilterChange}
-              coverageFilter={coverageFilter}
-              othersFilter={othersFilter}
-              setCategoryFilter={setCategoryFilter}
-              categoryFilter={categoryFilter}
-              setCoverageFilter={setCoverageFilter}
-              setOthersFilter={setOthersFilter}
+              filters={filters}
+              setFilters={setFilters}
+              clearAllFilters={clearAllFilters}
+              hasActiveFilters={hasActiveFilters}
             />
           </div>
           <div className="flex sm:hidden w-full flex-row-reverse items-center">
             <ProductFiltersMobile
-              onFilterChange={handleFilterChange}
-              coverageFilter={coverageFilter}
-              othersFilter={othersFilter}
-              setCategoryFilter={setCategoryFilter}
-              categoryFilter={categoryFilter}
-              setCoverageFilter={setCoverageFilter}
-              setOthersFilter={setOthersFilter}
+              filters={filters}
+              setFilters={setFilters}
+              clearAllFilters={clearAllFilters}
+              hasActiveFilters={hasActiveFilters}
             />
           </div>
         </div>

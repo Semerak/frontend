@@ -1,75 +1,38 @@
 import { Button, Box, SwipeableDrawer } from '@mui/material';
-import React, { useState } from 'react';
+import { type Dispatch, type SetStateAction, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { CategoryFilters } from '~/features/results/components/category-filter';
-import { CoverageFilters } from '~/features/results/components/coverage-filters';
-import { OthersFilters } from '~/features/results/components/others-filter';
+import { IconCross } from '~/components/ui/icons';
+import { MultiSelectFilter } from '~/features/results/components/multi-select-filter';
+import { FILTER_CONFIG } from '~/features/results/config/filter-config';
+import type { FilterState } from '~/features/results/hooks/use-filters-hook';
+import theme from '~/styles/theme';
 
-export interface FilterState {
-  coverage: string[];
-  category: string[];
-  others: string[];
-}
-
-interface ProductFiltersMobileProps {
-  onFilterChange: (filters: Partial<FilterState>) => void;
-  coverageFilter: string[];
-  setCoverageFilter: (filters: string[]) => void;
-  categoryFilter: string[];
-  setCategoryFilter: (filters: string[]) => void;
-  othersFilter: string[];
-  setOthersFilter: (filters: string[]) => void;
-}
+type ProductFiltersMobileProps = {
+  filters: FilterState;
+  setFilters: Dispatch<SetStateAction<FilterState>>;
+  clearAllFilters: () => void;
+  hasActiveFilters: boolean;
+};
 
 export function ProductFiltersMobile({
-  onFilterChange,
-  coverageFilter,
-  setCoverageFilter,
-  setCategoryFilter,
-  setOthersFilter,
-  othersFilter,
-  categoryFilter,
+  filters,
+  setFilters,
+  clearAllFilters,
+  hasActiveFilters,
 }: ProductFiltersMobileProps) {
   const { t } = useTranslation();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const toggleDrawer =
-    (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-      if (
-        event.type === 'keydown' &&
-        ((event as React.KeyboardEvent).key === 'Tab' ||
-          (event as React.KeyboardEvent).key === 'Shift')
-      ) {
-        return;
-      }
-      setDrawerOpen(open);
-    };
-
-  const clearAllFilters = () => {
-    setCoverageFilter([]);
-    setCategoryFilter([]);
-    setOthersFilter([]);
-    onFilterChange({
-      coverage: [],
-      category: [],
-      others: [],
-    });
+  const toggleDrawer = (open: boolean) => (event: any) => {
+    if (
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
+    )
+      return;
+    setDrawerOpen(open);
   };
 
-  const onApplyFilterClick = () => {
-    setDrawerOpen(false);
-    onFilterChange({
-      coverage: coverageFilter,
-      category: categoryFilter,
-      others: othersFilter,
-    });
-  };
-
-  const hasActiveFilters =
-    coverageFilter.length > 0 ||
-    categoryFilter.length > 0 ||
-    othersFilter.length > 0;
   return (
     <>
       <Button
@@ -85,6 +48,7 @@ export function ProductFiltersMobile({
       >
         {t('results.filters.title')}
       </Button>
+
       <SwipeableDrawer
         anchor="right"
         open={drawerOpen}
@@ -100,64 +64,45 @@ export function ProductFiltersMobile({
             height: '100%',
             backgroundColor: 'white',
           }}
-          role="presentation"
-          onKeyDown={toggleDrawer(false)}
         >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', pb: 4 }}>
-            <span style={{ fontWeight: 600, fontSize: '1rem' }}>
+            <span style={{ fontWeight: 600, fontSize: '1.5rem' }}>
               {t('results.filters.title')}
             </span>
+            <button onClick={() => setDrawerOpen(false)}>
+              <IconCross
+                width={30}
+                height={30}
+                color={theme.palette.primary.main}
+              />
+            </button>
           </Box>
 
           <Box
             sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}
           >
-            <CoverageFilters
-              filter={coverageFilter}
-              setFilter={setCoverageFilter}
-            />
-            <CategoryFilters
-              filter={categoryFilter}
-              setFilter={setCategoryFilter}
-            />
-            <OthersFilters filter={othersFilter} setFilter={setOthersFilter} />
+            {Object.entries(FILTER_CONFIG).map(([key, config]) => (
+              <MultiSelectFilter
+                key={key}
+                filter={filters[key as keyof FilterState]}
+                setFilter={(value: string) =>
+                  setFilters((prev) => ({ ...prev, [key]: value }))
+                }
+                labelKey={config.labelKey}
+                optionKeys={config.optionKeys}
+              />
+            ))}
           </Box>
 
           <Box className="flex flex-col gap-3">
             {hasActiveFilters && (
-              <Button
-                fullWidth
-                variant="outlined"
-                onClick={clearAllFilters}
-                sx={{
-                  borderRadius: '8px',
-                  backgroundColor: 'white',
-                  textTransform: 'none',
-                  '&:hover': { backgroundColor: '#4d3725' },
-                }}
-              >
+              <Button fullWidth variant="outlined" onClick={clearAllFilters}>
                 {t('results.filters.clear')}
               </Button>
             )}
-
-            <Button
-              fullWidth
-              variant="contained"
-              onClick={onApplyFilterClick}
-              sx={{
-                borderRadius: '8px',
-                backgroundColor: '#906B4D',
-                textTransform: 'none',
-                '&:hover': { backgroundColor: '#4d3725' },
-              }}
-            >
-              {t('results.filters.applyButton')}
-            </Button>
           </Box>
         </Box>
       </SwipeableDrawer>
     </>
   );
 }
-
-export default ProductFiltersMobile;
