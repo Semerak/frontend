@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router';
 
-import { IconArrowLeft } from '~/components/ui/icons';
+import { IconChevronLeft } from '~/components/ui/icons';
 import { NavButton } from '~/components/ui/nav-button';
 
 interface BundleLayoutProps {
@@ -17,7 +17,7 @@ export function BundleLayout({ children }: BundleLayoutProps) {
     <div className="flex flex-col w-full h-full pt-20 sm:overflow-y-scroll">
       <div className="absolute top-6 left-28 z-20 w-auto">
         <NavLink to={'/results'}>
-          <IconArrowLeft width={10} />
+          <IconChevronLeft width={10} />
         </NavLink>
       </div>
       <div className="absolute top-6 right-8 z-20 w-auto">

@@ -1,24 +1,24 @@
-import { Typography, useMediaQuery } from '@mui/material';
+import { Typography } from '@mui/material';
 
 import AvailabilityLight from '~/components/ui/availability-light';
 import type { Availability } from '~/features/results/types';
 import { cn } from '~/utils/cn';
-import theme from '~/styles/theme';
 
 type ProductAvailabilityProps = {
   availability: Availability;
   price: string;
   position?: 'left' | 'right';
   className?: string;
+  size?: 'small' | 'medium';
 };
 
 export const ProductAvailability = ({
   availability,
   price,
   position = 'left',
+  size = 'medium',
   className,
 }: ProductAvailabilityProps) => {
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   return (
     <div
       className={cn('flex items-center mt-2', {
@@ -28,7 +28,7 @@ export const ProductAvailability = ({
     >
       {availability && <AvailabilityLight status={availability} />}
       <Typography
-        variant={isMobile ? 'body2' : 'body1'}
+        variant={size === 'medium' ? 'body1' : 'body2'}
         color="text.primary"
         className="ml-2"
       >

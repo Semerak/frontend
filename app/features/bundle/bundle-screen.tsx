@@ -1,4 +1,4 @@
-import { Typography, useMediaQuery } from '@mui/material';
+import { Box, Typography, useMediaQuery } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { SmallLarge } from '~/components/layouts/small-large';
@@ -11,7 +11,6 @@ import theme from '~/styles/theme';
 const MAIN_URL = 'https://beautechful.com';
 
 export const BundleScreen = ({ product }: { product: Product }) => {
-  // const { id } = useParams<{ id: string }>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { t } = useTranslation();
 
@@ -19,9 +18,9 @@ export const BundleScreen = ({ product }: { product: Product }) => {
     <>
       <div className="p-6 sm:pt-16 flex flex-col gap-6 w-full max-w-3xl mx-auto overflow-y-scroll">
         <MainProduct product={product} />
-        <div className="flex flex-col mt-6 sm:mt-20 gap-1 sm:gap-3">
+        <div className="flex flex-col mt-2 sm:mt-16 gap-1 sm:gap-3">
           <Typography
-            variant={isMobile ? 'h5' : 'h3'}
+            variant={'h3'}
             color="text.primary"
             className="mb-1"
             fontWeight={500}
@@ -37,11 +36,24 @@ export const BundleScreen = ({ product }: { product: Product }) => {
             {t('bundle.text')}
           </Typography>
 
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-6 w-full sm:pt-2 bg-[#F2F2F2] sm:bg-white p-3 rounded-md">
+          <div className="sm:hidden gap-2 w-full rounded-md mt-8 grid grid-cols-2">
+            <BundleProduct product={product} />
             <BundleProduct product={product} />
             <BundleProduct product={product} />
             <BundleProduct product={product} />
           </div>
+
+          <Box className="w-full mt-8 hidden sm:flex">
+            <div className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide p-3 sm:pt-2">
+              <BundleProduct product={product} />
+              <BundleProduct product={product} />
+              <BundleProduct product={product} />
+              <BundleProduct product={product} />
+              {/*{products.map((p, i) => (*/}
+              {/*  <BundleProduct key={i} product={p} />*/}
+              {/*))}*/}
+            </div>
+          </Box>
         </div>
       </div>
       <SmallLarge

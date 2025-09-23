@@ -1,6 +1,6 @@
 import type { IconType } from '~/components/ui/icons/icon.type';
 
-export const IconArrowLeft: React.FC<IconType> = ({
+export const IconChevronLeft: React.FC<IconType> = ({
   color,
   width,
   height,
