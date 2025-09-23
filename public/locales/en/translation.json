@@ -24,7 +24,10 @@
   },
   "results": {
     "title": "Your Top Matches",
+    "bestMatch": "Best match",
+    "feedback": "Help us improve",
     "filters": {
+      "title": "Filters",
       "clear": "Clear All Filters",
       "coverage": "Coverage",
       "coverageOptions": {
@@ -35,10 +38,10 @@
       "category": "Category",
       "categoryOptions": {
         "bb-cream-cc-cream": "BB-Cream and CC-Cream",
-        "concealer": "concealer",
-        "foundation": "foundation",
-        "highlighter": "highlighter",
-        "powder": "powder"
+        "concealer": "Concealer",
+        "foundation": "Foundation",
+        "highlighter": "Highlighter",
+        "powder": "Powder"
       },
       "other": "Others",
       "otherOptions": {
@@ -46,7 +49,8 @@
         "alcohol-free": "Alcohol Free",
         "natural": "Natural",
         "available": "Available"
-      }
+      },
+      "closeButton": "Close"
     },
     "qrCodeInstructions": "QR code & get results instantly on your phone",
     "exitButton": "Exit the analysis"

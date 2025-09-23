@@ -24,8 +24,11 @@
   },
   "results": {
     "title": "Deine Top Matches",
+    "bestMatch": "Beste Übereinstimmung",
+    "feedback": "Hilf uns, uns zu verbessern",
     "filters": {
       "clear": "Alle Filter löschen",
+      "title": "Filters",
       "coverage": "Deckkraft",
       "coverageOptions": {
         "full": "Volldeckend",
@@ -34,11 +37,11 @@
       },
       "category": "Kategorie",
       "categoryOptions": {
-        "bb-cream-cc-cream": "BB-Cream and CC-Cream",
-        "concealer": "concealer",
-        "foundation": "foundation",
-        "highlighter": "highlighter",
-        "powder": "powder"
+        "bb-cream-cc-cream": "BB-Cream und CC-Cream",
+        "concealer": "Concealer",
+        "foundation": "Foundation",
+        "highlighter": "Highlighter",
+        "powder": "Powder"
       },
       "other": "Weitere",
       "otherOptions": {

@@ -3,7 +3,7 @@ import React from 'react';
 
 import { NavButton } from '~/components/ui/nav-button';
 
-import ProductTile from '../../components/ui/product-tile';
+import ProductTile from '~/features/results/components\'/product-tile';
 
 interface ResultsScreenHorizontalProps {
   analysisResults: { label: string; value: string }[];

@@ -1,4 +1,4 @@
-import type { FilterState } from '~/components/ui/product-filters';
+import type { FilterState } from '~/features/results/components/product-filters';
 import type { Match } from '~/features/results/utils/result-translate';
 
 export function filterProducts(
@@ -7,7 +7,7 @@ export function filterProducts(
 ): Match[] {
   return products.filter((product) => {
     // Filter by product type (category)
-    if (filters.category.length > 0) {
+    if (filters.category?.length && filters.category?.length > 0) {
       const productTypeLower = product.type.toLowerCase();
       const hasMatchingCategory = filters.category.some((category) =>
         productTypeLower.includes(category.toLowerCase()),
@@ -19,8 +19,8 @@ export function filterProducts(
 
     // Filter by "available" option in Others tab only
     if (
-      filters.others.includes('Available') ||
-      filters.others.includes('Verfügbar')
+      (filters.others && filters.others?.includes('Available')) ||
+      filters.others?.includes('Verfügbar')
     ) {
       if (product.availability !== 'available') {
         return false;

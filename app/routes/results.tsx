@@ -3,6 +3,7 @@ import { Navigate, useLocation } from 'react-router';
 import { ResultLayout } from '~/components/layouts/result-layout';
 import ResultsScreenVertical from '~/features/results/results-screen-vertical';
 import { translateProductsToMatches } from '~/features/results/utils/result-translate';
+import { mockResults } from '~/features/results/mockData/results';
 
 const mockAnalysisResults = [
   { label: 'Skin Tone', value: 'Fair' },
@@ -12,7 +13,7 @@ const mockAnalysisResults = [
 
 const ResultsPage = () => {
   const location = useLocation();
-  const results = location.state?.results;
+  const results = location.state?.results ?? mockResults;
 
   if (!results) {
     // Redirect to a fallback page if no data is passed
