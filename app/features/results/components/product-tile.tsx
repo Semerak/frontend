@@ -1,31 +1,19 @@
 import { Typography, useMediaQuery } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router';
 
+import type { Match, Product } from '~/features/results/types';
 import theme from '~/styles/theme';
 import { cn } from '~/utils/cn';
 
-import AvailabilityLight, {
-  type AvailabilityStatus,
-} from '../../../components/ui/availability-light';
+import AvailabilityLight from '../../../components/ui/availability-light';
 
 interface ProductTileProps {
-  image: string;
-  brand: string;
-  description: string;
-  type: string;
-  price: string;
-  availability?: AvailabilityStatus;
-  rank: number;
+  product: Product;
 }
 
-export function ProductTile({
-  image,
-  brand,
-  description,
-  type,
-  price,
-  availability,
-}: ProductTileProps) {
+export function ProductTile({ match }: { match: Match }) {
+  const { image, brand, description, type, price, availability } = match;
   return (
     <div className="flex flex-col items-center bg-background-paper p-4 rounded-lg shadow-md w-34 h-full">
       <div className="flex justify-center items-center mb-4">
@@ -68,16 +56,11 @@ export function ProductTile({
   );
 }
 
-export function ProductTileHorizontal({
-  image,
-  brand,
-  description,
-  type,
-  price,
-  availability,
-  rank,
-}: ProductTileProps) {
+export function ProductTileHorizontal({ product }: ProductTileProps) {
   const { t } = useTranslation();
+  const { image, brand, description, type, price, availability, rank } =
+    product;
+
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
@@ -145,25 +128,39 @@ export function ProductTileHorizontal({
   );
 }
 
-export function ProductTileHorizontalRanked({
-  image,
-  brand,
-  description,
-  type,
-  price,
-  availability,
-  rank,
-}: ProductTileProps & { rank: number }) {
+export function ProductTileHorizontalRanked({ product }: ProductTileProps) {
+  const { image, brand, description, type, price, id, rank, availability } =
+    product;
+
+  const bundleProduct = {
+    image: image,
+    brand: brand,
+    price: price,
+    description: description,
+    availability: availability,
+  };
+
+  const navigate = useNavigate();
+
+  const handleOnClickProduct = () => {
+    navigate(`/bundle/${id}`, { state: { product: bundleProduct } });
+  };
   return (
-    <div className="flex flex-row items-center w-full sm:pt-4">
+    <div
+      className="flex flex-row items-center w-full sm:pt-4"
+      onClick={handleOnClickProduct}
+    >
       <ProductTileHorizontal
-        image={image}
-        brand={brand}
-        description={description}
-        type={type}
-        price={price}
-        availability={availability}
-        rank={rank}
+        product={{
+          id: id,
+          image: image,
+          brand: brand,
+          description: description,
+          type: type,
+          price: price,
+          availability: availability,
+          rank: rank,
+        }}
       />
     </div>
   );

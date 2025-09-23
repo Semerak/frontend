@@ -16,6 +16,7 @@ interface Product {
 }
 
 export interface Match {
+  product_id: string;
   image: string;
   brand: string;
   description: string;
@@ -40,6 +41,7 @@ export function translateProductsToMatches(products: Product[]): Match[] {
     }
 
     return {
+      product_id: product.product_id,
       image: product.product_image,
       brand: product.product_brand_name,
       description: product.product_description,

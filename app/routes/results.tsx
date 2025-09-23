@@ -1,9 +1,9 @@
 import { Navigate, useLocation } from 'react-router';
 
 import { ResultLayout } from '~/components/layouts/result-layout';
+import { mockResults } from '~/features/results/mockData/results';
 import ResultsScreenVertical from '~/features/results/results-screen-vertical';
 import { translateProductsToMatches } from '~/features/results/utils/result-translate';
-import { mockResults } from '~/features/results/mockData/results';
 
 const mockAnalysisResults = [
   { label: 'Skin Tone', value: 'Fair' },

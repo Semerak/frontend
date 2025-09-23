@@ -1,19 +1,27 @@
 import { useTheme } from '@mui/material/styles';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { NavLink } from 'react-router';
 
+import { IconArrowLeft } from '~/components/ui/icons';
 import { NavButton } from '~/components/ui/nav-button';
 
-interface ResultLayoutProps {
-  children: React.ReactNode;
+interface BundleLayoutProps {
+  children: ReactNode;
 }
 
-export function ResultLayout({ children }: ResultLayoutProps) {
+export function BundleLayout({ children }: BundleLayoutProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   return (
-    <div className="flex flex-col flex-grow pt-20 w-full h-full overflow-y-scroll">
+    <div className="flex flex-col w-full h-full pt-20 sm:overflow-y-scroll">
+      <div className="absolute top-6 left-28 z-20 w-auto">
+        <NavLink to={'/results'}>
+          <IconArrowLeft width={10} />
+        </NavLink>
+      </div>
       <div className="absolute top-6 right-8 z-20 w-auto">
-        <div className="flex flex-row gap-2 items-center">
+        <div className="flex flex-row gap-2 items-center justify-between w-full">
           <NavButton
             text={t('results.feedback')}
             url={'/feedback'}

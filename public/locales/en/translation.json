@@ -98,5 +98,10 @@
     "others": "Others",
     "othersPlaceholder": "Other Suggestions...",
     "submit": "Submit"
+  },
+  "bundle": {
+    "bestMatch": "Best match",
+    "title": "Complete the look!",
+    "text": "Explore the products that could go well with it."
   }
 }

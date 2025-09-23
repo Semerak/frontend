@@ -97,5 +97,10 @@
     "others": "Andere",
     "othersPlaceholder": "Weitere Vorschläge...",
     "submit": "Absenden"
+  },
+  "bundle": {
+    "bestMatch": "Beste Übereinstimmung",
+    "title": "Vervollständige den Look!",
+    "text": "Entdecke die Produkte, die gut dazu passen könnten."
   }
 }
