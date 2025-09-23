@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 export interface FilterState {
   coverage: string[];
@@ -10,7 +10,7 @@ export function useFilters(initialState?: Partial<FilterState>) {
   const [filters, setFilters] = useState<FilterState>({
     coverage: [],
     category: [],
-    others: [],
+    others: ['Available'],
     ...initialState,
   });
 
