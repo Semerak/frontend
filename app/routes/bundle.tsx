@@ -15,7 +15,7 @@ export default function Bundle() {
 
   useEffect(() => {
     if (productId && userId) {
-      fetchBundle({ userId: userId, productId: productId });
+      fetchBundle({ user_id: userId, product_id: productId });
     }
   }, [fetchBundle, productId, userId]);
 

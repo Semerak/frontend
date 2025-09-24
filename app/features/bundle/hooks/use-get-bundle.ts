@@ -3,8 +3,8 @@ import { useMutation } from '@tanstack/react-query';
 import type { Bundle } from '~/features/bundle/types';
 
 export interface GetBundlePayload {
-  userId: string;
-  productId: string;
+  user_id: string;
+  product_id: string;
 }
 
 async function getBundle(payload: GetBundlePayload): Promise<Bundle> {
