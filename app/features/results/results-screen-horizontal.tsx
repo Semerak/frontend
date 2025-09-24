@@ -2,19 +2,12 @@ import { Typography } from '@mui/material';
 import React from 'react';
 
 import { NavButton } from '~/components/ui/nav-button';
-
-import ProductTile from '~/features/results/components\'/product-tile';
+import ProductTile from '~/features/results/components/product-tile';
+import type { Match } from '~/features/results/types';
 
 interface ResultsScreenHorizontalProps {
   analysisResults: { label: string; value: string }[];
-  topMatches: {
-    image: string;
-    brand: string;
-    description: string;
-    type: string;
-    price: string;
-    availability: 'available' | 'online' | 'unavailable' | 'unknown';
-  }[];
+  topMatches: Match[];
 }
 
 export function ResultsScreenHorizontal({
@@ -72,12 +65,14 @@ export function ResultsScreenHorizontal({
               // style={{ width: '300px' }}
             >
               <ProductTile
-                image={match.image}
-                brand={match.brand}
-                description={match.description}
-                type={match.type}
-                price={match.price}
-                availability={match.availability}
+                match={{
+                  image: match.image,
+                  brand: match.brand,
+                  description: match.description,
+                  type: match.type,
+                  price: match.price,
+                  availability: match.availability,
+                }}
               />
             </div>
           ))}

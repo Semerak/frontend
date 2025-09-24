@@ -1,7 +1,7 @@
 import { useMediaQuery } from '@mui/material';
 import Button from '@mui/material/Button';
-import { useEffect, useRef, useState } from 'react';
 import type { ButtonHTMLAttributes } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface DefaultButtonProps {
   text: string;
