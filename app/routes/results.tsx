@@ -25,7 +25,7 @@ const ResultsPage = () => {
   const matches = translateProductsToMatches(results.products);
 
   return (
-    <ResultLayout>
+    <ResultLayout userId={results.user_id}>
       <ResultsScreenVertical
         analysisResults={mockAnalysisResults}
         topMatches={matches}

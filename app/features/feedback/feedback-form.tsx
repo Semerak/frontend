@@ -36,9 +36,10 @@ const defaultValues: FeedbackFormData = {
 
 interface FeedbackFormProps {
   onClose: () => void;
+  userId?: string;
 }
 
-export const FeedbackForm = ({ onClose }: FeedbackFormProps) => {
+export const FeedbackForm = ({ onClose, userId }: FeedbackFormProps) => {
   const { t } = useTranslation();
   const { methods } = useFeedbackFormContext();
   const { showError } = useSnackbar();
@@ -71,7 +72,7 @@ export const FeedbackForm = ({ onClose }: FeedbackFormProps) => {
 
   const onSubmit = handleSubmit(async (data: FeedbackFormData) => {
     try {
-      const payload = { ...data };
+      const payload = { ...data, user_id: userId };
       await submitFeedback(payload);
       onClose();
       reset(defaultValues);

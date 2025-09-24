@@ -9,9 +9,10 @@ import { FeedbackModal } from '~/features/feedback/feedback-modal';
 
 interface BundleLayoutProps {
   children: ReactNode;
+  userId: string;
 }
 
-export function BundleLayout({ children }: BundleLayoutProps) {
+export function BundleLayout({ children, userId }: BundleLayoutProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -44,7 +45,11 @@ export function BundleLayout({ children }: BundleLayoutProps) {
         </div>
       </div>
       {children}
-      <FeedbackModal open={isFeedbackOpen} onClose={handleCloseFeedback} />
+      <FeedbackModal
+        open={isFeedbackOpen}
+        onClose={handleCloseFeedback}
+        userId={userId}
+      />
     </div>
   );
 }
