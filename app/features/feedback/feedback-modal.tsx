@@ -15,9 +15,14 @@ import theme from '~/styles/theme';
 type FeedbackModalProps = {
   open: boolean;
   onClose: () => void;
+  userId?: string;
 };
 
-export const FeedbackModal = ({ open, onClose }: FeedbackModalProps) => {
+export const FeedbackModal = ({
+  open,
+  onClose,
+  userId,
+}: FeedbackModalProps) => {
   const { t } = useTranslation();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -64,7 +69,7 @@ export const FeedbackModal = ({ open, onClose }: FeedbackModalProps) => {
           <p className="text-left sm:text-center text-md sm:text-xl">
             {t('feedback.text')}
           </p>
-          <FeedbackForm onClose={onClose} />
+          <FeedbackForm onClose={onClose} userId={userId} />
         </DialogContent>
       </FeedbackFormProvider>
     </Dialog>

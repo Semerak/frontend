@@ -1,14 +1,16 @@
+import { Button } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { FeedbackModal } from '~/features/feedback/feedback-modal';
-import { Button } from '@mui/material';
 
 interface ResultLayoutProps {
   children: ReactNode;
+  userId?: string;
 }
 
-export function ResultLayout({ children }: ResultLayoutProps) {
+export function ResultLayout({ children, userId }: ResultLayoutProps) {
   const { t } = useTranslation();
   const theme = useTheme();
 
@@ -36,7 +38,11 @@ export function ResultLayout({ children }: ResultLayoutProps) {
         </div>
       </div>
       {children}
-      <FeedbackModal open={isFeedbackOpen} onClose={handleCloseFeedback} />
+      <FeedbackModal
+        open={isFeedbackOpen}
+        onClose={handleCloseFeedback}
+        userId={userId}
+      />
     </div>
   );
 }

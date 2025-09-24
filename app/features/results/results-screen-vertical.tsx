@@ -15,7 +15,6 @@ import { useUserFlowExit } from '~/features/user-flow/hooks/use-user-flow-exit';
 
 import { filterProducts } from './utils/filter-products';
 
-
 const MAIN_URL = 'https://beautechful.com';
 
 interface ResultsScreenVerticalProps {
@@ -117,6 +116,7 @@ export function ResultsScreenVertical({
                   availability: match.availability,
                   rank: index + 1,
                 }}
+                userId={userId}
               />
             ))}
           </div>

@@ -26,7 +26,7 @@ export default function Bundle() {
   }
 
   return (
-    <BundleLayout>
+    <BundleLayout userId={userId ?? ''}>
       <BundleScreen bundle={bundle} />
     </BundleLayout>
   );

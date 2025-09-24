@@ -10,6 +10,7 @@ import AvailabilityLight from '../../../components/ui/availability-light';
 
 interface ProductTileProps {
   product: Product;
+  userId?: string;
 }
 
 export function ProductTile({ match }: { match: Match }) {
@@ -128,13 +129,16 @@ export function ProductTileHorizontal({ product }: ProductTileProps) {
   );
 }
 
-export function ProductTileHorizontalRanked({ product }: ProductTileProps) {
+export function ProductTileHorizontalRanked({
+  product,
+  userId,
+}: ProductTileProps) {
   const { image, brand, description, type, price, id, rank, availability } =
     product;
 
   const navigate = useNavigate();
   const handleOnClickProduct = () => {
-    navigate(`/bundle/${id}?userId=userId`);
+    navigate(`/bundle/${id}?userId=${userId}`);
   };
 
   return (
