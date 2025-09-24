@@ -83,10 +83,10 @@
     "instructions": "Look directly at the camera. The system will automatically detect when you're looking and take a photo after a 3-second countdown."
   },
   "feedback": {
-    "title": "We want your feedback!",
-    "text": "How was the Make-up Match Experience?",
+    "title": "Help us improve!",
+    "text": "How would you rate your experience?",
     "improvement": {
-      "title": "Tell us what could be improved:",
+      "title": "Tell us what could be improved",
       "options": {
         "colorMatch": "Color Match",
         "suggestions": "Suggestions",

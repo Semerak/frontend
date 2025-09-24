@@ -1,4 +1,4 @@
-import { type RouteConfig, index, route } from '@react-router/dev/routes';
+import { index, route, type RouteConfig } from '@react-router/dev/routes';
 
 export default [
   route('/', 'routes/protected-layout.tsx', [
@@ -8,7 +8,6 @@ export default [
     route('/questionnaire', 'routes/questionnaire.tsx'),
     route('/results', 'routes/results.tsx'),
     route('/research', 'routes/research.tsx'),
-    route('/feedback', 'routes/feedback.tsx'),
     route('/bundle/:productId', 'routes/bundle.tsx'),
     route('/dev', 'routes/dev/layout.tsx', [
       index('routes/dev/home.tsx'),
