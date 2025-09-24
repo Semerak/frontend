@@ -133,17 +133,14 @@ export function ProductTileHorizontalRanked({ product }: ProductTileProps) {
     product;
 
   const navigate = useNavigate();
-
   const handleOnClickProduct = () => {
-    navigate(`/bundle/${id}`, {
-      state: { userId: 'userId' },
-    });
+    navigate(`/bundle/${id}?userId=userId`);
   };
 
   return (
-    <div
-      className="flex flex-row items-center w-full sm:pt-4"
+    <button
       onClick={handleOnClickProduct}
+      className="flex flex-row items-center w-full sm:pt-4 text-left"
     >
       <ProductTileHorizontal
         product={{
@@ -157,7 +154,7 @@ export function ProductTileHorizontalRanked({ product }: ProductTileProps) {
           rank: rank,
         }}
       />
-    </div>
+    </button>
   );
 }
 

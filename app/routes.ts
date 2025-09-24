@@ -9,7 +9,7 @@ export default [
     route('/results', 'routes/results.tsx'),
     route('/research', 'routes/research.tsx'),
     route('/feedback', 'routes/feedback.tsx'),
-    route('/bundle/:id', 'routes/bundle.tsx'),
+    route('/bundle/:productId', 'routes/bundle.tsx'),
     route('/dev', 'routes/dev/layout.tsx', [
       index('routes/dev/home.tsx'),
       route('product-scanner', 'routes/dev/product-scanner.tsx'),
