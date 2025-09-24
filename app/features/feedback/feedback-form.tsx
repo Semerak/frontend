@@ -3,11 +3,11 @@ import { useTranslation } from 'react-i18next';
 
 import { Form } from '~/components/react-hook-form';
 import {
+  RatingFifth,
   RatingFirst,
+  RatingFourth,
   RatingSecond,
   RatingThird,
-  RatingFourth,
-  RatingFifth,
 } from '~/components/ui/icons';
 import type { IconType } from '~/components/ui/icons/icon.type';
 import {
@@ -34,7 +34,11 @@ const defaultValues: FeedbackFormData = {
   opinions: '',
 };
 
-export function FeedbackForm() {
+interface FeedbackFormProps {
+  onClose: () => void;
+}
+
+export const FeedbackForm = ({ onClose }: FeedbackFormProps) => {
   const { t } = useTranslation();
   const { methods } = useFeedbackFormContext();
   const { showError } = useSnackbar();
@@ -69,6 +73,7 @@ export function FeedbackForm() {
     try {
       const payload = { ...data };
       await submitFeedback(payload);
+      onClose();
       reset(defaultValues);
     } catch (error) {
       showError(`Failed to submit Feedback: ${(error as Error).message}`);
@@ -79,8 +84,7 @@ export function FeedbackForm() {
     <Form onSubmit={onSubmit} methods={methods}>
       <div className="flex flex-col gap-6 items-center w-full">
         <div>
-          {/* Rating */}
-          <div className="flex">
+          <div className="flex gap-1 sm:gap-0">
             {ratings.map((num) => {
               const Icon = ratingIcons[num];
               const isSelected = selectedRating === num;
@@ -93,7 +97,7 @@ export function FeedbackForm() {
                   onClick={() => handleClickRating(num)}
                 >
                   <Icon
-                    className="h-18 w-18 sm:w-28 sm:h-28 transform transition-transform duration-400 hover:scale-105"
+                    className="h-14 w-14 sm:w-28 sm:h-28 transform transition-transform duration-400 hover:scale-105"
                     color={
                       isSelected ? theme.palette.secondary.main : 'currentColor'
                     }
@@ -104,10 +108,10 @@ export function FeedbackForm() {
           </div>
           <input type="hidden" {...register('rating', { required: true })} />
         </div>
-        {/* Improvements */}
+
         <div className="flex gap-2 flex-col">
           <Typography
-            variant="h6"
+            variant="body1"
             fontWeight={600}
             color="text.primary"
             className="mb-2"
@@ -125,7 +129,7 @@ export function FeedbackForm() {
                   type="button"
                   onClick={() => toggleImprovement(option)}
                   className={cn(
-                    'rounded-[15px] border px-4 py-2 text-left transition-colors',
+                    'rounded-[15px] border px-4 py-2 text-left transition-colors text-sm sm:text-md',
                     {
                       'text-white': isSelected,
                       'bg-white text-gray-800 hover:bg-gray-100': !isSelected,
@@ -148,14 +152,14 @@ export function FeedbackForm() {
 
           <input type="hidden" {...register('improvements')} />
         </div>
-        {/* Opinions */}
+
         <div className="flex gap-2 flex-col w-full lg:hidden">
-          <Typography variant="h6" fontWeight={600} color="text.primary">
+          <Typography variant="body1" fontWeight={600} color="text.primary">
             {t('feedback.others')}
           </Typography>
           <textarea
             rows={4}
-            className="resize-none rounded-xl border p-3 h-[153px] w-full focus:border-[#906B4D]
+            className="text-sm resize-none rounded-xl border p-3 h-[153px] w-full focus:border-[#906B4D]
             focus:ring-2 focus:ring-[#906B4D] focus:outline-none"
             style={{
               borderColor: theme.palette.border.shadow,
@@ -164,12 +168,12 @@ export function FeedbackForm() {
             {...register('opinions')}
           />
         </div>
-        {/* Submit */}
-        <div>
+
+        <div className="flex w-full sm:w-fit">
           <button
             disabled={isButtonDisabled}
             type="submit"
-            className="text-xl rounded bg.primary.main px-4 py-2 text-white
+            className="text-md sm:text-lg rounded-lg bg.primary.main px-4 py-2 text-white w-full
                transform transition-transform duration-400 font-semibold
                enabled:hover:scale-105 disabled:cursor-not-allowed"
             style={{
@@ -184,4 +188,4 @@ export function FeedbackForm() {
       </div>
     </Form>
   );
-}
+};
