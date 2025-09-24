@@ -1,10 +1,11 @@
 import { useTheme } from '@mui/material/styles';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { NavButton } from '~/components/ui/nav-button';
 
 interface ResultLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export function ResultLayout({ children }: ResultLayoutProps) {

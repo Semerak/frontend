@@ -1,16 +1,33 @@
-import { useLocation } from 'react-router';
+import { useEffect } from 'react';
+import { useLocation, useParams } from 'react-router';
 
 import { BundleLayout } from '~/components/layouts/bundle-layout';
 import { BundleScreen } from '~/features/bundle/bundle-screen';
-import type { Product } from '~/features/results/types';
+import { useGetBundle } from '~/features/bundle/hooks/use-get-bundle';
+import { mockBundle } from '~/features/bundle/mockData/bundle';
+import LoadingScreen from '~/features/loading-screen/loading-screen';
 
 export default function Bundle() {
+  const { mutate: fetchBundle, data, isPending } = useGetBundle();
+  const { productId } = useParams();
   const location = useLocation();
-  const product = location.state?.product as Product;
+  const userId = location.state?.userId;
+
+  useEffect(() => {
+    if (productId && userId) {
+      fetchBundle({ userId: userId, productId: productId });
+    }
+  }, [fetchBundle, productId, userId]);
+
+  const bundle = data ?? mockBundle;
+
+  if (isPending) {
+    return <LoadingScreen />;
+  }
 
   return (
     <BundleLayout>
-      <BundleScreen product={product} />
+      <BundleScreen bundle={bundle} />
     </BundleLayout>
   );
 }

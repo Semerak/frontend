@@ -1,7 +1,7 @@
+import type { BundleProduct as BundleProductType } from '~/features/bundle/types';
 import { ProductAvailability } from '~/features/results/components/product-availability';
-import type { Product } from '~/features/results/types';
 
-export const BundleProduct = ({ product }: { product: Product }) => {
+export const BundleProduct = ({ product }: { product: BundleProductType }) => {
   const { image, brand, price, availability, description } = product;
   return (
     <div className="p-2 sm:p-3 shadow-md rounded-md sm:flex sm:flex-col bg-white sm:w-[280px] flex-shrink-0">

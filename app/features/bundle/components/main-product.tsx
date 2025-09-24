@@ -1,11 +1,11 @@
 import { Typography, useMediaQuery } from '@mui/material';
-
-import { ProductAvailability } from '~/features/results/components/product-availability';
-import type { Product } from '~/features/results/types';
-import theme from '~/styles/theme';
 import { useTranslation } from 'react-i18next';
 
-export const MainProduct = ({ product }: { product: Product }) => {
+import type { MainProduct as MainProductType } from '~/features/bundle/types';
+import { ProductAvailability } from '~/features/results/components/product-availability';
+import theme from '~/styles/theme';
+
+export const MainProduct = ({ product }: { product: MainProductType }) => {
   const { image, brand, price, availability, description } = product;
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { t } = useTranslation();
@@ -14,7 +14,7 @@ export const MainProduct = ({ product }: { product: Product }) => {
       <img
         src={image}
         alt={brand}
-        className="object-contain sm:h-96 h-50 col-span-1 flex justify-center items-center w-full bg-[#F2F2F2] p-2 rounded-xl"
+        className="object-contain sm:h-96 h-50 col-span-1 flex justify-center items-center w-full bg-[#F2F2F2] sm:bg-white p-2 rounded-xl"
       />
       <div className="flex flex-col text-left col-span-3 py-4 ml-2 sm:py-10 sm:ml-4 sm:gap-10 gap-6">
         <div>

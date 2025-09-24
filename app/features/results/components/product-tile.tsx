@@ -132,19 +132,14 @@ export function ProductTileHorizontalRanked({ product }: ProductTileProps) {
   const { image, brand, description, type, price, id, rank, availability } =
     product;
 
-  const bundleProduct = {
-    image: image,
-    brand: brand,
-    price: price,
-    description: description,
-    availability: availability,
-  };
-
   const navigate = useNavigate();
 
   const handleOnClickProduct = () => {
-    navigate(`/bundle/${id}`, { state: { product: bundleProduct } });
+    navigate(`/bundle/${id}`, {
+      state: { userId: 'userId' },
+    });
   };
+
   return (
     <div
       className="flex flex-row items-center w-full sm:pt-4"
