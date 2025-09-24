@@ -16,7 +16,7 @@ export const BundleScreen = ({ bundle }: { bundle: Bundle }) => {
 
   return (
     <>
-      <div className="p-6 sm:pt-16 flex flex-col gap-6 w-full max-w-3xl mx-auto overflow-y-scroll">
+      <div className="p-6 sm:pt-22 flex flex-col gap-6 w-full max-w-3xl mx-auto overflow-y-scroll">
         <MainProduct product={bundle.main_product} />
         <div className="flex flex-col mt-2 sm:mt-16 gap-1 sm:gap-3">
           <Typography
