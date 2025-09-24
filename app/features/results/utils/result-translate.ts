@@ -11,6 +11,7 @@ interface Product {
   online_status: boolean;
   stock_level: number;
   match_percentage: string;
+  product_id: string;
   properties: Record<string, string[]>;
 }
 
@@ -21,6 +22,7 @@ export interface Match {
   type: string;
   price: string;
   availability: 'available' | 'online' | 'unavailable' | 'unknown';
+  gtin: string;
 }
 
 export function translateProductsToMatches(products: Product[]): Match[] {
@@ -44,6 +46,7 @@ export function translateProductsToMatches(products: Product[]): Match[] {
       type: product.type,
       price: product.price,
       availability,
+      gtin: product.product_id,
     };
   });
 }

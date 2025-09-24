@@ -1,4 +1,6 @@
+import { useMediaQuery } from '@mui/material';
 import Button from '@mui/material/Button';
+import { useEffect, useRef, useState } from 'react';
 import type { ButtonHTMLAttributes } from 'react';
 
 interface DefaultButtonProps {
@@ -7,6 +9,8 @@ interface DefaultButtonProps {
   style?: React.CSSProperties;
   type?: ButtonHTMLAttributes<HTMLButtonElement>['type'];
   disabled?: boolean;
+  focus?: boolean;
+  focusTimeout?: number;
   size?: 'small' | 'medium' | 'large' | 'xlarge';
   fullWidth?: boolean;
 }
@@ -17,9 +21,64 @@ export function DefaultButton({
   style,
   type,
   disabled,
+  focus = false,
+  focusTimeout = 3000,
   size = 'medium',
   fullWidth = false,
 }: DefaultButtonProps) {
+  const [shouldPulse, setShouldPulse] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const isLargeScreen = useMediaQuery('(min-width:1000px)');
+  if (isLargeScreen) {
+    if (size === 'small') {
+      size = 'large';
+    } else {
+      size = 'xlarge';
+    }
+  }
+
+  // Handle focus timeout and pulsing effect
+  useEffect(() => {
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+
+    // Reset pulsing state
+    setShouldPulse(false);
+
+    // Only start timer if focus is true and disabled is false
+    if (focus && !disabled) {
+      timeoutRef.current = setTimeout(() => {
+        setShouldPulse(true);
+      }, focusTimeout);
+    }
+
+    // Cleanup function
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+  }, [focus, disabled, focusTimeout]);
+
+  // Handle button click
+  const handleButtonClick = () => {
+    // Disable pulsing when button is pressed
+    setShouldPulse(false);
+
+    // Clear timeout if it's still running
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+
+    // Call the original click handler
+    handleClick();
+  };
   const getXlButtonStyle = () => {
     if (size !== 'xlarge') return {};
 
@@ -33,7 +92,7 @@ export function DefaultButton({
 
   return (
     <Button
-      onClick={handleClick}
+      onClick={handleButtonClick}
       variant="contained"
       size={size === 'xlarge' ? 'large' : size}
       fullWidth={fullWidth}
@@ -43,11 +102,28 @@ export function DefaultButton({
       }}
       type={type}
       disabled={disabled}
-      sx={{
+      sx={(theme) => ({
         '&.MuiButton-root': {
-          textTransform: 'none', // Prevents all-caps text
+          textTransform: 'none',
         },
-      }}
+        ...(shouldPulse && {
+          animation: 'pulse 1.5s ease-in-out infinite',
+          '@keyframes pulse': {
+            '0%': {
+              transform: 'scale(1)',
+              boxShadow: `0 0 0 0 ${theme.palette.primary.main}70`,
+            },
+            '50%': {
+              transform: 'scale(1.02)',
+              boxShadow: `0 0 0 10px ${theme.palette.primary.main}00`,
+            },
+            '100%': {
+              transform: 'scale(1)',
+              boxShadow: `0 0 0 0 ${theme.palette.primary.main}00`,
+            },
+          },
+        }),
+      })}
     >
       {text}
     </Button>

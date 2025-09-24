@@ -14,6 +14,10 @@ interface SpotDisplayProps {
   questionnaireIndex: number;
   number: number;
   color: string;
+  text?: string;
+  disabled?: boolean;
+  focus?: boolean;
+  focusTimeout?: number;
   onClick?: () => void;
 }
 
@@ -21,6 +25,10 @@ export function SpotDisplay({
   questionnaireIndex,
   number,
   color,
+  text,
+  disabled,
+  focus = false,
+  focusTimeout = 3000,
 }: SpotDisplayProps) {
   const { t } = useTranslation();
   const { methods } = useMainFormContext();
@@ -42,22 +50,34 @@ export function SpotDisplay({
       );
     }
   }, [data, number, methods]);
-
+  const size_rem =
+    typeof window !== 'undefined' && window.innerWidth >= 1024
+      ? '2rem'
+      : '1.5rem';
   return (
     <div className="flex flex-row items-center gap-4">
       <span
-        className="w-9 h-9 rounded-full border border-gray-300 transition-shadow duration-200 group-hover:shadow-lg flex items-center justify-center"
+        className="
+          rounded-full border border-gray-300 transition-shadow duration-200 group-hover:shadow-lg flex items-center justify-center
+          w-9 h-9
+          lg:w-18 lg:h-18
+          shrink-0
+        "
         style={{ backgroundColor: !data ? color : data.hex_value }}
       >
         {isPending ? (
-          <CircularProgress color="secondary" size="1.5rem" />
+          <CircularProgress color="secondary" size={size_rem} />
         ) : data?.hex_value ? (
-          <CheckIcon htmlColor="background" />
+          <CheckIcon htmlColor="background" style={{ fontSize: size_rem }} />
         ) : null}
       </span>
       <DefaultButton
-        text={`${t('sensorAnalysis.spot')} ${number}`}
+        text={text || `${t('sensorAnalysis.spot')} ${number}`}
         handleClick={handleClick}
+        fullWidth={true}
+        disabled={disabled || isPending}
+        focus={focus}
+        focusTimeout={focusTimeout}
       />
     </div>
   );

@@ -17,6 +17,9 @@
   "sensorAnalysis": {
     "title": "Sensor Analysis",
     "spot": "Scan spot",
+    "spot1": "Scan forehead",
+    "spot2": "Scan cheek",
+    "spot3": "Scan neck",
     "instruction": "Grab the sensor and place it in three different spots of your face"
   },
   "results": {
@@ -31,7 +34,7 @@
       },
       "category": "Category",
       "categoryOptions": {
-        "bb-cream-cc-cream": "BB-Cream & CC-Cream",
+        "bb-cream-cc-cream": "BB-Cream and CC-Cream",
         "concealer": "concealer",
         "foundation": "foundation",
         "highlighter": "highlighter",
@@ -45,6 +48,7 @@
         "available": "Available"
       }
     },
+    "qrCodeInstructions": "QR code & get results instantly on your phone",
     "exitButton": "Exit the analysis"
   },
   "cameraAnalysis": {
@@ -73,5 +77,22 @@
     "manualCapture": "Manual Capture",
     "stopCamera": "Stop Camera",
     "instructions": "Look directly at the camera. The system will automatically detect when you're looking and take a photo after a 3-second countdown."
+  },
+  "feedback": {
+    "title": "We want your feedback!",
+    "text": "How was the Make-up Match Experience?",
+    "improvement": {
+      "title": "Tell us what could be improved:",
+      "options": {
+        "colorMatch": "Color Match",
+        "suggestions": "Suggestions",
+        "speed": "Speed",
+        "scanning": "Scanning",
+        "hygenic": "Hygenic"
+      }
+    },
+    "others": "Others",
+    "othersPlaceholder": "Other Suggestions...",
+    "submit": "Submit"
   }
 }
