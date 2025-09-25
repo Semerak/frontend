@@ -19,7 +19,7 @@ async function getBundle(payload: GetBundlePayload): Promise<Bundle> {
   if (!response.ok) {
     throw new Error('Failed to get bundle products');
   }
-  return response.json();
+  return await response.json();
 }
 
 export function useGetBundle() {

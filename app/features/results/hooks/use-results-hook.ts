@@ -1,9 +1,15 @@
 import { useMutation } from '@tanstack/react-query';
 
-import { postResults } from '../result-api';
+import { getResultsByUserId, postResults } from '../result-api';
 
-export function useGetResults() {
+export function usePostResults() {
   return useMutation({
     mutationFn: postResults,
+  });
+}
+
+export function useGetResultsByUserId() {
+  return useMutation({
+    mutationFn: getResultsByUserId,
   });
 }
