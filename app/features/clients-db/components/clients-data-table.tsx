@@ -2,6 +2,7 @@ import {
   ExpandMore as ExpandMoreIcon,
   Clear as ClearIcon,
   FilterList as FilterListIcon,
+  Visibility as VisibilityIcon,
 } from '@mui/icons-material';
 import {
   Table,
@@ -26,8 +27,10 @@ import {
   MenuItem,
   IconButton,
   Tooltip,
+  Button,
 } from '@mui/material';
 import React, { useState, useMemo } from 'react';
+import { Link } from 'react-router';
 
 import type { ClientData } from '../api/clients-db-api';
 
@@ -452,6 +455,7 @@ export function ClientsDataTable({ data, loading }: ClientsDataTableProps) {
                   </TableSortLabel>
                 </TableCell>
               ))}
+              <TableCell sx={{ minWidth: 120 }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -462,6 +466,17 @@ export function ClientsDataTable({ data, loading }: ClientsDataTableProps) {
                     {formatValue(row[column as keyof ClientData], column)}
                   </TableCell>
                 ))}
+                <TableCell sx={{ py: 1 }}>
+                  <Button
+                    component={Link}
+                    to={`/dev/client-detail/${row.client_id}`}
+                    size="small"
+                    variant="outlined"
+                    startIcon={<VisibilityIcon />}
+                  >
+                    View
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

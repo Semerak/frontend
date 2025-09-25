@@ -14,6 +14,7 @@ export default [
       route('product-scanner', 'routes/dev/product-scanner.tsx'),
       route('system-status', 'routes/dev/system-status.tsx'),
       route('clients-db', 'routes/dev/clients-db.tsx'),
+      route('client-detail/:clientId', 'routes/dev/client-detail.tsx'),
     ]),
   ]),
   route('/login', 'routes/login.tsx'),
