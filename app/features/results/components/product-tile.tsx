@@ -1,6 +1,6 @@
 import { Typography, useMediaQuery } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 
 import type { Match, Product } from '~/features/results/types';
 import theme from '~/styles/theme';
@@ -10,7 +10,6 @@ import AvailabilityLight from '../../../components/ui/availability-light';
 
 interface ProductTileProps {
   product: Product;
-  userId?: string;
 }
 
 export function ProductTile({ match }: { match: Match }) {
@@ -129,12 +128,12 @@ export function ProductTileHorizontal({ product }: ProductTileProps) {
   );
 }
 
-export function ProductTileHorizontalRanked({
-  product,
-  userId,
-}: ProductTileProps) {
+export function ProductTileHorizontalRanked({ product }: ProductTileProps) {
   const { image, brand, description, type, price, id, rank, availability } =
     product;
+
+  const [searchParams] = useSearchParams();
+  const userId = searchParams.get('userId');
 
   const navigate = useNavigate();
   const handleOnClickProduct = () => {

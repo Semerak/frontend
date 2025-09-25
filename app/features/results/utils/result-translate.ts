@@ -1,19 +1,4 @@
-interface Product {
-  product_brand_name: string;
-  product_description: string;
-  product_color_swatch: string;
-  type: string;
-  price: string;
-  product_image: string;
-  product_link: string;
-  erp_connection: boolean;
-  instore_status: boolean;
-  online_status: boolean;
-  stock_level: number;
-  match_percentage: string;
-  product_id: string;
-  properties: Record<string, string[]>;
-}
+import type { RecommendedProduct } from '~/features/results/types';
 
 export interface Match {
   product_id: string;
@@ -26,7 +11,9 @@ export interface Match {
   gtin: string;
 }
 
-export function translateProductsToMatches(products: Product[]): Match[] {
+export function translateProductsToMatches(
+  products: RecommendedProduct[],
+): Match[] {
   return products.map((product) => {
     let availability: 'available' | 'online' | 'unavailable' | 'unknown';
 

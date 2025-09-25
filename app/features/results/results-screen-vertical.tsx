@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 
 import { SmallLarge } from '~/components/layouts/small-large';
 import { DefaultButton } from '~/components/ui/default-button';
@@ -27,11 +27,12 @@ export function ResultsScreenVertical({
 }: ResultsScreenVerticalProps) {
   const numberOfProductsToShow = 3;
   const { t } = useTranslation();
-  const location = useLocation();
   const navigate = useNavigate();
   const userFlowExitMutation = useUserFlowExit();
 
-  const userId = location.state?.results?.user_id;
+  const [searchParams] = useSearchParams();
+  const userId = searchParams.get('userId');
+
   const { filters, setFilters, clearAllFilters, hasActiveFilters } =
     useFilters();
 
@@ -116,7 +117,6 @@ export function ResultsScreenVertical({
                   availability: match.availability,
                   rank: index + 1,
                 }}
-                userId={userId}
               />
             ))}
           </div>

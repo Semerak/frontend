@@ -24,7 +24,7 @@ export function BundleLayout({ children, userId }: BundleLayoutProps) {
   return (
     <div className="flex flex-col w-full h-full pt-20 sm:overflow-y-scroll">
       <div className="absolute top-6 left-26 z-20 w-auto">
-        <NavLink to={'/results'}>
+        <NavLink to={`/results?userId=${userId}`}>
           <IconChevronLeft width={isMobile ? 10 : 24} />
         </NavLink>
       </div>

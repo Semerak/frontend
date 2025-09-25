@@ -4,7 +4,6 @@ import { useParams, useSearchParams } from 'react-router';
 import { BundleLayout } from '~/components/layouts/bundle-layout';
 import { BundleScreen } from '~/features/bundle/bundle-screen';
 import { useGetBundle } from '~/features/bundle/hooks/use-get-bundle';
-import { mockBundle } from '~/features/bundle/mockData/bundle';
 import LoadingScreen from '~/features/loading-screen/loading-screen';
 
 export default function Bundle() {
@@ -19,15 +18,13 @@ export default function Bundle() {
     }
   }, [fetchBundle, productId, userId]);
 
-  const bundle = data ?? mockBundle;
-
-  if (isPending) {
+  if (isPending || !userId || !data) {
     return <LoadingScreen />;
   }
 
   return (
-    <BundleLayout userId={userId ?? ''}>
-      <BundleScreen bundle={bundle} />
+    <BundleLayout userId={userId}>
+      <BundleScreen bundle={data} />
     </BundleLayout>
   );
 }

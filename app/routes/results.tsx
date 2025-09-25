@@ -1,7 +1,9 @@
-import { Navigate, useLocation } from 'react-router';
+import { useEffect } from 'react';
+import { useSearchParams } from 'react-router';
 
 import { ResultLayout } from '~/components/layouts/result-layout';
-import { mockResults } from '~/features/results/mockData/results';
+import LoadingScreen from '~/features/loading-screen/loading-screen';
+import { useGetResultsByUserId } from '~/features/results/hooks/use-results-hook';
 import ResultsScreenVertical from '~/features/results/results-screen-vertical';
 import { translateProductsToMatches } from '~/features/results/utils/result-translate';
 
@@ -12,20 +14,24 @@ const mockAnalysisResults = [
 ];
 
 const ResultsPage = () => {
-  const location = useLocation();
-  const results = location.state?.results ?? mockResults;
+  const [searchParams] = useSearchParams();
+  const userId = searchParams.get('userId');
+  const { mutate: fetchResults, data, isPending } = useGetResultsByUserId();
 
-  if (!results) {
-    // Redirect to a fallback page if no data is passed
-    return <Navigate to="/" />;
+  useEffect(() => {
+    if (userId) {
+      fetchResults(userId);
+    }
+  }, [fetchResults, userId]);
+
+  if (isPending || !data) {
+    return <LoadingScreen />;
   }
-  console.log('Results:', results);
 
-  // const matches = translateProductsToMatches(results.products).slice(0, 10);
-  const matches = translateProductsToMatches(results.products);
+  const matches = translateProductsToMatches(data.products);
 
   return (
-    <ResultLayout userId={results.user_id}>
+    <ResultLayout userId={data.user_id}>
       <ResultsScreenVertical
         analysisResults={mockAnalysisResults}
         topMatches={matches}

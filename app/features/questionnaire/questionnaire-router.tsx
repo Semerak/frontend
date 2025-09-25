@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
@@ -8,7 +8,7 @@ import { useConfig } from '~/context/config-context';
 import { useMainFormContext } from '~/context/main-form-context';
 import { useSnackbar } from '~/context/snackbar-context';
 import LoadingScreen from '~/features/loading-screen/loading-screen';
-import { useGetResults } from '~/features/results/hooks/use-results-hook';
+import { usePostResults } from '~/features/results/hooks/use-results-hook';
 import { QuestinnaireTypes } from '~/types/questionnaires-enum';
 
 import CameraAnalysis from '../camera-analysis/camera-analysis';
@@ -28,7 +28,7 @@ export function QuestionnaireRouter() {
   const { data: questions, isPending } = useQuestionsQuery();
   const { i18n } = useTranslation();
   const { config } = useConfig();
-  const getResults = useGetResults();
+  const postResults = usePostResults();
   const navigate = useNavigate();
   const { showError } = useSnackbar();
 
@@ -107,7 +107,7 @@ export function QuestionnaireRouter() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questionIndex, questions, i18n.language, isSubmitting]);
 
-  if (isPending || getResults.isPending || isSubmitting) {
+  if (isPending || postResults.isPending || isSubmitting) {
     return <LoadingScreen />;
   }
 
@@ -137,7 +137,7 @@ export function QuestionnaireRouter() {
         config: config,
         answers: mergedAnswers,
       };
-      getResults.mutate(payload, {
+      postResults.mutate(payload, {
         onError: (error) => {
           setIsSubmitting(false);
           hasSubmittedRef.current = false; // Reset on error so user can retry
@@ -148,7 +148,7 @@ export function QuestionnaireRouter() {
         onSuccess: (resultData) => {
           console.log('Results:', resultData);
           setIsSubmitting(false);
-          navigate('/results', { state: { results: resultData } });
+          navigate(`/results?userId=${resultData.user_id}`);
         },
       });
     } catch (error) {
