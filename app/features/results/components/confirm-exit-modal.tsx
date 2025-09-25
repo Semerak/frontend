@@ -107,6 +107,7 @@ export const ConfirmExitModal = ({
             onClick={onClose}
             style={{
               fontSize: '20px',
+              fontWeight: 600,
             }}
           >
             {t('results.confirmExitModal.cancelButton')}
@@ -114,9 +115,11 @@ export const ConfirmExitModal = ({
           <Button
             variant="outlined"
             size="medium"
+            className="font-semibold text-xl"
             onClick={() => navigate('/')}
             style={{
               fontSize: '20px',
+              fontWeight: 600,
             }}
           >
             {t('results.confirmExitModal.confirmButton')}
