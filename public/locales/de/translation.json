@@ -52,7 +52,12 @@
       }
     },
     "qrCodeInstructions": "QR-Code scannen & Ergebnisse sofort aufs Handy erhalten",
-    "exitButton": "Analyse beenden"
+    "exitButton": "Analyse beenden",
+    "confirmExitModal": {
+      "title": "Sie verlassen die Seite... Sind Sie sicher?",
+      "cancelButton": "Nein, auf der Seite bleiben",
+      "confirmButton": "Ja, den Vorgang beenden"
+    }
   },
   "cameraAnalysis": {
     "resultsTitle": "Gesichtsanalyse - Ergebnisse",

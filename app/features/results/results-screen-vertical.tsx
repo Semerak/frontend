@@ -1,11 +1,12 @@
 import { Typography } from '@mui/material';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router';
 
 import { SmallLarge } from '~/components/layouts/small-large';
 import { DefaultButton } from '~/components/ui/default-button';
 import { QRCodeBanner } from '~/components/ui/qr-code-banner';
+import { ConfirmExitModal } from '~/features/results/components/confirm-exit-modal';
 import { ProductFilters } from '~/features/results/components/product-filters';
 import { ProductFiltersMobile } from '~/features/results/components/product-filters-mobile';
 import { ProductTileHorizontalRanked } from '~/features/results/components/product-tile';
@@ -27,9 +28,13 @@ export function ResultsScreenVertical({
 }: ResultsScreenVerticalProps) {
   const numberOfProductsToShow = 3;
   const { t } = useTranslation();
+  const [isConfirmExitOpen, setIsConfirmExitOpen] = useState(false);
   const navigate = useNavigate();
-  const userFlowExitMutation = useUserFlowExit();
 
+  const handleOpenConfirmExit = () => setIsConfirmExitOpen(true);
+  const handleCloseConfirmExit = () => setIsConfirmExitOpen(false);
+
+  const userFlowExitMutation = useUserFlowExit();
   const [searchParams] = useSearchParams();
   const userId = searchParams.get('userId');
 
@@ -67,6 +72,11 @@ export function ResultsScreenVertical({
       console.warn('No user ID available for user flow exit tracking');
       navigate('/');
     }
+  };
+
+  const handleOnConfirmExit = () => {
+    pressExitButton();
+    navigate('/');
   };
 
   return (
@@ -126,13 +136,19 @@ export function ResultsScreenVertical({
           <DefaultButton
             size="medium"
             text={t('results.exitButton')}
-            handleClick={pressExitButton}
+            handleClick={handleOpenConfirmExit}
           />
         </div>
 
         <SmallLarge
           child_large={<QRCodeBanner link={MAIN_URL} />}
           child_small={<div />}
+        />
+
+        <ConfirmExitModal
+          open={isConfirmExitOpen}
+          onClose={handleCloseConfirmExit}
+          onConfirmExit={handleOnConfirmExit}
         />
       </div>
     </div>

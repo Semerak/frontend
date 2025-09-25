@@ -53,7 +53,12 @@
       "closeButton": "Close"
     },
     "qrCodeInstructions": "QR code & get results instantly on your phone",
-    "exitButton": "Exit the analysis"
+    "exitButton": "Exit the analysis",
+    "confirmExitModal": {
+      "title": "You're leaving... Are you sure?",
+      "cancelButton": "No, stay on the page",
+      "confirmButton": "Yes, exit the process"
+    }
   },
   "cameraAnalysis": {
     "resultsTitle": "Face Analysis - Results",
