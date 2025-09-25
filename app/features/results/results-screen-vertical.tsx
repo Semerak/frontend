@@ -16,8 +16,6 @@ import { useUserFlowExit } from '~/features/user-flow/hooks/use-user-flow-exit';
 
 import { filterProducts } from './utils/filter-products';
 
-const MAIN_URL = 'https://beautechful.com';
-
 interface ResultsScreenVerticalProps {
   analysisResults: { label: string; value: string }[];
   topMatches: Match[];
@@ -141,7 +139,7 @@ export function ResultsScreenVertical({
         </div>
 
         <SmallLarge
-          child_large={<QRCodeBanner link={MAIN_URL} />}
+          child_large={<QRCodeBanner link={window.location.href} />}
           child_small={<div />}
         />
 

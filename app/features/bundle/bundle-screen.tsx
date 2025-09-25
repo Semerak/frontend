@@ -8,8 +8,6 @@ import { MainProduct } from '~/features/bundle/components/main-product';
 import type { Bundle } from '~/features/bundle/types';
 import theme from '~/styles/theme';
 
-const MAIN_URL = 'https://beautechful.com';
-
 export const BundleScreen = ({ bundle }: { bundle: Bundle }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { t } = useTranslation();
@@ -52,7 +50,7 @@ export const BundleScreen = ({ bundle }: { bundle: Bundle }) => {
         </div>
       </div>
       <SmallLarge
-        child_large={<QRCodeBanner link={MAIN_URL} />}
+        child_large={<QRCodeBanner link={window.location.href} />}
         child_small={<div />}
       />
     </>
