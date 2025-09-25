@@ -2,6 +2,9 @@ import {
   ArrowBack as ArrowBackIcon,
   ShoppingCart as ShoppingCartIcon,
   Palette as PaletteIcon,
+  Star as StarIcon,
+  StarBorder as StarBorderIcon,
+  Feedback as FeedbackIcon,
 } from '@mui/icons-material';
 import {
   Typography,
@@ -90,6 +93,12 @@ interface ClientDetail {
       others: string[];
     };
     final_recommendations: any[];
+  };
+  feedback?: {
+    rating: number;
+    feedback_timestamp: string;
+    opinions: string;
+    improvements: string[];
   };
 }
 
@@ -595,6 +604,119 @@ export default function ClientDetail() {
           </Box>
         </Paper>
 
+        {/* User Feedback Section */}
+        {client.feedback && (
+          <Paper sx={{ p: 3 }}>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+            >
+              <FeedbackIcon />
+              User Feedback
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              {/* Rating */}
+              <Box>
+                <Typography variant="subtitle1" gutterBottom>
+                  Rating
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Box key={star}>
+                      {star <= (client.feedback?.rating || 0) ? (
+                        <StarIcon color="warning" />
+                      ) : (
+                        <StarBorderIcon color="action" />
+                      )}
+                    </Box>
+                  ))}
+                  <Typography variant="body2" sx={{ ml: 1 }}>
+                    {client.feedback?.rating || 0}/5
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* Feedback Timestamp */}
+              <Box>
+                <Typography variant="subtitle1" gutterBottom>
+                  Submitted On
+                </Typography>
+                <Typography variant="body2" fontFamily="monospace">
+                  {client.feedback?.feedback_timestamp
+                    ? new Date(
+                        client.feedback.feedback_timestamp,
+                      ).toLocaleString()
+                    : 'N/A'}
+                </Typography>
+              </Box>
+
+              {/* Opinions */}
+              {client.feedback?.opinions && (
+                <Box>
+                  <Typography variant="subtitle1" gutterBottom>
+                    User Comments
+                  </Typography>
+                  <Paper
+                    sx={{
+                      p: 2,
+                      backgroundColor: 'grey.50',
+                      borderLeft: 3,
+                      borderLeftColor: 'primary.main',
+                    }}
+                  >
+                    <Typography variant="body2">
+                      &ldquo;{client.feedback.opinions}&rdquo;
+                    </Typography>
+                  </Paper>
+                </Box>
+              )}
+
+              {/* Improvements */}
+              {client.feedback?.improvements &&
+                client.feedback.improvements.length > 0 && (
+                  <Box>
+                    <Typography variant="subtitle1" gutterBottom>
+                      Suggested Improvements
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 1,
+                      }}
+                    >
+                      {client.feedback.improvements.map(
+                        (improvement, index) => (
+                          <Box
+                            key={index}
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 1,
+                              p: 1,
+                              backgroundColor: 'info.light',
+                              borderRadius: 1,
+                            }}
+                          >
+                            <Typography variant="body2" fontWeight="medium">
+                              •
+                            </Typography>
+                            <Typography variant="body2">
+                              {improvement}
+                            </Typography>
+                          </Box>
+                        ),
+                      )}
+                    </Box>
+                  </Box>
+                )}
+            </Box>
+          </Paper>
+        )}
+
         {/* Recommendation Focus */}
         <Paper sx={{ p: 3 }}>
           <Typography variant="h6" gutterBottom>
@@ -757,6 +879,32 @@ export default function ClientDetail() {
           <RecommendationTable
             recommendations={client.recommendations}
             clientColor={client.features?.color_avg_hex || '#000000'}
+          />
+        </Paper>
+
+        {/* Raw Endpoint Data Section */}
+        <Paper sx={{ p: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            Raw Endpoint Response
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+          <Box
+            component="textarea"
+            sx={{
+              width: '100%',
+              minHeight: 300,
+              maxHeight: 800,
+              resize: 'vertical',
+              fontFamily: 'monospace',
+              fontSize: '0.875rem',
+              border: '1px solid #ccc',
+              borderRadius: 1,
+              p: 2,
+              backgroundColor: '#f5f5f5',
+              overflow: 'auto',
+            }}
+            value={JSON.stringify(client, null, 2)}
+            readOnly
           />
         </Paper>
       </Box>
