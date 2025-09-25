@@ -4,60 +4,23 @@ import {
   DialogContent,
   IconButton,
   Typography,
-  useMediaQuery,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
 
-import { IconCross } from '~/components/ui/icons';
-import { useUserFlowExit } from '~/features/user-flow/hooks/use-user-flow-exit';
-import theme from '~/styles/theme';
-import React from 'react';
-import { IconExit } from '~/components/ui/icons/icon-exit';
+import { IconCross, IconExit } from '~/components/ui/icons';
 
 type ConfirmExitModalProps = {
   open: boolean;
   onClose: () => void;
-  userId: string;
+  onConfirmExit: () => void;
 };
 
 export const ConfirmExitModal = ({
   open,
   onClose,
-  userId,
+  onConfirmExit,
 }: ConfirmExitModalProps) => {
   const { t } = useTranslation();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const navigate = useNavigate();
-  const userFlowExitMutation = useUserFlowExit();
-
-  // const pressExitButton = () => {
-  //   const userFlowExit = {
-  //     filters: filters,
-  //     final_recommendations: filteredMatches,
-  //   };
-  //
-  //   if (userId) {
-  //     userFlowExitMutation.mutate(
-  //       {
-  //         userId,
-  //         data: userFlowExit,
-  //       },
-  //       {
-  //         onSuccess: () => {
-  //           navigate('/');
-  //         },
-  //         onError: (error) => {
-  //           console.error('Failed to send user flow exit data:', error);
-  //           navigate('/');
-  //         },
-  //       },
-  //     );
-  //   } else {
-  //     console.warn('No user ID available for user flow exit tracking');
-  //     navigate('/');
-  //   }
-  // };
 
   return (
     <Dialog
@@ -116,7 +79,7 @@ export const ConfirmExitModal = ({
             variant="outlined"
             size="medium"
             className="font-semibold text-xl"
-            onClick={() => navigate('/')}
+            onClick={onConfirmExit}
             style={{
               fontSize: '20px',
               fontWeight: 600,

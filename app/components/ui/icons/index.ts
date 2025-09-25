@@ -5,3 +5,4 @@ export { RatingFourth } from './rating-fourth';
 export { RatingFifth } from './rating-fifth';
 export { IconCross } from './icon-cross';
 export { IconChevronLeft } from './icon-chevron-left';
+export { IconExit } from './icon-exit';
