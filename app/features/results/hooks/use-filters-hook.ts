@@ -38,6 +38,10 @@ export function useFilters(initialState?: Partial<FilterState>) {
     localStorage.removeItem(FILTERS_KEY);
   };
 
+  const clearCache = () => {
+    localStorage.removeItem(FILTERS_KEY);
+  };
+
   const hasActiveFilters = useMemo(
     () => Object.values(filters).some((arr) => arr.length > 0),
     [filters],
@@ -48,5 +52,6 @@ export function useFilters(initialState?: Partial<FilterState>) {
     setFilters,
     clearAllFilters,
     hasActiveFilters,
+    clearCache,
   };
 }

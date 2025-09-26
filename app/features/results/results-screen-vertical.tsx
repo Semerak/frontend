@@ -36,7 +36,7 @@ export function ResultsScreenVertical({
   const [searchParams] = useSearchParams();
   const userId = searchParams.get('userId');
 
-  const { filters, setFilters, clearAllFilters, hasActiveFilters } =
+  const { filters, setFilters, clearAllFilters, hasActiveFilters, clearCache } =
     useFilters();
 
   const filteredMatches = useMemo(
@@ -74,6 +74,7 @@ export function ResultsScreenVertical({
 
   const handleOnConfirmExit = () => {
     pressExitButton();
+    clearCache();
     navigate('/');
   };
 
