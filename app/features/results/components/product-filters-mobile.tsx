@@ -1,5 +1,5 @@
-import { Button, Box, SwipeableDrawer } from '@mui/material';
-import { type Dispatch, type SetStateAction, useState } from 'react';
+import { Box, Button, SwipeableDrawer } from '@mui/material';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { IconCross } from '~/components/ui/icons';
@@ -10,7 +10,7 @@ import theme from '~/styles/theme';
 
 type ProductFiltersMobileProps = {
   filters: FilterState;
-  setFilters: Dispatch<SetStateAction<FilterState>>;
+  setFilters: (newFilters: Partial<FilterState>) => void;
   clearAllFilters: () => void;
   hasActiveFilters: boolean;
 };
@@ -85,9 +85,7 @@ export function ProductFiltersMobile({
               <MultiSelectFilter
                 key={key}
                 filter={filters[key as keyof FilterState]}
-                setFilter={(value: string) =>
-                  setFilters((prev) => ({ ...prev, [key]: value }))
-                }
+                setFilter={(value: string) => setFilters({ [key]: value })}
                 labelKey={config.labelKey}
                 optionKeys={config.optionKeys}
               />
