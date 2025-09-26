@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export interface FilterState {
   coverage: string[];
@@ -6,16 +6,36 @@ export interface FilterState {
   others: string[];
 }
 
+const FILTERS_KEY = 'app_filters';
+
 export function useFilters(initialState?: Partial<FilterState>) {
-  const [filters, setFilters] = useState<FilterState>({
-    coverage: [],
-    category: [],
-    others: ['Available'],
-    ...initialState,
+  const [filters, setFiltersState] = useState<FilterState>(() => {
+    try {
+      const saved = localStorage.getItem(FILTERS_KEY);
+      if (saved) return JSON.parse(saved) as FilterState;
+    } catch (e) {
+      console.warn('Failed to parse saved filters:', e);
+    }
+    return {
+      coverage: [],
+      category: [],
+      others: ['Available'],
+      ...initialState,
+    };
   });
 
+  useEffect(() => {
+    localStorage.setItem(FILTERS_KEY, JSON.stringify(filters));
+  }, [filters]);
+
+  const setFilters = (newFilters: Partial<FilterState>) => {
+    setFiltersState((prev) => ({ ...prev, ...newFilters }));
+  };
+
   const clearAllFilters = () => {
-    setFilters({ coverage: [], category: [], others: [] });
+    const cleared = { coverage: [], category: [], others: [] };
+    setFiltersState(cleared);
+    localStorage.removeItem(FILTERS_KEY);
   };
 
   const hasActiveFilters = useMemo(

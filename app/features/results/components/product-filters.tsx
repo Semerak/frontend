@@ -1,5 +1,4 @@
 import { Button } from '@mui/material';
-import type { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MultiSelectFilter } from '~/features/results/components/multi-select-filter';
@@ -8,7 +7,7 @@ import type { FilterState } from '~/features/results/hooks/use-filters-hook';
 
 export type ProductFiltersProps = {
   filters: FilterState;
-  setFilters: Dispatch<SetStateAction<FilterState>>;
+  setFilters: (newFilters: Partial<FilterState>) => void;
   clearAllFilters: () => void;
   hasActiveFilters: boolean;
 };
@@ -28,9 +27,7 @@ export function ProductFilters({
           <MultiSelectFilter
             key={key}
             filter={filters[key as keyof FilterState]}
-            setFilter={(value: string) =>
-              setFilters((prev) => ({ ...prev, [key]: value }))
-            }
+            setFilter={(value: string) => setFilters({ [key]: value })}
             labelKey={config.labelKey}
             optionKeys={config.optionKeys}
           />
