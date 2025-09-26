@@ -66,6 +66,21 @@
     "analysisComplete": "✓ Gesichtsanalyse erfolgreich abgeschlossen",
     "continueButton": "Weiter zum nächsten Schritt"
   },
+  "grabTheSensor": {
+    "title": "Hautfarbenanalyse",
+    "text": "Jetzt geht der Spaß los!",
+    "subtitle": "Greife zum Sensor",
+    "explanation": "Der Gesichtsscanner befindet sich auf der linken Seite dieses Bildschirms. Du wirst ihn für den nächsten Schritt brauchen :)",
+    "buttonText": "Weiter"
+  },
+  "scanningWarnings": {
+    "title": "Hautfarbenanalyse",
+    "text": "Für genaue Ergebnisse vermeide das Scannen von:",
+    "makeup": "Stellen mit starkem Contouring-Make-up",
+    "blush": "Stellen mit Rouge",
+    "birthmarks": "Muttermalen",
+    "buttonText": "Bereit?"
+  },
   "faceDetection": {
     "title": "Gesichtsanalyse",
     "initializing": "Gesichtserkennung wird initialisiert...",

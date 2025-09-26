@@ -6,3 +6,8 @@ export { RatingFifth } from './rating-fifth';
 export { IconCross } from './icon-cross';
 export { IconChevronLeft } from './icon-chevron-left';
 export { IconExit } from './icon-exit';
+export { IconArrowLeft } from './icon-arrow-left';
+export { IconBrush } from './icon-brush';
+export { IconPalette } from './icon-palette';
+export { IconFace } from './icon-face';
+export { IconError } from './icon-error';

@@ -67,6 +67,21 @@
     "analysisComplete": "✓ Face analysis completed successfully",
     "continueButton": "Continue to Next Step"
   },
+  "grabTheSensor": {
+    "title": "Skin color analysis",
+    "text": "Now the fun starts!",
+    "subtitle": "Grab the sensor",
+    "explanation": "The face scanning sensor is located on the left side of this screen. You’ll need it for the next step :)",
+    "buttonText": "Next"
+  },
+  "scanningWarnings": {
+    "title": "Skin color analysis",
+    "text": "To get accurate results, avoid scanning:",
+    "makeup": "Spots with heavy contour makeup",
+    "blush": "Spots with blush",
+    "birthmarks": "Birthmarks",
+    "buttonText": "Ready?"
+  },
   "faceDetection": {
     "title": "Face Detection",
     "initializing": "Initializing face detection...",
